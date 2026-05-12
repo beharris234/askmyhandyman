@@ -24,7 +24,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     radial-gradient(ellipse 55% 40% at 85% 95%,rgba(255,110,180,.05) 0%,transparent 55%)}
 .app{position:relative;z-index:1;max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .3s ease}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .3s ease;position:relative}
 .screen.active{display:flex}
 @keyframes fu{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
 .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
@@ -44,21 +44,29 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .inp::placeholder{color:var(--dmr)}
 
 /* LANDING */
-#landing{justify-content:center;align-items:center;background:var(--bg)}
-.splash-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;animation:splashIn 1s ease}
-@keyframes splashIn{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
-.splash-mark{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 60px rgba(180,150,255,.45),0 0 120px rgba(255,110,180,.22);animation:glow 3s ease-in-out infinite}
-@keyframes glow{0%,100%{box-shadow:0 0 60px rgba(180,150,255,.45),0 0 120px rgba(255,110,180,.22)}50%{box-shadow:0 0 90px rgba(180,150,255,.65),0 0 180px rgba(255,110,180,.35)}}
-.splash-name{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;letter-spacing:12px;text-transform:uppercase;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.splash-tag{font-size:10px;letter-spacing:5px;color:var(--dim);text-transform:uppercase}
-.splash-btns{margin-top:64px;display:flex;flex-direction:column;gap:10px;width:100%;padding:0 36px}
+#landing{position:relative;overflow:hidden;justify-content:flex-end}
+.land-bg{position:absolute;inset:0;z-index:0}
+.land-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:brightness(.55) saturate(1.1)}
+.land-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#06060d 0%,#06060dcc 35%,rgba(6,6,13,.3) 65%,transparent 100%)}
+.land-content{position:relative;z-index:1;padding:0 28px 54px;display:flex;flex-direction:column;align-items:center}
+.land-badge{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gd);border:1px solid rgba(255,215,0,.3);padding:5px 14px;border-radius:100px;margin-bottom:22px}
+.land-name{font-family:'Cormorant Garamond',serif;font-size:58px;font-weight:300;letter-spacing:8px;text-transform:uppercase;text-align:center;line-height:1;background:linear-gradient(135deg,#fff 0%,#e8d5ff 50%,#ff6eb4 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:10px}
+.land-tag{font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.45);text-align:center;text-transform:uppercase;margin-bottom:38px}
+.land-rule{width:40px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.5),transparent);margin-bottom:38px}
+.land-btns{display:flex;flex-direction:column;gap:10px;width:100%}
+
+.land-photo-strip{position:absolute;top:0;left:0;right:0;height:62%;z-index:0;overflow:hidden}
+.land-photo-strip::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,6,13,.15) 0%,#06060d 100%)}
 
 /* AUTH FORMS */
-.auth-form{padding:56px 26px 40px;display:flex;flex-direction:column;gap:0;overflow-y:auto}
+.auth-screen-bg{position:absolute;inset:0;z-index:0;overflow:hidden}
+.auth-screen-bg img{width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(.35) saturate(.9) blur(2px);transform:scale(1.05)}
+.auth-screen-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(160deg,rgba(6,6,13,.7) 0%,rgba(6,6,13,.92) 60%,#06060d 100%)}
+.auth-form{position:relative;z-index:1;padding:56px 26px 40px;display:flex;flex-direction:column;gap:0;overflow-y:auto;flex:1}
 .auth-form::-webkit-scrollbar{display:none}
 .auth-back{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--dim);font-size:11px;letter-spacing:1px;margin-bottom:28px;transition:color .2s;width:fit-content}
 .auth-back:active{color:var(--pu)}
-.auth-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;margin-bottom:6px}
+.auth-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:300;margin-bottom:6px;line-height:1.1}
 .auth-sub{font-size:11px;color:var(--dim);line-height:1.7;margin-bottom:28px}
 .auth-fields{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
 .auth-link{font-size:11px;color:var(--pu);text-align:center;margin-top:14px;cursor:pointer;letter-spacing:.5px}
@@ -156,25 +164,30 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
 <!-- LANDING -->
 <div class="screen active" id="landing">
-  <div class="splash-wrap">
-    <div class="splash-mark">🔒</div>
-    <div>
-      <div class="splash-name">PrivateBlast</div>
-      <div class="splash-tag" style="text-align:center;margin-top:6px">Your message. Nobody's business.</div>
-    </div>
+  <div class="land-bg">
+    <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=800&q=85&auto=format&fit=crop" alt="" loading="eager">
   </div>
-  <div class="splash-btns">
-    <button class="btn bp" onclick="goTo('signup')">Get Started</button>
-    <button class="btn bg" onclick="goTo('signin')">Sign In</button>
+  <div class="land-content">
+    <div class="land-badge">Members Only</div>
+    <div class="land-name">Private<br>Blast</div>
+    <div class="land-rule"></div>
+    <div class="land-tag">Your message. Nobody's business.</div>
+    <div class="land-btns">
+      <button class="btn bp" onclick="goTo('signup')">Get Started Free →</button>
+      <button class="btn bg" onclick="goTo('signin')">Sign In</button>
+    </div>
   </div>
 </div>
 
 <!-- SIGN UP -->
 <div class="screen" id="signup">
+  <div class="auth-screen-bg">
+    <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80&auto=format&fit=crop" alt="">
+  </div>
   <div class="auth-form">
     <div class="auth-back" onclick="goTo('landing')">← Back</div>
     <div class="auth-title">Create Account</div>
-    <div class="auth-sub">Join thousands of nightlife professionals who keep their business private.</div>
+    <div class="auth-sub">Built for nightlife professionals. Private by default.</div>
     <div class="err-box" id="signupErr"></div>
     <div class="auth-fields">
       <div class="ig"><div class="il">Full Name</div><input class="inp" id="signupName" type="text" placeholder="Your name" autocomplete="name"></div>
@@ -202,6 +215,9 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
 <!-- SIGN IN -->
 <div class="screen" id="signin">
+  <div class="auth-screen-bg">
+    <img src="https://images.unsplash.com/photo-1571266028243-e4733b0f0bb0?w=600&q=80&auto=format&fit=crop" alt="">
+  </div>
   <div class="auth-form">
     <div class="auth-back" onclick="goTo('landing')">← Back</div>
     <div class="auth-title">Welcome Back</div>

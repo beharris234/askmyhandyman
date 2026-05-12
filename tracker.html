@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06060d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PrivateBlast — Income Tracker</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06060d;--s1:#0b0b17;--s2:#11111f;--s3:#171728;
+  --b:rgba(255,255,255,.055);--bhi:rgba(180,150,255,.28);
+  --tx:#eeeef8;--dim:#545468;--dmr:#262636;
+  --pu:#b496ff;--pk:#ff6eb4;--tl:#64ffda;--gd:#ffd700;--rd:#ff4d6d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'DM Mono',monospace;font-size:14px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 45% at 10% 0%,rgba(180,150,255,.07) 0%,transparent 55%),
+             radial-gradient(ellipse 55% 35% at 90% 100%,rgba(255,110,180,.05) 0%,transparent 55%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .28s ease}
+.screen.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:92px}
+.scroll::-webkit-scrollbar{display:none}
+.hdr{padding:54px 22px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);flex-shrink:0}
+.logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;letter-spacing:6px;text-transform:uppercase;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hbtn{width:38px;height:38px;border-radius:10px;background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .2s;flex-shrink:0}
+.hbtn:active{background:var(--s3);transform:scale(.93)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(6,6,13,.97);backdrop-filter:blur(28px);border-top:1px solid var(--b);display:flex;padding:10px 0 28px;z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px}
+.ni-i{font-size:19px;transition:transform .2s}
+.ni-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);transition:color .2s}
+.ni.active .ni-l{color:var(--pu)}
+.ni.active .ni-i{transform:scale(1.1)}
+.ni:active .ni-i{transform:scale(.87)}
+.btn{padding:14px 20px;border-radius:12px;border:none;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bp{background:linear-gradient(135deg,#b496ff,#ff6eb4);color:#fff;font-weight:500;box-shadow:0 6px 28px rgba(180,150,255,.28)}
+.bp:active{transform:scale(.97)}
+.bg{background:transparent;color:var(--dim);border:1px solid var(--b)}
+.bg:active{background:var(--s2)}
+.bfw{width:100%}
+.ig{display:flex;flex-direction:column;gap:7px}
+.il{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.inp{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:13px 15px;color:var(--tx);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;width:100%}
+.inp:focus{border-color:var(--bhi)}
+.inp::placeholder{color:var(--dmr)}
+.sec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin:22px 0 10px}
+.money-inp{position:relative}
+.money-inp .sym{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--gd);pointer-events:none}
+.money-inp input{padding-left:32px;background:var(--s1);border:1px solid var(--b);border-radius:11px;padding-left:30px;color:var(--gd);font-family:'Cormorant Garamond',serif;font-size:20px;outline:none;transition:border-color .2s;width:100%;padding-top:12px;padding-bottom:12px}
+.money-inp input:focus{border-color:rgba(255,215,0,.3)}
+.money-inp input::placeholder{color:rgba(255,215,0,.2)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(12px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex;animation:fu .2s ease}
+.modal{background:var(--s1);border:1px solid var(--b);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:22px;padding-bottom:42px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:38px;height:4px;border-radius:2px;background:var(--b);margin:0 auto 18px}
+.mtitle{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px}
+.mbody{display:flex;flex-direction:column;gap:12px}
+.toast{position:fixed;top:54px;left:50%;transform:translateX(-50%) translateY(-18px);background:var(--s2);border:1px solid var(--b);border-radius:11px;padding:11px 16px;font-size:12px;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;max-width:calc(100vw - 44px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HOME -->
+<div class="screen active" id="home">
+  <div class="hdr">
+    <div>
+      <div class="logo">Tracker</div>
+      <div style="font-size:9px;letter-spacing:1.5px;color:var(--dim);margin-top:2px">💰 Income Tracker</div>
+    </div>
+    <div class="hbtn" onclick="window.location.href='/app.html'">←</div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <!-- Net hero -->
+    <div style="background:linear-gradient(135deg,rgba(180,150,255,.08),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.18);border-radius:18px;padding:22px;text-align:center;margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:6px">Net This Week</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;background:linear-gradient(135deg,#ffd700,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1" id="weekNet">$0</div>
+      <div style="display:flex;justify-content:center;gap:18px;margin-top:12px">
+        <div style="text-align:center">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--gd)" id="monthNet">$0</div>
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:2px">This Month</div>
+        </div>
+        <div style="width:1px;background:var(--b)"></div>
+        <div style="text-align:center">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--pu)" id="yearNet">$0</div>
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:2px">This Year</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
+      <div onclick="navTo('track')" style="background:linear-gradient(135deg,#b496ff,#ff6eb4);border-radius:14px;padding:18px;cursor:pointer;transition:all .2s">
+        <div style="font-size:24px;margin-bottom:6px">💰</div>
+        <div style="font-size:12px;font-weight:500;letter-spacing:1px">Track Shift</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.7);margin-top:2px">Log tonight's earnings</div>
+      </div>
+      <div onclick="navTo('reports')" style="background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:18px;cursor:pointer;transition:all .2s">
+        <div style="font-size:24px;margin-bottom:6px">📊</div>
+        <div style="font-size:12px">Reports</div>
+        <div style="font-size:10px;color:var(--dim);margin-top:2px">View earnings history</div>
+      </div>
+    </div>
+
+    <div class="sec">Recent Shifts</div>
+    <div id="recentShifts"><div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No shifts tracked yet. Tap Track Shift to get started!</div></div>
+  </div>
+</div>
+
+<!-- TRACK SHIFT -->
+<div class="screen" id="track">
+  <div class="hdr">
+    <div><div class="logo" style="font-size:18px">Track Shift</div></div>
+    <div class="hbtn" onclick="navTo('home')">←</div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <!-- Venue selector -->
+    <div class="ig" style="margin-bottom:14px">
+      <div class="il">Venue</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px" id="venueChips"></div>
+    </div>
+    <div class="ig" style="margin-bottom:14px">
+      <div class="il">Date</div>
+      <input class="inp" type="date" id="shiftDate">
+    </div>
+
+    <!-- Earnings section -->
+    <div style="background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:16px;margin-bottom:14px">
+      <div class="il" style="margin-bottom:14px">💵 Earnings</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="ig"><div class="il">Cash Tips</div><input class="inp" type="number" id="eCash" placeholder="0" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">Chip Tips</div><input class="inp" type="number" id="eChips" placeholder="0" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">Card Tips</div><input class="inp" type="number" id="eCard" placeholder="0" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">Digital Tips</div><input class="inp" type="number" id="eDigital" placeholder="CashApp/Venmo" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">VIP Room</div><input class="inp" type="number" id="eVip" placeholder="0" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">Dances</div><input class="inp" type="number" id="eDances" placeholder="0" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">Guarantee</div><input class="inp" type="number" id="eGuarantee" placeholder="0" oninput="calcTotals()"></div>
+        <div class="ig"><div class="il">Other</div><input class="inp" type="number" id="eOther" placeholder="0" oninput="calcTotals()"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid var(--b)">
+        <div style="font-size:11px;color:var(--dim)">Gross Total</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--gd)" id="grossTotal">$0</div>
+      </div>
+    </div>
+
+    <!-- Tip Out section -->
+    <div style="background:var(--s1);border:1px solid rgba(255,77,109,.12);border-radius:14px;padding:16px;margin-bottom:14px">
+      <div class="il" style="margin-bottom:14px">📤 Tip Outs</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="ig"><div class="il">DJ Tip Out</div><input class="inp" type="number" id="tDj" placeholder="0" oninput="calcTotals()" style="border-color:rgba(255,77,109,.15)"></div>
+        <div class="ig"><div class="il">House Fee</div><input class="inp" type="number" id="tHouse" placeholder="0" oninput="calcTotals()" style="border-color:rgba(255,77,109,.15)"></div>
+        <div class="ig"><div class="il">Bar Tip Out</div><input class="inp" type="number" id="tBar" placeholder="0" oninput="calcTotals()" style="border-color:rgba(255,77,109,.15)"></div>
+        <div class="ig"><div class="il">Other</div><input class="inp" type="number" id="tOther" placeholder="0" oninput="calcTotals()" style="border-color:rgba(255,77,109,.15)"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,77,109,.12)">
+        <div style="font-size:11px;color:var(--dim)">Total Tip Outs</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--rd)" id="tipoutTotal">$0</div>
+      </div>
+    </div>
+
+    <!-- Net take-home -->
+    <div style="background:linear-gradient(135deg,rgba(100,255,218,.06),rgba(180,150,255,.04));border:2px solid rgba(100,255,218,.2);border-radius:14px;padding:18px;margin-bottom:14px;text-align:center">
+      <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin-bottom:6px">You Keep</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:44px;font-weight:300;color:var(--tl)" id="netTotal">$0</div>
+    </div>
+
+    <div class="ig" style="margin-bottom:14px">
+      <div class="il">Notes (optional)</div>
+      <textarea class="inp" id="shiftNotes" placeholder="How was the night? Crowd size, any notes..." style="min-height:70px;resize:none"></textarea>
+    </div>
+
+    <button class="btn bp bfw" onclick="saveShift()">Save Shift</button>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="screen" id="reports">
+  <div class="hdr">
+    <div><div class="logo" style="font-size:18px">Reports</div></div>
+    <div class="hbtn" onclick="navTo('home')">←</div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <!-- Period tabs -->
+    <div style="display:flex;gap:8px;margin-bottom:18px;overflow-x:auto" id="periodTabs">
+      <div onclick="setPeriod('week',this)" style="padding:8px 16px;border-radius:100px;background:rgba(180,150,255,.1);border:1px solid rgba(180,150,255,.3);color:var(--pu);font-size:10px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;flex-shrink:0">This Week</div>
+      <div onclick="setPeriod('month',this)" style="padding:8px 16px;border-radius:100px;border:1px solid var(--b);color:var(--dim);font-size:10px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;flex-shrink:0">This Month</div>
+      <div onclick="setPeriod('year',this)" style="padding:8px 16px;border-radius:100px;border:1px solid var(--b);color:var(--dim);font-size:10px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;flex-shrink:0">This Year</div>
+      <div onclick="setPeriod('all',this)" style="padding:8px 16px;border-radius:100px;border:1px solid var(--b);color:var(--dim);font-size:10px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;flex-shrink:0">All Time</div>
+    </div>
+
+    <div id="reportStats"></div>
+
+    <div class="sec">Venue Breakdown</div>
+    <div id="reportVenues"></div>
+
+    <div class="sec" id="taxSec" style="display:none">Tax Summary</div>
+    <div id="taxSummary"></div>
+
+    <div class="sec">Shift History</div>
+    <div id="shiftHistory"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="ni active" onclick="navTo('home')" id="navHome"><div class="ni-i">🏠</div><div class="ni-l">Home</div></div>
+  <div class="ni" onclick="navTo('track')"><div class="ni-i">💰</div><div class="ni-l">Track</div></div>
+  <div class="ni" onclick="navTo('reports')"><div class="ni-i">📊</div><div class="ni-l">Reports</div></div>
+</div>
+</div>
+
+<!-- ADD VENUE MODAL -->
+<div class="overlay" id="addVenueOverlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Add Venue</div>
+    <div class="mbody">
+      <div class="ig"><div class="il">Venue Name</div><input class="inp" id="venueName" type="text" placeholder="Club or venue name"></div>
+      <div class="ig"><div class="il">City</div><input class="inp" id="venueCity" type="text" placeholder="City, State"></div>
+      <button class="btn bp bfw" onclick="saveVenue()">Add Venue</button>
+      <button class="btn bg bfw" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+let currentUser = null
+let allVenues = []
+let allShifts = []
+let selectedVenueId = null
+let selectedVenueName = ''
+let currentPeriod = 'week'
+
+;(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = '/onboarding.html'; return }
+  currentUser = session.user
+  document.getElementById('shiftDate').value = new Date().toISOString().split('T')[0]
+  await loadData()
+})()
+
+async function loadData() {
+  const [{ data: venues }, { data: shifts }] = await Promise.all([
+    supabase.from('venues').select('*').eq('user_id', currentUser.id).order('created_at'),
+    supabase.from('shifts').select('*').eq('user_id', currentUser.id).order('shift_date', { ascending: false })
+  ])
+  allVenues = venues || []
+  allShifts = shifts || []
+  renderHome()
+  renderVenueChips()
+  renderReport()
+}
+
+function renderHome() {
+  const now = new Date()
+  const weekAgo = new Date(now - 7*86400000).toISOString().split('T')[0]
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+  const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0]
+
+  const weekNet = allShifts.filter(s => s.shift_date >= weekAgo).reduce((a,s) => a + (s.net_total||0), 0)
+  const monthNet = allShifts.filter(s => s.shift_date >= monthStart).reduce((a,s) => a + (s.net_total||0), 0)
+  const yearNet = allShifts.filter(s => s.shift_date >= yearStart).reduce((a,s) => a + (s.net_total||0), 0)
+
+  document.getElementById('weekNet').textContent = '$' + weekNet.toFixed(0)
+  document.getElementById('monthNet').textContent = '$' + monthNet.toFixed(0)
+  document.getElementById('yearNet').textContent = '$' + yearNet.toFixed(0)
+
+  const el = document.getElementById('recentShifts')
+  if (allShifts.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No shifts tracked yet. Tap Track Shift to get started!</div>'
+    return
+  }
+  el.innerHTML = allShifts.slice(0, 5).map(s => `
+    <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--s1);border:1px solid var(--b);border-radius:13px;margin-bottom:8px">
+      <div style="font-size:22px">💃</div>
+      <div style="flex:1">
+        <div style="font-size:12px;margin-bottom:2px">${escHtml(s.venue_name || 'Unknown venue')}</div>
+        <div style="font-size:10px;color:var(--dim)">${s.shift_date}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--tl)">$${(s.net_total||0).toFixed(0)}</div>
+        <div style="font-size:9px;color:var(--dim)">net</div>
+      </div>
+    </div>`).join('')
+}
+
+function renderVenueChips() {
+  const el = document.getElementById('venueChips')
+  el.innerHTML = allVenues.map(v =>
+    `<div onclick="selectVenue('${v.id}','${escHtml(v.name)}')" style="padding:8px 14px;border-radius:100px;border:1px solid ${selectedVenueId===v.id?'var(--pu)':'var(--b)'};background:${selectedVenueId===v.id?'rgba(180,150,255,.1)':'transparent'};color:${selectedVenueId===v.id?'var(--pu)':'var(--dim)'};font-size:10px;cursor:pointer;transition:all .2s;letter-spacing:1px;flex-shrink:0">${escHtml(v.name)}</div>`
+  ).join('') + `<div onclick="document.getElementById('addVenueOverlay').classList.add('show')" style="padding:8px 14px;border-radius:100px;border:1px dashed var(--b);color:var(--dim);font-size:10px;cursor:pointer;letter-spacing:1px;flex-shrink:0">+ New Venue</div>`
+}
+
+function selectVenue(id, name) {
+  selectedVenueId = id
+  selectedVenueName = name
+  renderVenueChips()
+}
+
+function calcTotals() {
+  const earnIds = ['eCash','eChips','eCard','eDigital','eVip','eDances','eGuarantee','eOther']
+  const tipIds = ['tDj','tHouse','tBar','tOther']
+  const gross = earnIds.reduce((a,id) => a + (+document.getElementById(id).value || 0), 0)
+  const tipouts = tipIds.reduce((a,id) => a + (+document.getElementById(id).value || 0), 0)
+  const net = gross - tipouts
+  document.getElementById('grossTotal').textContent = '$' + gross.toFixed(2)
+  document.getElementById('tipoutTotal').textContent = '$' + tipouts.toFixed(2)
+  document.getElementById('netTotal').textContent = '$' + net.toFixed(2)
+}
+
+async function saveShift() {
+  if (!selectedVenueId) { toast('Select a venue first'); return }
+  const cash = +document.getElementById('eCash').value || 0
+  const chips = +document.getElementById('eChips').value || 0
+  const card = +document.getElementById('eCard').value || 0
+  const digital = +document.getElementById('eDigital').value || 0
+  const vip = +document.getElementById('eVip').value || 0
+  const dances = +document.getElementById('eDances').value || 0
+  const guarantee = +document.getElementById('eGuarantee').value || 0
+  const other = +document.getElementById('eOther').value || 0
+  const tDj = +document.getElementById('tDj').value || 0
+  const tHouse = +document.getElementById('tHouse').value || 0
+  const tBar = +document.getElementById('tBar').value || 0
+  const tOther = +document.getElementById('tOther').value || 0
+  const gross = cash + chips + card + digital + vip + dances + guarantee + other
+  const tipouts = tDj + tHouse + tBar + tOther
+  const net = gross - tipouts
+  const date = document.getElementById('shiftDate').value
+
+  if (gross === 0) { toast('Enter your earnings first'); return }
+
+  const { error } = await supabase.from('shifts').insert({
+    user_id: currentUser.id,
+    venue_id: selectedVenueId,
+    venue_name: selectedVenueName,
+    cash, chips, card_tips: card, digital_tips: digital,
+    vip_room: vip, private_dances: dances, guarantee_fee: guarantee, other,
+    tipout_dj: tDj, tipout_house: tHouse, tipout_bar: tBar, tipout_other: tOther,
+    gross_total: gross, net_total: net,
+    notes: document.getElementById('shiftNotes').value.trim(),
+    shift_date: date
+  })
+  if (error) { toast('Failed to save shift'); return }
+
+  // Reset all inputs
+  ['eCash','eChips','eCard','eDigital','eVip','eDances','eGuarantee','eOther',
+   'tDj','tHouse','tBar','tOther'].forEach(id => document.getElementById(id).value = '')
+  document.getElementById('shiftNotes').value = ''
+  calcTotals()
+  await loadData()
+  navTo('home')
+  toast('✓ Shift saved — $' + net.toFixed(0) + ' net!')
+}
+
+async function saveVenue() {
+  const name = document.getElementById('venueName').value.trim()
+  const city = document.getElementById('venueCity').value.trim()
+  if (!name) { toast('Enter venue name'); return }
+  const { error } = await supabase.from('venues').insert({ user_id: currentUser.id, name, city })
+  if (error) { toast('Failed to add venue'); return }
+  document.getElementById('venueName').value = ''
+  document.getElementById('venueCity').value = ''
+  await loadData()
+  closeModal()
+  toast('✓ Venue added')
+}
+
+function renderReport() {
+  const now = new Date()
+  const weekAgo = new Date(now - 7*86400000).toISOString().split('T')[0]
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+  const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0]
+
+  let filtered = allShifts
+  if (currentPeriod === 'week') filtered = allShifts.filter(s => s.shift_date >= weekAgo)
+  else if (currentPeriod === 'month') filtered = allShifts.filter(s => s.shift_date >= monthStart)
+  else if (currentPeriod === 'year') filtered = allShifts.filter(s => s.shift_date >= yearStart)
+
+  const totalGross = filtered.reduce((a,s) => a + (s.gross_total||0), 0)
+  const totalNet = filtered.reduce((a,s) => a + (s.net_total||0), 0)
+  const totalTipouts = filtered.reduce((a,s) => a + ((s.tipout_dj||0)+(s.tipout_house||0)+(s.tipout_bar||0)+(s.tipout_other||0)), 0)
+  const avgNet = filtered.length ? totalNet / filtered.length : 0
+
+  document.getElementById('reportStats').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gd)">$${totalGross.toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Gross</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--tl)">$${totalNet.toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Net</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--rd)">$${totalTipouts.toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Tip Outs</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--pu)">$${avgNet.toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Avg/Shift</div>
+      </div>
+    </div>`
+
+  const byVenue = {}
+  filtered.forEach(s => {
+    const n = s.venue_name || 'Unknown'
+    if (!byVenue[n]) byVenue[n] = { gross: 0, net: 0, count: 0 }
+    byVenue[n].gross += (s.gross_total||0)
+    byVenue[n].net += (s.net_total||0)
+    byVenue[n].count++
+  })
+  const sorted = Object.entries(byVenue).sort((a,b) => b[1].net - a[1].net)
+  const venueEl = document.getElementById('reportVenues')
+  venueEl.innerHTML = sorted.length ? sorted.map(([name, d], i) => `
+    <div style="display:flex;align-items:center;gap:12px;padding:14px;background:var(--s1);border:1px solid var(--b);border-radius:12px;margin-bottom:8px">
+      <div style="font-size:18px">${i===0?'🥇':i===1?'🥈':i===2?'🥉':'📍'}</div>
+      <div style="flex:1">
+        <div style="font-size:12px">${escHtml(name)}</div>
+        <div style="font-size:10px;color:var(--dim)">${d.count} shift${d.count!==1?'s':''} · avg $${(d.net/d.count).toFixed(0)}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--tl)">$${d.net.toFixed(0)}</div>
+        <div style="font-size:9px;color:var(--dim)">net</div>
+      </div>
+    </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--dim);font-size:11px">No data for this period</div>'
+
+  if (currentPeriod === 'year' || currentPeriod === 'all') {
+    document.getElementById('taxSec').style.display = 'block'
+    document.getElementById('taxSummary').innerHTML = `
+      <div style="background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.18);border-radius:13px;padding:16px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-size:11px;color:var(--dim)">YTD Gross</div><div style="font-size:13px">$${totalGross.toFixed(2)}</div></div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px"><div style="font-size:11px;color:var(--dim)">Deductible Tip Outs</div><div style="font-size:13px;color:var(--tl)">-$${totalTipouts.toFixed(2)}</div></div>
+        <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid rgba(255,215,0,.15)"><div style="font-size:11px;color:var(--gd)">Est. Net Taxable</div><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gd)">$${totalNet.toFixed(2)}</div></div>
+        <div style="margin-top:10px;font-size:10px;color:var(--dim);line-height:1.6">💡 Tip outs may be deductible as business expenses. Consult a tax professional.</div>
+      </div>`
+  } else {
+    document.getElementById('taxSec').style.display = 'none'
+    document.getElementById('taxSummary').innerHTML = ''
+  }
+
+  const histEl = document.getElementById('shiftHistory')
+  histEl.innerHTML = filtered.length ? filtered.map(s => `
+    <div style="display:flex;align-items:center;gap:12px;padding:13px;background:var(--s1);border:1px solid var(--b);border-radius:12px;margin-bottom:7px">
+      <div style="flex:1">
+        <div style="font-size:12px">${escHtml(s.venue_name||'Unknown')}</div>
+        <div style="font-size:10px;color:var(--dim)">${s.shift_date}</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--gd)">$${(s.gross_total||0).toFixed(0)}</div>
+        <div style="font-size:9px;color:var(--tl)">→ $${(s.net_total||0).toFixed(0)} net</div>
+      </div>
+    </div>`).join('') : '<div style="text-align:center;padding:20px;color:var(--dim);font-size:11px">No shifts in this period</div>'
+}
+
+function setPeriod(p, el) {
+  currentPeriod = p
+  document.querySelectorAll('#periodTabs div').forEach(d => {
+    d.style.background = 'transparent'
+    d.style.borderColor = 'var(--b)'
+    d.style.color = 'var(--dim)'
+  })
+  el.style.background = 'rgba(180,150,255,.1)'
+  el.style.borderColor = 'rgba(180,150,255,.3)'
+  el.style.color = 'var(--pu)'
+  renderReport()
+}
+
+function navTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'))
+  const map = { home: 0, track: 1, reports: 2 }
+  document.querySelectorAll('.ni')[map[id]]?.classList.add('active')
+}
+
+function closeModal() { document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show')) }
+
+function toast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast show'
+  setTimeout(() => t.classList.remove('show'), 3000)
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+</script>
+</body>
+</html>

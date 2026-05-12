@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06060d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Club Dashboard · PrivateBlast</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<style>
+:root{
+  --bg:#06060d;--s1:#0b0b17;--s2:#11111f;--s3:#171728;
+  --b:rgba(255,255,255,.055);--bhi:rgba(180,150,255,.28);
+  --tx:#eeeef8;--dim:#545468;--dmr:#262636;
+  --pu:#b496ff;--pk:#ff6eb4;--tl:#64ffda;--gd:#ffd700;--rd:#ff4d6d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'DM Mono',monospace;font-size:14px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 45% at 10% 0%,rgba(180,150,255,.07) 0%,transparent 55%),
+             radial-gradient(ellipse 55% 35% at 90% 100%,rgba(255,110,180,.05) 0%,transparent 55%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .28s ease}
+.screen.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:92px}
+.scroll::-webkit-scrollbar{display:none}
+
+.hdr{padding:52px 20px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);flex-shrink:0}
+.hdr-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hdr-sub{font-size:9px;letter-spacing:1.5px;color:var(--dim);text-transform:uppercase;margin-top:2px}
+.hbtn{width:36px;height:36px;border-radius:10px;background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0}
+.hbtn:active{background:var(--s3);transform:scale(.93)}
+
+/* NAV */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(6,6,13,.97);backdrop-filter:blur(28px);border-top:1px solid var(--b);display:flex;padding:10px 0 28px;z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 2px;position:relative}
+.ni-i{font-size:17px;transition:transform .2s}
+.ni-l{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);transition:color .2s;white-space:nowrap}
+.ni.active .ni-l{color:var(--pu)}
+.ni.active .ni-i{transform:scale(1.1)}
+.ni:active .ni-i{transform:scale(.87)}
+
+/* BUTTONS */
+.btn{padding:13px 18px;border-radius:12px;border:none;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bp{background:linear-gradient(135deg,#b496ff,#ff6eb4);color:#fff;font-weight:500;box-shadow:0 6px 28px rgba(180,150,255,.25)}
+.bp:active{transform:scale(.97)}
+.bg{background:transparent;color:var(--dim);border:1px solid var(--b)}
+.bg:active{background:var(--s2)}
+.btl{background:rgba(100,255,218,.1);color:var(--tl);border:1px solid rgba(100,255,218,.22)}
+.bgd{background:rgba(255,215,0,.1);color:var(--gd);border:1px solid rgba(255,215,0,.22)}
+.brd{background:rgba(255,77,109,.1);color:var(--rd);border:1px solid rgba(255,77,109,.22)}
+.bfw{width:100%}
+.btn-sm{padding:7px 12px;font-size:9px;letter-spacing:1.5px}
+
+/* INPUTS */
+.ig{display:flex;flex-direction:column;gap:6px}
+.il{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.inp{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:13px 14px;color:var(--tx);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;width:100%}
+.inp:focus{border-color:var(--bhi)}
+.inp::placeholder{color:var(--dmr)}
+select.inp{appearance:none;cursor:pointer}
+textarea.inp{resize:none;min-height:80px}
+.sec{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin:20px 0 10px}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b);border-radius:14px;padding:16px}
+.card+.card{margin-top:8px}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:13px;background:var(--s1);border:1px solid var(--b);border-radius:11px}
+.srow+.srow{margin-top:7px}
+
+/* TOGGLE */
+.tog{width:42px;height:24px;border-radius:100px;background:var(--s3);border:1px solid var(--b);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--pu);border-color:var(--pu)}
+.tog::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.tog.on::after{transform:translateX(18px)}
+
+/* STAT PANEL */
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px 10px;text-align:center}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1}
+.stat-l{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:4px}
+
+/* STATUS BAR */
+.status-bar{display:flex;gap:8px;margin-bottom:14px}
+.status-pill{flex:1;padding:10px 8px;border-radius:11px;text-align:center;border:1px solid}
+.sp-paid{background:rgba(100,255,218,.07);border-color:rgba(100,255,218,.22);color:var(--tl)}
+.sp-owe{background:rgba(255,215,0,.07);border-color:rgba(255,215,0,.22);color:var(--gd)}
+.sp-late{background:rgba(255,77,109,.07);border-color:rgba(255,77,109,.22);color:var(--rd)}
+.sp-n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300}
+.sp-l{font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+
+/* QUICK ACTIONS */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px}
+.qa{padding:14px 12px;background:var(--s1);border:1px solid var(--b);border-radius:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:9px}
+.qa:active{background:var(--s2);transform:scale(.97)}
+.qa-ico{font-size:20px;flex-shrink:0}
+.qa-info .qa-l{font-size:11px}
+.qa-info .qa-s{font-size:9px;color:var(--dim);margin-top:2px;letter-spacing:.5px}
+
+/* PERFORMER LIST */
+.perf-item{background:var(--s1);border:1px solid var(--b);border-radius:13px;margin-bottom:8px;overflow:hidden}
+.perf-main{display:flex;align-items:center;gap:11px;padding:13px;cursor:pointer}
+.perf-av{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;background:var(--s2);flex-shrink:0}
+.perf-info{flex:1;min-width:0}
+.perf-name{font-size:13px;margin-bottom:2px}
+.perf-sub{font-size:10px;color:var(--dim)}
+.perf-amt{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;flex-shrink:0}
+.perf-status{padding:3px 8px;border-radius:100px;font-size:8px;letter-spacing:1px;text-transform:uppercase;margin-left:6px}
+.ps-paid{background:rgba(100,255,218,.1);color:var(--tl);border:1px solid rgba(100,255,218,.22)}
+.ps-owe{background:rgba(255,215,0,.1);color:var(--gd);border:1px solid rgba(255,215,0,.22)}
+.ps-late{background:rgba(255,77,109,.1);color:var(--rd);border:1px solid rgba(255,77,109,.22)}
+.perf-expand{padding:13px;border-top:1px solid var(--b);display:none}
+.perf-expand.show{display:block}
+.bd-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--b);font-size:11px;color:var(--dim)}
+.bd-row:last-child{border-bottom:none}
+.bd-total{display:flex;justify-content:space-between;align-items:center;padding:10px 0 4px;font-size:13px}
+
+/* RULE CARDS */
+.rule-card{background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px;margin-bottom:8px}
+.rule-top{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.rule-ico{width:36px;height:36px;border-radius:10px;background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:17px}
+.rule-name{flex:1;font-size:13px}
+.type-toggle{display:flex;border-radius:9px;overflow:hidden;border:1px solid var(--b)}
+.tt-btn{padding:6px 12px;font-size:10px;letter-spacing:1px;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s;border:none;background:transparent;color:var(--dim)}
+.tt-btn.active{background:var(--pu);color:#fff}
+.rule-inputs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.rule-footer{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--b)}
+
+/* RECIPIENT CARDS */
+.recip-card{background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px;margin-bottom:8px;cursor:pointer;transition:all .2s}
+.recip-card:active{background:var(--s2)}
+.recip-top{display:flex;align-items:center;gap:11px}
+.recip-av{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--s2)}
+.recip-info{flex:1}
+.recip-name{font-size:13px;margin-bottom:2px}
+.recip-sub{font-size:10px;color:var(--dim)}
+.recip-amt{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--tl)}
+
+/* CALC */
+.calc-result{background:linear-gradient(135deg,rgba(180,150,255,.08),rgba(255,110,180,.06));border:1px solid rgba(180,150,255,.18);border-radius:14px;padding:16px;margin-top:14px}
+.calc-bd{display:flex;flex-direction:column;gap:6px}
+.calc-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--dim);padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.calc-row:last-child{border-bottom:none}
+.calc-total-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0 4px;font-size:14px}
+.calc-big{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;text-align:center}
+
+/* REPORTS */
+.period-tabs{display:flex;border-radius:11px;overflow:hidden;border:1px solid var(--b);margin-bottom:14px}
+.pt-btn{flex:1;padding:10px 6px;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'DM Mono',monospace;transition:all .2s;border:none;background:transparent;color:var(--dim);text-align:center}
+.pt-btn.active{background:var(--s2);color:var(--tx)}
+.rep-stat{background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.rep-stat-n{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;color:var(--pu)}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--s2) 25%,var(--s3) 50%,var(--s2) 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(12px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex;animation:fu .2s ease}
+.modal{background:var(--s1);border:1px solid var(--b);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:22px;padding-bottom:44px;animation:slideUp .3s ease;max-height:85vh;overflow-y:auto}
+.modal::-webkit-scrollbar{display:none}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:38px;height:4px;border-radius:2px;background:var(--b);margin:0 auto 18px}
+.mtitle{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px}
+.mbody{display:flex;flex-direction:column;gap:12px}
+
+/* TOAST */
+.toast{position:fixed;top:54px;left:50%;transform:translateX(-50%) translateY(-18px);background:var(--s2);border:1px solid var(--b);border-radius:11px;padding:11px 16px;font-size:12px;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;max-width:calc(100vw - 44px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tok{border-color:rgba(100,255,218,.28);color:var(--tl)}
+.terr{border-color:rgba(255,77,109,.28);color:var(--rd)}
+.tgd{border-color:rgba(255,215,0,.28);color:var(--gd)}
+
+/* FAB */
+.fab{position:fixed;bottom:86px;right:calc(50% - 215px + 16px);width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,#b496ff,#ff6eb4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:0 8px 26px rgba(180,150,255,.35);transition:all .2s;z-index:98}
+.fab:active{transform:scale(.91)}
+@media(max-width:430px){.fab{right:16px}}
+
+/* UPGRADE GATE */
+.gate{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:30px;text-align:center}
+.gate-ico{font-size:48px}
+.gate-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300}
+.gate-sub{font-size:11px;color:var(--dim);line-height:1.8;max-width:280px}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="screen active" id="scDashboard">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title" id="clubName">Club Dashboard</div>
+      <div class="hdr-sub">🏛️ Business Dashboard</div>
+    </div>
+    <div class="hbtn" onclick="window.location.href='/app.html'" title="Back to app">←</div>
+  </div>
+  <div class="scroll" style="padding:16px 20px">
+    <!-- Night Stats -->
+    <div class="sec" style="margin-top:4px">Tonight's Summary</div>
+    <div class="stat-grid" id="nightStats">
+      <div class="stat"><div class="stat-n skel" style="height:28px;margin-bottom:6px"></div><div class="stat-l">Earned</div></div>
+      <div class="stat"><div class="stat-n skel" style="height:28px;margin-bottom:6px"></div><div class="stat-l">Tip Outs</div></div>
+      <div class="stat"><div class="stat-n skel" style="height:28px;margin-bottom:6px"></div><div class="stat-l">Collected</div></div>
+    </div>
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+      <div class="status-pill sp-paid"><div class="sp-n" id="spPaid">0</div><div class="sp-l">Paid ✓</div></div>
+      <div class="status-pill sp-owe"><div class="sp-n" id="spOwe">0</div><div class="sp-l">Still Owe</div></div>
+      <div class="status-pill sp-late"><div class="sp-n" id="spLate">0</div><div class="sp-l">Late</div></div>
+    </div>
+    <!-- Quick Actions -->
+    <div class="sec">Quick Actions</div>
+    <div class="qa-grid">
+      <div class="qa" onclick="goTo('scCalc')"><div class="qa-ico">⏱️</div><div class="qa-info"><div class="qa-l">Clock Out</div><div class="qa-s">Calculate tip out</div></div></div>
+      <div class="qa" onclick="goTo('scRules')"><div class="qa-ico">📋</div><div class="qa-info"><div class="qa-l">Tip Out Rules</div><div class="qa-s">Set percentages</div></div></div>
+      <div class="qa" onclick="goTo('scRecips')"><div class="qa-ico">👥</div><div class="qa-info"><div class="qa-l">Recipients</div><div class="qa-s">Tonight's totals</div></div></div>
+      <div class="qa" onclick="sendReminders()"><div class="qa-ico">📲</div><div class="qa-info"><div class="qa-l">Send Reminders</div><div class="qa-s">Ping those who owe</div></div></div>
+    </div>
+    <!-- Performer List -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-top:20px;margin-bottom:10px">
+      <div class="sec" style="margin:0">Tonight's Performers</div>
+      <div style="font-size:9px;color:var(--dim)" id="shiftDate"></div>
+    </div>
+    <div id="performerList"></div>
+  </div>
+</div>
+
+<!-- ═══ RULES ═══ -->
+<div class="screen" id="scRules">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">Tip Out Rules</div>
+      <div class="hdr-sub">Per performer · per shift</div>
+    </div>
+    <div class="hbtn" onclick="goBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:16px 20px">
+    <div id="rulesList"></div>
+    <button class="btn bg bfw" onclick="addRule()" style="margin-top:8px">+ Add Rule</button>
+    <button class="btn bp bfw" onclick="saveRules()" style="margin-top:10px">Save All Rules</button>
+  </div>
+</div>
+
+<!-- ═══ CALCULATOR ═══ -->
+<div class="screen" id="scCalc">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">Clock Out</div>
+      <div class="hdr-sub">Calculate tip out</div>
+    </div>
+    <div class="hbtn" onclick="goBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:16px 20px">
+    <div class="ig">
+      <div class="il">Select Performer</div>
+      <select class="inp" id="calcPerformer" onchange="checkExistingShift()">
+        <option value="">Choose performer...</option>
+      </select>
+    </div>
+    <div id="existingShiftWarn" style="display:none;margin-top:10px;padding:11px 13px;background:rgba(255,215,0,.07);border:1px solid rgba(255,215,0,.22);border-radius:11px;font-size:11px;color:var(--gd)">
+      ⚠️ This performer already has a shift today. Saving will override it.
+    </div>
+    <div class="ig" style="margin-top:12px">
+      <div class="il">Total Earned Tonight ($)</div>
+      <input class="inp" id="calcEarned" type="number" inputmode="decimal" placeholder="0.00" oninput="recalculate()">
+    </div>
+    <div class="ig" style="margin-top:12px">
+      <div class="il">Shift Date</div>
+      <input class="inp" id="calcDate" type="date">
+    </div>
+    <div class="calc-result" id="calcResult" style="display:none">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:12px">Tip Out Breakdown</div>
+      <div class="calc-bd" id="calcBreakdown"></div>
+      <div style="height:1px;background:var(--b);margin:12px 0"></div>
+      <div class="calc-total-row">
+        <div style="color:var(--dim)">Total Tip Out</div>
+        <div style="color:var(--rd);font-family:'Cormorant Garamond',serif;font-size:22px" id="calcTotalOut">$0.00</div>
+      </div>
+      <div class="calc-total-row" style="padding-top:0">
+        <div style="color:var(--dim)">Performer Keeps</div>
+        <div style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:22px" id="calcKeeps">$0.00</div>
+      </div>
+      <div class="calc-big" id="calcKeepsBig" style="margin-top:10px;color:var(--tl)">$0.00</div>
+    </div>
+    <button class="btn bp bfw" onclick="clockOut()" style="margin-top:14px" id="clockOutBtn" disabled>Clock Out &amp; Save</button>
+  </div>
+</div>
+
+<!-- ═══ RECIPIENTS ═══ -->
+<div class="screen" id="scRecips">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">Recipients</div>
+      <div class="hdr-sub">Tonight's totals</div>
+    </div>
+    <div class="hbtn" onclick="goBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:16px 20px">
+    <div id="recipientList"></div>
+    <button class="btn bg bfw" onclick="openAddPerformer()" style="margin-top:10px">+ Add Performer</button>
+  </div>
+</div>
+
+<!-- ═══ REPORTS ═══ -->
+<div class="screen" id="scReports">
+  <div class="hdr">
+    <div>
+      <div class="hdr-title">Reports</div>
+      <div class="hdr-sub">Earnings overview</div>
+    </div>
+    <div class="hbtn" onclick="goBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:16px 20px">
+    <div class="period-tabs" id="reportTabs">
+      <button class="pt-btn active" onclick="setReportPeriod('week',this)">Week</button>
+      <button class="pt-btn" onclick="setReportPeriod('month',this)">Month</button>
+      <button class="pt-btn" onclick="setReportPeriod('year',this)">Year</button>
+    </div>
+    <div id="reportContent"></div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <div class="ni active" id="navDash" onclick="navTo('scDashboard','navDash')"><div class="ni-i">🏠</div><div class="ni-l">Dashboard</div></div>
+  <div class="ni" id="navRules" onclick="navTo('scRules','navRules')"><div class="ni-i">📋</div><div class="ni-l">Rules</div></div>
+  <div class="ni" id="navCalc" onclick="navTo('scCalc','navCalc')"><div class="ni-i">⏱️</div><div class="ni-l">Clock Out</div></div>
+  <div class="ni" id="navRecips" onclick="navTo('scRecips','navRecips')"><div class="ni-i">👥</div><div class="ni-l">Recipients</div></div>
+  <div class="ni" id="navReports" onclick="navTo('scReports','navReports')"><div class="ni-i">📊</div><div class="ni-l">Reports</div></div>
+</div>
+
+</div><!-- .app -->
+
+<!-- ADD PERFORMER MODAL -->
+<div class="overlay" id="addPerformerOverlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Add Performer</div>
+    <div class="mbody">
+      <div class="ig"><div class="il">Name</div><input class="inp" id="perfName" type="text" placeholder="Performer name" autocomplete="off"></div>
+      <div class="ig"><div class="il">Emoji / Avatar</div><input class="inp" id="perfEmoji" type="text" placeholder="💃" maxlength="4"></div>
+      <div class="ig"><div class="il">Role / Category</div><input class="inp" id="perfRole" type="text" placeholder="DJ, House, Bar, Performer..."></div>
+      <button class="btn bp bfw" onclick="savePerformer()">Add Performer</button>
+      <button class="btn bg bfw" onclick="closeModal('addPerformerOverlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHIFT DETAIL MODAL -->
+<div class="overlay" id="shiftDetailOverlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="shiftDetailTitle">Shift Detail</div>
+    <div id="shiftDetailBody"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───────────────────────────────────
+let currentUser = null
+let currentProfile = null
+let allPerformers = []
+let allShifts = []
+let allRules = []
+let calcBreakdown = []
+let reportPeriod = 'week'
+let navStack = ['scDashboard']
+let editRulesDirty = false
+
+// ─── INIT ────────────────────────────────────
+;(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = '/onboarding.html'; return }
+  currentUser = session.user
+
+  const { data: profile } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
+  currentProfile = profile
+
+  if (!profile || (profile.plan !== 'business')) {
+    showUpgradeGate()
+    return
+  }
+
+  document.getElementById('clubName').textContent = profile.display_name || profile.full_name || 'My Club'
+  document.getElementById('shiftDate').textContent = formatDate(new Date())
+
+  const today = new Date().toISOString().split('T')[0]
+  document.getElementById('calcDate').value = today
+
+  await Promise.all([loadPerformers(), loadRules(), loadShifts()])
+  renderDashboard()
+  renderRules()
+  renderCalcPerformers()
+  renderRecipients()
+  renderReports()
+})()
+
+function showUpgradeGate() {
+  document.querySelector('.app').innerHTML = `
+    <div class="gate">
+      <div class="gate-ico">🏛️</div>
+      <div class="gate-title">Business Plan Required</div>
+      <div class="gate-sub">The Club Tip-Out Dashboard is exclusive to Business plan subscribers at $49.99/mo.</div>
+      <button class="btn bp" onclick="showUpgradeModal('Club Dashboard','business')">Upgrade Now ↗</button>
+      <button class="btn bg" onclick="window.location.href='/app.html'">← Back to App</button>
+    </div>
+    <div class="toast" id="toast"></div>`
+}
+
+// ─── DATA LOADERS ────────────────────────────
+async function loadPerformers() {
+  const { data } = await supabase.from('performers').select('*').eq('user_id', currentUser.id).order('name')
+  allPerformers = data || []
+}
+
+async function loadRules() {
+  const { data } = await supabase.from('tip_out_rules').select('*').eq('user_id', currentUser.id).order('sort_order')
+  allRules = data || []
+}
+
+async function loadShifts(dateStr) {
+  const d = dateStr || new Date().toISOString().split('T')[0]
+  const { data } = await supabase.from('performer_shifts')
+    .select('*, performers(name, emoji, role)')
+    .eq('user_id', currentUser.id)
+    .eq('shift_date', d)
+    .order('created_at', { ascending: false })
+  allShifts = data || []
+}
+
+// ─── DASHBOARD ───────────────────────────────
+function renderDashboard() {
+  const totalEarned = allShifts.reduce((s, sh) => s + (sh.gross_earned || 0), 0)
+  const totalTipOut = allShifts.reduce((s, sh) => s + (sh.tip_out_total || 0), 0)
+  const totalCollected = allShifts.filter(sh => sh.tip_out_status === 'paid').reduce((s, sh) => s + (sh.tip_out_total || 0), 0)
+
+  document.getElementById('nightStats').innerHTML = `
+    <div class="stat"><div class="stat-n">$${fmt(totalEarned)}</div><div class="stat-l">Earned</div></div>
+    <div class="stat"><div class="stat-n">$${fmt(totalTipOut)}</div><div class="stat-l">Tip Outs</div></div>
+    <div class="stat"><div class="stat-n">$${fmt(totalCollected)}</div><div class="stat-l">Collected</div></div>`
+
+  const paid = allShifts.filter(s => s.tip_out_status === 'paid').length
+  const owe = allShifts.filter(s => s.tip_out_status === 'owe').length
+  const late = allShifts.filter(s => s.tip_out_status === 'late').length
+  document.getElementById('spPaid').textContent = paid
+  document.getElementById('spOwe').textContent = owe
+  document.getElementById('spLate').textContent = late
+
+  const el = document.getElementById('performerList')
+  if (allShifts.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:11px;line-height:2">No performers clocked out yet tonight.<br>Use Clock Out to add a shift.</div>`
+    return
+  }
+  el.innerHTML = allShifts.map(sh => {
+    const perf = sh.performers || {}
+    const status = sh.tip_out_status || 'owe'
+    const stClass = status === 'paid' ? 'ps-paid' : status === 'late' ? 'ps-late' : 'ps-owe'
+    const stLabel = status === 'paid' ? 'Paid ✓' : status === 'late' ? 'Late ⚠' : 'Owes'
+    const breakdown = sh.tip_out_breakdown || {}
+    const bdRows = Object.entries(breakdown).map(([k,v]) =>
+      `<div class="bd-row"><span>${escHtml(k)}</span><span>$${fmt(v)}</span></div>`).join('')
+    return `<div class="perf-item">
+      <div class="perf-main" onclick="toggleExpand('exp-${sh.id}')">
+        <div class="perf-av">${perf.emoji || '💃'}</div>
+        <div class="perf-info">
+          <div class="perf-name">${escHtml(perf.name || 'Unknown')}</div>
+          <div class="perf-sub">Earned $${fmt(sh.gross_earned || 0)} · Tip out $${fmt(sh.tip_out_total || 0)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <div class="perf-amt" style="color:var(--tl)">$${fmt(sh.performer_net || 0)}</div>
+          <div class="perf-status ${stClass}">${stLabel}</div>
+        </div>
+      </div>
+      <div class="perf-expand" id="exp-${sh.id}">
+        ${bdRows}
+        <div class="bd-total"><span>Keeps</span><span style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:20px">$${fmt(sh.performer_net || 0)}</span></div>
+        ${status !== 'paid' ? `<button class="btn btl btn-sm bfw" style="margin-top:8px" onclick="markPaid('${sh.id}')">Mark Paid ✓</button>` : ''}
+      </div>
+    </div>`
+  }).join('')
+}
+
+function toggleExpand(id) {
+  const el = document.getElementById(id)
+  el.classList.toggle('show')
+}
+
+async function markPaid(shiftId) {
+  await supabase.from('performer_shifts').update({ tip_out_status: 'paid' }).eq('id', shiftId)
+  await loadShifts()
+  renderDashboard()
+  toast('✓ Marked as paid', 'tok')
+}
+
+function sendReminders() {
+  const oweList = allShifts.filter(s => s.tip_out_status !== 'paid')
+  if (oweList.length === 0) { toast('Everyone is paid up! 🎉', 'tgd'); return }
+  toast(`📲 Reminders sent to ${oweList.length} performer${oweList.length > 1 ? 's' : ''}`, 'tok')
+}
+
+// ─── RULES ───────────────────────────────────
+function renderRules() {
+  const el = document.getElementById('rulesList')
+  if (allRules.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:30px 20px;color:var(--dim);font-size:11px;line-height:2">No rules yet.<br>Add a rule to calculate tip outs automatically.</div>`
+    return
+  }
+  el.innerHTML = allRules.map((r, i) => `
+    <div class="rule-card" id="ruleCard-${i}">
+      <div class="rule-top">
+        <div class="rule-ico">${r.emoji || '💰'}</div>
+        <div class="rule-name">${escHtml(r.recipient_name)}</div>
+        <div class="tog ${r.is_active ? 'on' : ''}" onclick="this.classList.toggle('on')" data-rule-idx="${i}"></div>
+      </div>
+      <div class="type-toggle" style="margin-bottom:12px">
+        <button class="tt-btn ${r.type === 'percent' ? 'active' : ''}" onclick="setRuleType(${i},'percent',this)">%</button>
+        <button class="tt-btn ${r.type === 'flat' ? 'active' : ''}" onclick="setRuleType(${i},'flat',this)">Flat $</button>
+      </div>
+      <div class="rule-inputs">
+        <div class="ig"><div class="il">Amount</div><input class="inp" type="number" value="${r.amount || 0}" inputmode="decimal" placeholder="0" data-rule="${i}" data-field="amount" oninput="ruleChanged()"></div>
+        <div class="ig"><div class="il">Min $</div><input class="inp" type="number" value="${r.min_amount || ''}" inputmode="decimal" placeholder="None" data-rule="${i}" data-field="min_amount" oninput="ruleChanged()"></div>
+        <div class="ig"><div class="il">Max $</div><input class="inp" type="number" value="${r.max_amount || ''}" inputmode="decimal" placeholder="None" data-rule="${i}" data-field="max_amount" oninput="ruleChanged()"></div>
+      </div>
+      <div class="rule-footer">
+        <div style="font-size:10px;color:var(--dim)" id="rulePreview-${i}">${rulePreviewText(r)}</div>
+        <button class="btn brd btn-sm" onclick="deleteRule(${i})">Delete</button>
+      </div>
+    </div>`).join('')
+}
+
+function rulePreviewText(r) {
+  if (r.type === 'percent') return `${r.amount || 0}% of earnings`
+  return `Flat $${fmt(r.amount || 0)}`
+}
+
+function setRuleType(idx, type, btn) {
+  allRules[idx].type = type
+  btn.closest('.type-toggle').querySelectorAll('.tt-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  ruleChanged()
+}
+
+function ruleChanged() { editRulesDirty = true }
+
+async function addRule() {
+  const { data } = await supabase.from('tip_out_rules').insert({
+    user_id: currentUser.id,
+    recipient_name: 'New Rule',
+    emoji: '💰',
+    type: 'percent',
+    amount: 10,
+    is_active: true,
+    sort_order: allRules.length
+  }).select().single()
+  if (data) {
+    await loadRules()
+    renderRules()
+    toast('✓ Rule added', 'tok')
+  }
+}
+
+async function saveRules() {
+  const cards = document.querySelectorAll('[id^="ruleCard-"]')
+  const updates = Array.from(cards).map((card, i) => {
+    const r = allRules[i]
+    const inputs = card.querySelectorAll('[data-rule]')
+    const tog = card.querySelector('.tog')
+    const upd = { ...r, is_active: tog.classList.contains('on') }
+    inputs.forEach(inp => {
+      const field = inp.dataset.field
+      upd[field] = inp.value === '' ? null : parseFloat(inp.value)
+    })
+    return upd
+  })
+  await Promise.all(updates.map(r => supabase.from('tip_out_rules').update(r).eq('id', r.id)))
+  await loadRules()
+  renderRules()
+  editRulesDirty = false
+  toast('✓ Rules saved', 'tok')
+}
+
+async function deleteRule(idx) {
+  const r = allRules[idx]
+  if (!confirm(`Delete rule for "${r.recipient_name}"?`)) return
+  await supabase.from('tip_out_rules').delete().eq('id', r.id)
+  await loadRules()
+  renderRules()
+  toast('Rule deleted', 'terr')
+}
+
+// ─── CALCULATOR ──────────────────────────────
+function renderCalcPerformers() {
+  const sel = document.getElementById('calcPerformer')
+  sel.innerHTML = '<option value="">Choose performer...</option>' +
+    allPerformers.map(p => `<option value="${p.id}">${p.emoji || '💃'} ${escHtml(p.name)}</option>`).join('')
+}
+
+async function checkExistingShift() {
+  const perfId = document.getElementById('calcPerformer').value
+  const date = document.getElementById('calcDate').value || new Date().toISOString().split('T')[0]
+  const warn = document.getElementById('existingShiftWarn')
+  if (!perfId) { warn.style.display = 'none'; return }
+  const { data } = await supabase.from('performer_shifts')
+    .select('id').eq('performer_id', perfId).eq('shift_date', date).eq('user_id', currentUser.id).maybeSingle()
+  warn.style.display = data ? 'block' : 'none'
+  recalculate()
+}
+
+function recalculate() {
+  const earned = parseFloat(document.getElementById('calcEarned').value) || 0
+  const perfId = document.getElementById('calcPerformer').value
+  const btn = document.getElementById('clockOutBtn')
+  const resultEl = document.getElementById('calcResult')
+
+  if (!perfId || earned <= 0) {
+    resultEl.style.display = 'none'
+    btn.disabled = true
+    return
+  }
+
+  const activeRules = allRules.filter(r => r.is_active)
+  calcBreakdown = activeRules.map(r => {
+    let amt = 0
+    if (r.type === 'percent') amt = earned * ((r.amount || 0) / 100)
+    else amt = r.amount || 0
+    if (r.min_amount != null && amt < r.min_amount) amt = r.min_amount
+    if (r.max_amount != null && amt > r.max_amount) amt = r.max_amount
+    return { name: r.recipient_name, emoji: r.emoji || '💰', amount: amt }
+  })
+
+  const totalOut = calcBreakdown.reduce((s, b) => s + b.amount, 0)
+  const keeps = Math.max(0, earned - totalOut)
+
+  document.getElementById('calcBreakdown').innerHTML = calcBreakdown.map(b =>
+    `<div class="calc-row"><span>${b.emoji} ${escHtml(b.name)}</span><span style="color:var(--rd)">-$${fmt(b.amount)}</span></div>`).join('') +
+    `<div class="calc-row"><span style="color:var(--dim)">Gross Earned</span><span>$${fmt(earned)}</span></div>`
+
+  document.getElementById('calcTotalOut').textContent = '$' + fmt(totalOut)
+  document.getElementById('calcKeeps').textContent = '$' + fmt(keeps)
+  document.getElementById('calcKeepsBig').textContent = '$' + fmt(keeps)
+  resultEl.style.display = 'block'
+  btn.disabled = false
+}
+
+async function clockOut() {
+  const perfId = document.getElementById('calcPerformer').value
+  const earned = parseFloat(document.getElementById('calcEarned').value) || 0
+  const date = document.getElementById('calcDate').value || new Date().toISOString().split('T')[0]
+  if (!perfId || earned <= 0) { toast('Select a performer and enter earnings', 'terr'); return }
+
+  const totalOut = calcBreakdown.reduce((s, b) => s + b.amount, 0)
+  const keeps = Math.max(0, earned - totalOut)
+  const bdObj = {}
+  calcBreakdown.forEach(b => { bdObj[b.name] = b.amount })
+
+  // Check for existing shift to override
+  const { data: existing } = await supabase.from('performer_shifts')
+    .select('id').eq('performer_id', perfId).eq('shift_date', date).eq('user_id', currentUser.id).maybeSingle()
+
+  const shiftData = {
+    user_id: currentUser.id,
+    performer_id: perfId,
+    shift_date: date,
+    gross_earned: earned,
+    tip_out_total: totalOut,
+    performer_net: keeps,
+    tip_out_breakdown: bdObj,
+    tip_out_status: 'owe'
+  }
+
+  let err
+  if (existing) {
+    const res = await supabase.from('performer_shifts').update(shiftData).eq('id', existing.id)
+    err = res.error
+  } else {
+    const res = await supabase.from('performer_shifts').insert(shiftData)
+    err = res.error
+  }
+
+  if (err) { toast('Failed to save shift', 'terr'); return }
+
+  document.getElementById('calcPerformer').value = ''
+  document.getElementById('calcEarned').value = ''
+  document.getElementById('calcResult').style.display = 'none'
+  document.getElementById('clockOutBtn').disabled = true
+  document.getElementById('existingShiftWarn').style.display = 'none'
+
+  await loadShifts()
+  renderDashboard()
+  renderRecipients()
+  toast('✓ Shift saved!', 'tok')
+  navTo('scDashboard', 'navDash')
+}
+
+// ─── RECIPIENTS ──────────────────────────────
+function renderRecipients() {
+  const el = document.getElementById('recipientList')
+  if (allPerformers.length === 0) {
+    el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--dim);font-size:11px;line-height:2">No performers yet.<br>Add performers to track tip outs.</div>`
+    return
+  }
+
+  // Calculate tonight's received per recipient category from breakdown
+  const recipTotals = {}
+  allShifts.forEach(sh => {
+    const bd = sh.tip_out_breakdown || {}
+    Object.entries(bd).forEach(([k, v]) => {
+      recipTotals[k] = (recipTotals[k] || 0) + v
+    })
+  })
+
+  el.innerHTML = allPerformers.map(p => {
+    const shifts = allShifts.filter(s => s.performer_id === p.id)
+    const totalEarned = shifts.reduce((s, sh) => s + (sh.gross_earned || 0), 0)
+    const totalNet = shifts.reduce((s, sh) => s + (sh.performer_net || 0), 0)
+    const shiftCount = shifts.length
+    return `<div class="recip-card" onclick="openPerformerShifts('${p.id}')">
+      <div class="recip-top">
+        <div class="recip-av">${p.emoji || '💃'}</div>
+        <div class="recip-info">
+          <div class="recip-name">${escHtml(p.name)}</div>
+          <div class="recip-sub">${p.role || 'Performer'} · ${shiftCount} shift${shiftCount !== 1 ? 's' : ''} tonight</div>
+          ${shiftCount > 0 ? `<div style="font-size:10px;color:var(--dim);margin-top:3px">Earned $${fmt(totalEarned)} · Keeps $${fmt(totalNet)}</div>` : ''}
+        </div>
+        <div class="recip-amt">${shiftCount > 0 ? '$' + fmt(totalNet) : '—'}</div>
+      </div>
+    </div>`
+  }).join('')
+
+  // Also show rule-based recipient totals
+  if (Object.keys(recipTotals).length > 0) {
+    const ruleSection = `<div class="sec">Tonight's Tip Out By Category</div>` +
+      Object.entries(recipTotals).map(([k, v]) =>
+        `<div class="srow" style="margin-bottom:7px">
+          <div style="font-size:13px">${escHtml(k)}</div>
+          <div style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:18px">$${fmt(v)}</div>
+        </div>`).join('')
+    el.innerHTML += ruleSection
+  }
+}
+
+async function openPerformerShifts(perfId) {
+  const perf = allPerformers.find(p => p.id === perfId)
+  if (!perf) return
+  const { data: shifts } = await supabase.from('performer_shifts')
+    .select('*').eq('performer_id', perfId).eq('user_id', currentUser.id)
+    .order('shift_date', { ascending: false }).limit(10)
+
+  document.getElementById('shiftDetailTitle').textContent = `${perf.emoji || '💃'} ${perf.name}`
+  document.getElementById('shiftDetailBody').innerHTML = (shifts && shifts.length > 0)
+    ? shifts.map(s => `
+      <div class="srow" style="margin-bottom:7px">
+        <div>
+          <div style="font-size:12px">${formatDate(new Date(s.shift_date))}</div>
+          <div style="font-size:10px;color:var(--dim)">Earned $${fmt(s.gross_earned)} · Tip out $${fmt(s.tip_out_total)}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:18px">$${fmt(s.performer_net)}</div>
+          <div class="perf-status ${s.tip_out_status === 'paid' ? 'ps-paid' : s.tip_out_status === 'late' ? 'ps-late' : 'ps-owe'}" style="margin-top:4px">${s.tip_out_status || 'owe'}</div>
+        </div>
+      </div>`).join('')
+    : `<div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No shift history yet.</div>`
+  openModal('shiftDetailOverlay')
+}
+
+async function savePerformer() {
+  const name = document.getElementById('perfName').value.trim()
+  const emoji = document.getElementById('perfEmoji').value.trim() || '💃'
+  const role = document.getElementById('perfRole').value.trim() || 'Performer'
+  if (!name) { toast('Name is required', 'terr'); return }
+  const { error } = await supabase.from('performers').insert({ user_id: currentUser.id, name, emoji, role })
+  if (error) { toast('Failed to save performer', 'terr'); return }
+  await loadPerformers()
+  renderCalcPerformers()
+  renderRecipients()
+  closeModal('addPerformerOverlay')
+  document.getElementById('perfName').value = ''
+  document.getElementById('perfEmoji').value = ''
+  document.getElementById('perfRole').value = ''
+  toast('✓ Performer added', 'tok')
+}
+
+function openAddPerformer() { openModal('addPerformerOverlay') }
+
+// ─── REPORTS ─────────────────────────────────
+async function setReportPeriod(period, btn) {
+  reportPeriod = period
+  document.querySelectorAll('.pt-btn').forEach(b => b.classList.remove('active'))
+  btn.classList.add('active')
+  await renderReports()
+}
+
+async function renderReports() {
+  const now = new Date()
+  let startDate
+  if (reportPeriod === 'week') {
+    startDate = new Date(now); startDate.setDate(now.getDate() - 7)
+  } else if (reportPeriod === 'month') {
+    startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+  } else {
+    startDate = new Date(now.getFullYear(), 0, 1)
+  }
+
+  const { data: shifts } = await supabase.from('performer_shifts')
+    .select('*, performers(name, emoji)')
+    .eq('user_id', currentUser.id)
+    .gte('shift_date', startDate.toISOString().split('T')[0])
+    .order('shift_date', { ascending: false })
+
+  const s = shifts || []
+  const totalGross = s.reduce((acc, sh) => acc + (sh.gross_earned || 0), 0)
+  const totalNet = s.reduce((acc, sh) => acc + (sh.performer_net || 0), 0)
+  const totalTipOut = s.reduce((acc, sh) => acc + (sh.tip_out_total || 0), 0)
+  const numShifts = s.length
+  const avgPerShift = numShifts > 0 ? totalGross / numShifts : 0
+
+  // Per performer
+  const perfMap = {}
+  s.forEach(sh => {
+    const pid = sh.performer_id
+    if (!perfMap[pid]) perfMap[pid] = { name: sh.performers?.name || 'Unknown', emoji: sh.performers?.emoji || '💃', gross: 0, net: 0, shifts: 0 }
+    perfMap[pid].gross += sh.gross_earned || 0
+    perfMap[pid].net += sh.performer_net || 0
+    perfMap[pid].shifts++
+  })
+  const perfs = Object.values(perfMap).sort((a, b) => b.gross - a.gross)
+  const topEarner = perfs[0]
+
+  const el = document.getElementById('reportContent')
+  el.innerHTML = `
+    <div class="rep-stat"><div><div style="font-size:11px;color:var(--dim)">Total Gross Earned</div></div><div class="rep-stat-n">$${fmt(totalGross)}</div></div>
+    <div class="rep-stat"><div><div style="font-size:11px;color:var(--dim)">Total Tip Outs Collected</div></div><div class="rep-stat-n" style="color:var(--tl)">$${fmt(totalTipOut)}</div></div>
+    <div class="rep-stat"><div><div style="font-size:11px;color:var(--dim)">Total Performer Net</div></div><div class="rep-stat-n" style="color:var(--gd)">$${fmt(totalNet)}</div></div>
+    <div class="rep-stat"><div><div style="font-size:11px;color:var(--dim)">Avg Earned Per Shift</div></div><div class="rep-stat-n" style="color:var(--pk)">$${fmt(avgPerShift)}</div></div>
+    <div class="rep-stat"><div><div style="font-size:11px;color:var(--dim)">Total Shifts</div></div><div class="rep-stat-n">${numShifts}</div></div>
+    ${topEarner ? `<div class="rep-stat" style="border-color:rgba(255,215,0,.22);background:rgba(255,215,0,.05)"><div><div style="font-size:11px;color:var(--gd)">👑 Top Earner</div><div style="font-size:10px;color:var(--dim);margin-top:2px">${topEarner.emoji} ${escHtml(topEarner.name)}</div></div><div class="rep-stat-n" style="color:var(--gd)">$${fmt(topEarner.gross)}</div></div>` : ''}
+    ${perfs.length > 0 ? `<div class="sec">By Performer</div>` + perfs.map(p => `
+      <div class="rep-stat">
+        <div><div style="font-size:12px">${p.emoji} ${escHtml(p.name)}</div><div style="font-size:10px;color:var(--dim);margin-top:2px">${p.shifts} shift${p.shifts !== 1 ? 's' : ''}</div></div>
+        <div style="text-align:right"><div class="rep-stat-n">$${fmt(p.gross)}</div><div style="font-size:10px;color:var(--tl)">keeps $${fmt(p.net)}</div></div>
+      </div>`).join('') : ''}`
+}
+
+// ─── NAVIGATION ──────────────────────────────
+function navTo(screenId, navId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(screenId).classList.add('active')
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'))
+  if (navId) document.getElementById(navId)?.classList.add('active')
+  navStack = [screenId]
+}
+
+function goTo(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(screenId).classList.add('active')
+  navStack.push(screenId)
+}
+
+function goBack() {
+  navStack.pop()
+  const prev = navStack[navStack.length - 1] || 'scDashboard'
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(prev).classList.add('active')
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'))
+  const navMap = { scDashboard: 'navDash', scRules: 'navRules', scCalc: 'navCalc', scRecips: 'navRecips', scReports: 'navReports' }
+  if (navMap[prev]) document.getElementById(navMap[prev])?.classList.add('active')
+}
+
+// ─── MODALS ──────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('show') }
+function closeModal(id) { document.getElementById(id).classList.remove('show') }
+
+// ─── UTILS ───────────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast show ' + (type || 'tok')
+  setTimeout(() => t.classList.remove('show'), 3000)
+}
+
+function fmt(n) {
+  const num = parseFloat(n) || 0
+  return num % 1 === 0 ? num.toFixed(0) : num.toFixed(2)
+}
+
+function formatDate(d) {
+  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+}
+
+function escHtml(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+</script>
+</body>
+</html>

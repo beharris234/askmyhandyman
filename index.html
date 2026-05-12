@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06060d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PrivateBlast</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#06060d;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace}
+.loader{display:flex;flex-direction:column;align-items:center;gap:20px}
+.logo-mark{width:80px;height:80px;border-radius:24px;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 60px rgba(180,150,255,.4),0 0 120px rgba(255,110,180,.2);animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 60px rgba(180,150,255,.4),0 0 120px rgba(255,110,180,.2)}50%{box-shadow:0 0 90px rgba(180,150,255,.6),0 0 180px rgba(255,110,180,.35)}}
+.logo-name{font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;letter-spacing:10px;text-transform:uppercase;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-tag{font-size:10px;letter-spacing:4px;color:#545468;text-transform:uppercase}
+.spinner{width:32px;height:32px;border-radius:50%;border:2px solid rgba(180,150,255,.2);border-top-color:#b496ff;animation:spin 1s linear infinite;margin-top:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="loader">
+  <div class="logo-mark">🔒</div>
+  <div>
+    <div class="logo-name">PrivateBlast</div>
+    <div class="logo-tag" style="text-align:center;margin-top:6px">Your message. Nobody's business.</div>
+  </div>
+  <div class="spinner"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+(async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+      window.location.href = '/app.html'
+    } else {
+      window.location.href = '/onboarding.html'
+    }
+  } catch (e) {
+    window.location.href = '/onboarding.html'
+  }
+})()
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/service-worker.js')
+      .catch(() => {})
+  })
+}
+</script>
+</body>
+</html>

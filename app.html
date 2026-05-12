@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06060d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PrivateBlast</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06060d;--s1:#0b0b17;--s2:#11111f;--s3:#171728;
+  --b:rgba(255,255,255,.055);--bhi:rgba(180,150,255,.28);
+  --tx:#eeeef8;--dim:#545468;--dmr:#262636;
+  --pu:#b496ff;--pk:#ff6eb4;--tl:#64ffda;--gd:#ffd700;--rd:#ff4d6d;--gr:#4dff9b;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'DM Mono',monospace;font-size:14px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 45% at 10% 0%,rgba(180,150,255,.07) 0%,transparent 55%),
+             radial-gradient(ellipse 55% 35% at 90% 100%,rgba(255,110,180,.05) 0%,transparent 55%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .28s ease}
+.screen.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:92px}
+.scroll::-webkit-scrollbar{display:none}
+
+.hdr{padding:54px 22px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);flex-shrink:0}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;letter-spacing:7px;text-transform:uppercase;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hbtn{width:38px;height:38px;border-radius:10px;background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .2s;flex-shrink:0;position:relative}
+.hbtn:active{background:var(--s3);transform:scale(.93)}
+.notif-dot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--rd);border:2px solid var(--bg);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(6,6,13,.97);backdrop-filter:blur(28px);border-top:1px solid var(--b);display:none;padding:10px 0 28px;z-index:100}
+.nav.show{display:flex}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px;position:relative}
+.ni-i{font-size:19px;transition:transform .2s}
+.ni-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);transition:color .2s}
+.ni.active .ni-l{color:var(--pu)}
+.ni.active .ni-i{transform:scale(1.1)}
+.ni:active .ni-i{transform:scale(.87)}
+
+/* profile switcher bar */
+.profile-bar{display:none;padding:8px 16px;gap:8px;overflow-x:auto;border-bottom:1px solid var(--b);flex-shrink:0}
+.profile-bar.show{display:flex}
+.profile-bar::-webkit-scrollbar{display:none}
+.pb-pill{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:100px;border:1px solid var(--b);background:var(--s1);cursor:pointer;transition:all .2s;white-space:nowrap;flex-shrink:0}
+.pb-pill.active{border-color:var(--pu);background:rgba(180,150,255,.1);color:var(--pu)}
+.pb-pill:active{transform:scale(.95)}
+.pb-ico{font-size:14px}
+.pb-name{font-size:10px;letter-spacing:1px}
+.pb-add{padding:6px 12px;border-radius:100px;border:1px dashed var(--b);background:transparent;cursor:pointer;font-size:10px;color:var(--dim);letter-spacing:1px;transition:all .2s;white-space:nowrap;font-family:'DM Mono',monospace}
+.pb-add:active{background:var(--s2)}
+
+.btn{padding:14px 20px;border-radius:12px;border:none;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bp{background:linear-gradient(135deg,#b496ff,#ff6eb4);color:#fff;font-weight:500;box-shadow:0 6px 28px rgba(180,150,255,.28)}
+.bp:active{transform:scale(.97)}
+.bg{background:transparent;color:var(--dim);border:1px solid var(--b)}
+.bg:active{background:var(--s2)}
+.br{background:rgba(255,77,109,.1);color:var(--rd);border:1px solid rgba(255,77,109,.22)}
+.bfw{width:100%}
+
+.ig{display:flex;flex-direction:column;gap:7px}
+.il{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+textarea,.inp{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:14px 15px;color:var(--tx);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;width:100%}
+textarea:focus,.inp:focus{border-color:var(--bhi)}
+textarea{resize:none;min-height:95px}
+.inp::placeholder,textarea::placeholder{color:var(--dmr)}
+
+.sec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin:22px 0 10px}
+.chips{display:flex;gap:7px;flex-wrap:wrap}
+.chip{padding:7px 13px;border-radius:100px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.d3{width:3px;height:3px;border-radius:50%;background:var(--dmr)}
+.tog{width:46px;height:26px;border-radius:100px;background:var(--s3);border:1px solid var(--b);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.tog.on{background:var(--pu);border-color:var(--pu)}
+.tog::after{content:'';position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:transform .2s;box-shadow:0 2px 5px rgba(0,0,0,.3)}
+.tog.on::after{transform:translateX(20px)}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--s1);border:1px solid var(--b);border-radius:11px}
+
+/* LOCK OVERLAY */
+.locked{position:relative;overflow:hidden;pointer-events:none}
+.lock-overlay{position:absolute;inset:0;background:rgba(6,6,13,.82);backdrop-filter:blur(3px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;border-radius:inherit;z-index:10;cursor:pointer;pointer-events:all}
+.lock-ico{font-size:22px}
+.lock-txt{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);text-align:center;padding:0 20px}
+.lock-btn{padding:8px 16px;background:linear-gradient(135deg,#b496ff,#ff6eb4);border-radius:100px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#fff;margin-top:4px;cursor:pointer;font-family:'DM Mono',monospace;border:none}
+
+/* NOTIFICATION PANEL */
+.notif-panel{position:fixed;top:0;left:50%;transform:translateX(-50%) translateY(-100%);width:100%;max-width:430px;background:var(--s1);border-bottom:1px solid var(--b);z-index:400;transition:transform .3s ease;padding:60px 22px 22px}
+.notif-panel.show{transform:translateX(-50%) translateY(0)}
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:14px;background:var(--s2);border:1px solid var(--b);border-radius:13px;margin-bottom:8px}
+.notif-ico{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.notif-info{flex:1}
+.notif-title{font-size:12px;margin-bottom:3px}
+.notif-sub{font-size:10px;color:var(--dim);line-height:1.5}
+.notif-unread{border-color:rgba(180,150,255,.25);background:rgba(180,150,255,.05)}
+
+/* HOME */
+.plan-bar{margin:0 22px 14px;padding:10px 14px;background:var(--s1);border:1px solid var(--b);border-radius:11px;display:flex;align-items:center;justify-content:space-between}
+.plan-pill{padding:3px 10px;border-radius:100px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase}
+.pp-free{background:rgba(90,90,114,.15);color:var(--dim);border:1px solid rgba(90,90,114,.3)}
+.pp-basic{background:rgba(180,150,255,.12);color:var(--pu);border:1px solid rgba(180,150,255,.25)}
+.pp-vip{background:rgba(255,215,0,.12);color:var(--gd);border:1px solid rgba(255,215,0,.25)}
+.pp-biz{background:rgba(100,255,218,.1);color:var(--tl);border:1px solid rgba(100,255,218,.22)}
+.upgrade-link{font-size:10px;color:var(--pu);letter-spacing:.5px;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:2px}
+.stat{background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px 10px;text-align:center}
+.stat-n{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:300;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px}
+.blast-big{width:100%;padding:20px;border-radius:16px;background:linear-gradient(135deg,#b496ff,#ff6eb4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'DM Mono',monospace;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:#fff;font-weight:500;margin:18px 0;box-shadow:0 8px 34px rgba(180,150,255,.28);transition:all .2s;position:relative;overflow:hidden}
+.blast-big:active{transform:scale(.97)}
+.ref-bar{background:linear-gradient(135deg,rgba(255,215,0,.07),rgba(180,150,255,.06));border:1px solid rgba(255,215,0,.18);border-radius:14px;padding:15px;display:flex;align-items:center;gap:13px;margin-bottom:4px;cursor:pointer;transition:all .2s}
+.ref-bar:active{transform:scale(.99)}
+.rp{margin-top:7px;height:4px;background:var(--s3);border-radius:100px;overflow:hidden}
+.rf{height:100%;border-radius:100px;background:linear-gradient(90deg,#ffd700,#ff6eb4);transition:width .9s ease}
+.blast-row{display:flex;align-items:center;gap:12px;padding:13px;background:var(--s1);border:1px solid var(--b);border-radius:13px;margin-bottom:7px}
+.bico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.bt{background:rgba(180,150,255,.1)}.bi{background:rgba(255,110,180,.1)}.bv{background:rgba(100,255,218,.1)}.ba{background:rgba(255,215,0,.1)}
+.bd{flex:1;min-width:0}
+.bp2{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px}
+.bm{font-size:10px;color:var(--dim);display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+/* COMPOSE */
+.cmp-hdr{padding:54px 22px 16px;border-bottom:1px solid var(--b);flex-shrink:0}
+.cmp-t{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:2px}
+.cmp-s{font-size:10px;color:var(--dim);letter-spacing:1px}
+.cmp-body{padding:18px 22px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;flex:1;padding-bottom:120px}
+.cmp-body::-webkit-scrollbar{display:none}
+.med-row{display:flex;gap:8px}
+.mb{flex:1;padding:14px 8px;background:var(--s1);border:1px dashed var(--b);border-radius:11px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;transition:all .2s;font-family:'DM Mono',monospace;position:relative}
+.mb:active{background:var(--s2);transform:scale(.95)}
+.mb.on{border-color:var(--pu);border-style:solid;background:rgba(180,150,255,.07)}
+.mb-i{font-size:20px}
+.mb-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim)}
+.mb-lock{position:absolute;inset:0;background:rgba(6,6,13,.75);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer}
+.mb-lock-i{font-size:16px}
+.mb-lock-t{font-size:8px;letter-spacing:1px;color:var(--dim);text-transform:uppercase}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rcard{padding:12px;background:var(--s1);border:1px solid var(--b);border-radius:11px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px}
+.rcard.on{border-color:var(--pu);background:rgba(180,150,255,.08)}
+.rcard:active{transform:scale(.96)}
+.rdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ri{flex:1;min-width:0}
+.rn{font-size:11px}
+.rc2{font-size:10px;color:var(--dim);margin-top:1px}
+.rck{width:16px;height:16px;border-radius:50%;border:1px solid var(--b);display:flex;align-items:center;justify-content:center;font-size:9px;transition:all .2s}
+.rcard.on .rck{background:var(--pu);border-color:var(--pu);color:#fff}
+.cflag{padding:13px;border-radius:11px;display:flex;align-items:flex-start;gap:10px;font-size:11px;line-height:1.6;transition:all .3s}
+.cf-safe{background:rgba(100,255,218,.05);border:1px solid rgba(100,255,218,.18);color:var(--tl)}
+.cf-prv{background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.18);color:var(--rd)}
+.sbar{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);width:calc(100% - 44px);max-width:386px;z-index:99;display:flex;gap:8px}
+
+/* CONTACTS */
+.ct-hdr{padding:54px 22px 14px;border-bottom:1px solid var(--b);flex-shrink:0}
+.ct-t{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:12px}
+.srch{display:flex;align-items:center;gap:9px;background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:0 14px;margin-bottom:12px}
+.srch input{background:transparent;border:none;padding:12px 0;font-size:13px;color:var(--tx);font-family:'DM Mono',monospace;flex:1;outline:none}
+.srch input::placeholder{color:var(--dim)}
+.ct-item{display:flex;align-items:center;gap:12px;padding:13px 22px;border-bottom:1px solid var(--b);cursor:pointer;transition:background .15s}
+.ct-item:active{background:var(--s1)}
+.ct-av{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;flex-shrink:0}
+.ct-info{flex:1}
+.ct-name{font-size:13px;margin-bottom:2px}
+.ct-ph{font-size:10px;color:var(--dim)}
+.badge{padding:4px 9px;border-radius:100px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase}
+.fab{position:fixed;bottom:86px;right:22px;width:52px;height:52px;border-radius:15px;background:linear-gradient(135deg,#b496ff,#ff6eb4);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:0 8px 26px rgba(180,150,255,.38);transition:all .2s;z-index:98}
+.fab:active{transform:scale(.91)}
+
+/* REFERRALS */
+.ref-hero{margin:20px 22px 0;background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(180,150,255,.06));border:1px solid rgba(255,215,0,.2);border-radius:18px;padding:22px;text-align:center}
+.ref-big-count{font-family:'Cormorant Garamond',serif;font-size:72px;font-weight:300;background:linear-gradient(135deg,#ffd700,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+.ref-slots-big{display:flex;gap:10px;justify-content:center;margin:16px 0}
+.rsb{width:48px;height:48px;border-radius:14px;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:20px;transition:all .4s}
+.rsb-on{background:rgba(255,215,0,.12);border-color:rgba(255,215,0,.4);box-shadow:0 0 20px rgba(255,215,0,.2)}
+.rsb-off{background:var(--s1);border-color:var(--dmr);color:var(--dmr)}
+.rl-box{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:13px;display:flex;align-items:center;gap:9px}
+.rl-url{flex:1;font-size:11px;color:var(--pu);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.rl-copy{padding:7px 12px;background:rgba(180,150,255,.1);border:1px solid rgba(180,150,255,.22);border-radius:8px;color:var(--pu);font-size:10px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;font-family:'DM Mono',monospace}
+.rl-copy:active{background:rgba(180,150,255,.2)}
+.rh-item{display:flex;align-items:center;gap:11px;padding:13px;background:var(--s1);border:1px solid var(--b);border-radius:12px;margin-bottom:7px}
+.rh-av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(180,150,255,.18),rgba(255,110,180,.18));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.rh-info{flex:1}
+.rh-name{font-size:12px;margin-bottom:2px}
+.rh-plan{font-size:10px;color:var(--dim)}
+.rh-st{padding:3px 9px;border-radius:100px;font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.rhs-a{background:rgba(100,255,218,.09);color:var(--tl)}
+.rhs-n{background:rgba(255,215,0,.09);color:var(--gd)}
+
+/* TIP JAR */
+.tip-hero{margin:20px 22px 0;background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,110,180,.06));border:1px solid rgba(255,215,0,.18);border-radius:18px;padding:22px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
+.tip-av{width:68px;height:68px;border-radius:20px;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:0 0 40px rgba(180,150,255,.3)}
+.tip-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300}
+.tip-tag{font-size:10px;letter-spacing:2px;color:var(--dim);text-transform:uppercase}
+.pay-link{display:flex;align-items:center;gap:13px;padding:15px;background:var(--s1);border:1px solid var(--b);border-radius:13px;cursor:pointer;transition:all .2s;margin-bottom:9px}
+.pay-link:active{background:var(--s2);transform:scale(.98)}
+.pay-link.cfg{border-color:rgba(100,255,218,.2)}
+.pay-link-ico{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.pay-link-info{flex:1}
+.pay-link-name{font-size:13px;margin-bottom:2px}
+.pay-link-val{font-size:11px;color:var(--dim)}
+.pls-on{background:rgba(100,255,218,.1);color:var(--tl);padding:3px 9px;border-radius:100px;font-size:9px;letter-spacing:1px}
+.pls-off{background:var(--s2);color:var(--dim);padding:3px 9px;border-radius:100px;font-size:9px;letter-spacing:1px}
+
+/* BILLING */
+.plan-hero{background:linear-gradient(135deg,rgba(180,150,255,.09),rgba(255,110,180,.07));border:1px solid rgba(180,150,255,.17);border-radius:18px;padding:20px;margin-bottom:4px}
+.plan-grid-b{display:flex;flex-direction:column;gap:9px}
+.po{padding:16px;background:var(--s1);border:2px solid var(--b);border-radius:13px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.po:active{transform:scale(.98)}
+.po.curr{border-color:var(--pu);background:rgba(180,150,255,.07)}
+.po-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.po-price{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--pu)}
+.po-cks{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.po-ck{font-size:10px;color:var(--dim);background:var(--s2);border-radius:6px;padding:4px 8px}
+
+/* SETTINGS */
+.prof-sec{padding:26px 22px;display:flex;flex-direction:column;align-items:center;gap:9px;border-bottom:1px solid var(--b);flex-shrink:0}
+.prof-av{width:72px;height:72px;border-radius:22px;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 44px rgba(180,150,255,.28)}
+.prof-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300}
+.si{display:flex;align-items:center;justify-content:space-between;padding:15px;background:var(--s1);border:1px solid var(--b);border-radius:12px;margin-bottom:8px;cursor:pointer;transition:background .15s}
+.si:active{background:var(--s2)}
+.si-l{display:flex;align-items:center;gap:11px}
+
+/* SENDING ANIMATION */
+.sending{position:fixed;inset:0;background:rgba(6,6,13,.97);z-index:250;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px}
+.sending.show{display:flex;animation:fu .3s ease}
+.rings{position:relative;width:92px;height:92px}
+.ring{position:absolute;border-radius:50%;border:2px solid transparent;animation:spin 1.5s linear infinite}
+.r1{inset:0;border-top-color:var(--pu);animation-duration:.9s}
+.r2{inset:12px;border-top-color:var(--pk);animation-duration:1.4s;animation-direction:reverse}
+.r3{inset:24px;border-top-color:var(--tl);animation-duration:1.9s}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rctr{position:absolute;inset:33px;border-radius:50%;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:14px}
+.send-t{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;letter-spacing:5px}
+.send-n{font-size:54px;font-family:'Cormorant Garamond',serif;font-weight:300;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(12px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex;animation:fu .2s ease}
+.modal{background:var(--s1);border:1px solid var(--b);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:22px;padding-bottom:42px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:38px;height:4px;border-radius:2px;background:var(--b);margin:0 auto 18px}
+.mtitle{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px}
+.mbody{display:flex;flex-direction:column;gap:12px}
+
+.toast{position:fixed;top:54px;left:50%;transform:translateX(-50%) translateY(-18px);background:var(--s2);border:1px solid var(--b);border-radius:11px;padding:11px 16px;font-size:12px;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;max-width:calc(100vw - 44px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.tok{border-color:rgba(100,255,218,.28);color:var(--tl)}
+.terr{border-color:rgba(255,77,109,.28);color:var(--rd)}
+.tgd{border-color:rgba(255,215,0,.28);color:var(--gd)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ NOTIFICATION PANEL ═══ -->
+<div class="notif-panel" id="notifPanel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)">Notifications</div>
+    <div style="font-size:11px;color:var(--pu);cursor:pointer" onclick="markAllRead()">Mark All Read</div>
+  </div>
+  <div id="notifList"></div>
+</div>
+
+<!-- PROFILE SWITCHER -->
+<div class="profile-bar" id="profileBar"></div>
+
+<!-- ═══ HOME ═══ -->
+<div class="screen active" id="home">
+  <div class="hdr">
+    <div>
+      <div class="logo">PrivateBlast</div>
+      <div id="roleTag" style="font-size:9px;letter-spacing:1.5px;color:var(--dim);margin-top:2px;text-transform:uppercase">Loading...</div>
+    </div>
+    <div class="hbtn" onclick="toggleNotifs()">🔔<div class="notif-dot" id="notifDot" style="display:none"></div></div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <div class="plan-bar">
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="plan-pill pp-free" id="planPill">🆓 Free Plan</div>
+        <div style="font-size:10px;color:var(--dim)" id="contactsLeft"></div>
+      </div>
+      <div class="upgrade-link" onclick="goTo('billing')">Upgrade ↗</div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-n" id="statContacts">0</div><div class="stat-l">Contacts</div></div>
+      <div class="stat"><div class="stat-n" id="statBlasts">0</div><div class="stat-l">Blasts</div></div>
+      <div class="stat"><div class="stat-n" id="statGroups">0</div><div class="stat-l">Groups</div></div>
+    </div>
+    <button class="blast-big" onclick="goTo('compose')"><span style="font-size:21px">💥</span> Send A Blast</button>
+    <div class="ref-bar" onclick="goTo('referrals')">
+      <div style="font-size:26px">🎁</div>
+      <div style="flex:1">
+        <div style="font-size:12px;margin-bottom:2px">Refer & Upgrade FREE</div>
+        <div style="font-size:10px;color:var(--dim)" id="refSubText">5 paid referrals = free upgrade!</div>
+        <div class="rp"><div class="rf" id="homeRF" style="width:0%"></div></div>
+        <div style="font-size:10px;color:var(--gd);margin-top:4px" id="homeRT">0 of 5 · tap to share your link</div>
+      </div>
+    </div>
+    <div class="sec">Recent Blasts</div>
+    <div id="recentBlasts"><div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No blasts yet. Send your first blast! 💥</div></div>
+  </div>
+</div>
+
+<!-- ═══ COMPOSE ═══ -->
+<div class="screen" id="compose">
+  <div class="cmp-hdr">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <div class="hbtn" onclick="navBack()" style="width:34px;height:34px;font-size:13px">←</div>
+      <div><div class="cmp-t">New Blast</div><div class="cmp-s">Sends to your group · feels 1-on-1</div></div>
+    </div>
+  </div>
+  <div class="cmp-body">
+    <div class="ig"><div class="il">Your Message</div><textarea id="msgTxt" placeholder="Type your message... use [name] to personalize" oninput="checkFlag()"></textarea></div>
+    <div class="ig">
+      <div class="il">Attach Media</div>
+      <div class="med-row" id="mediaRow">
+        <div class="mb" id="mbText" onclick="setMedia('text')"><div class="mb-i">💬</div><div class="mb-l">Text</div></div>
+        <div class="mb" id="mbImage" onclick="handleMediaClick('image','basic','Image blasts')"><div class="mb-i">🖼</div><div class="mb-l">Flyer/Pic</div></div>
+        <div class="mb" id="mbVideo" onclick="handleMediaClick('video','vip','Video blasts')"><div class="mb-i">🎬</div><div class="mb-l">Video</div></div>
+        <div class="mb" id="mbVoice" onclick="handleMediaClick('voice','vip','Voice clone')"><div class="mb-i">🎙</div><div class="mb-l">Voice</div></div>
+      </div>
+    </div>
+    <div class="cflag cf-safe" id="cFlag"><div style="font-size:15px;flex-shrink:0">💬</div><div id="cFlagTxt">Text blast ready.</div></div>
+    <div class="ig">
+      <div class="il">Send To</div>
+      <div class="rg" id="recGrid"></div>
+    </div>
+    <div class="srow" id="scheduleRow" style="cursor:pointer;opacity:.6" onclick="handleScheduleClick()">
+      <div><div style="font-size:12px;color:var(--dim)">🔒 Schedule Send</div><div style="font-size:10px;color:var(--dmr);margin-top:2px">Available on Basic plan and above</div></div>
+      <div style="font-size:10px;color:var(--pu)">Upgrade</div>
+    </div>
+  </div>
+  <div class="sbar">
+    <button class="btn bg" style="flex:1" onclick="navBack()">Cancel</button>
+    <button class="btn bp" style="flex:2" onclick="sendBlast()">Send Blast 💥</button>
+  </div>
+</div>
+
+<!-- ═══ CONTACTS ═══ -->
+<div class="screen" id="contacts">
+  <div class="ct-hdr">
+    <div class="ct-t">Contacts</div>
+    <div class="srch"><span style="color:var(--dim);font-size:14px">🔍</span><input type="search" id="searchInp" placeholder="Search contacts..." oninput="filterContacts(this.value)"></div>
+    <div class="chips" id="groupFilters"></div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding-bottom:92px" id="contactList"></div>
+  <button class="fab" onclick="openAddContact()">+</button>
+</div>
+
+<!-- ═══ REFERRALS ═══ -->
+<div class="screen" id="referrals">
+  <div class="hdr">
+    <div><div class="logo" style="font-size:20px">Refer & Earn</div><div style="font-size:9px;color:var(--dim);margin-top:2px;letter-spacing:1px">5 paid referrals = upgrade FREE</div></div>
+    <div class="hbtn" onclick="navBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:0 22px">
+    <div class="ref-hero">
+      <div class="ref-big-count" id="refCount">0</div>
+      <div style="font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim)">Active Referrals</div>
+      <div class="ref-slots-big" id="refSlots"></div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.7">Get 5 active paid referrals and your plan upgrades for FREE. They must be on a paid plan for 30+ days.</div>
+    </div>
+    <div class="sec">Your Referral Link</div>
+    <div class="rl-box">
+      <div class="rl-url" id="refUrl">Loading...</div>
+      <div class="rl-copy" onclick="copyRefLink()">Copy</div>
+    </div>
+    <div class="sec">Your Referrals</div>
+    <div id="refList"><div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No referrals yet. Share your link!</div></div>
+  </div>
+</div>
+
+<!-- ═══ TIP JAR ═══ -->
+<div class="screen" id="tipjar">
+  <div class="hdr">
+    <div><div class="logo" style="font-size:20px">Tip Jar</div></div>
+    <div class="hbtn" onclick="navBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:0 22px">
+    <div class="tip-hero">
+      <div class="tip-av" id="tipAv">💃</div>
+      <div class="tip-name" id="tipName">Your Name</div>
+      <div class="tip-tag">Accept Tips Directly</div>
+    </div>
+    <div class="sec">Payment Methods</div>
+    <div id="payLinks"></div>
+    <button class="btn bp bfw" style="margin-top:8px" onclick="openEditTipJar()">Edit Payment Links</button>
+  </div>
+</div>
+
+<!-- ═══ BILLING ═══ -->
+<div class="screen" id="billing">
+  <div class="hdr">
+    <div><div class="logo" style="font-size:20px">Your Plan</div></div>
+    <div class="hbtn" onclick="navBack()">←</div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <div class="plan-hero">
+      <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:6px">Current Plan</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300" id="currPlanName">Free Plan</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:4px" id="currPlanPrice">$0/month</div>
+      <div style="font-size:11px;color:var(--tl);margin-top:10px" id="refFreeStatus"></div>
+    </div>
+    <div class="sec">Choose Plan</div>
+    <div class="plan-grid-b">
+      <div class="po" id="planFree" onclick="selectBillingPlan('free')">
+        <div class="po-top"><div style="font-size:13px">🆓 Free</div><div class="po-price">$0</div></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:8px">10 contacts · text only · 1 profile</div>
+        <div class="po-cks"><div class="po-ck">10 contacts</div><div class="po-ck">Text only</div><div class="po-ck">3 groups</div></div>
+      </div>
+      <div class="po" id="planBasic" onclick="selectBillingPlan('basic')">
+        <div class="po-top"><div style="font-size:13px">💜 Basic</div><div class="po-price">$9.99/mo</div></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:8px">100 contacts · images · tip jar · 2 profiles</div>
+        <div class="po-cks"><div class="po-ck">100 contacts</div><div class="po-ck">Images</div><div class="po-ck">Tip jar</div><div class="po-ck">Schedule</div></div>
+      </div>
+      <div class="po" id="planVip" onclick="selectBillingPlan('vip')">
+        <div style="position:absolute;top:11px;right:11px;padding:3px 9px;border-radius:100px;background:rgba(255,215,0,.14);color:var(--gd);font-size:9px;letter-spacing:1.5px">Popular</div>
+        <div class="po-top"><div style="font-size:13px">👑 VIP</div><div class="po-price">$19.99/mo</div></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:8px">Unlimited contacts · video · voice · blacklist · 3 profiles</div>
+        <div class="po-cks"><div class="po-ck">Unlimited</div><div class="po-ck">Video</div><div class="po-ck">Voice</div><div class="po-ck">Blacklist</div><div class="po-ck">$5/referral</div></div>
+      </div>
+      <div class="po" id="planBusiness" onclick="selectBillingPlan('business')">
+        <div class="po-top"><div style="font-size:13px">🏛️ Business</div><div class="po-price">$49.99/mo</div></div>
+        <div style="font-size:10px;color:var(--dim);margin-bottom:8px">Club dashboard · multi-business · unlimited profiles</div>
+        <div class="po-cks"><div class="po-ck">Club tip-out</div><div class="po-ck">Staff mgmt</div><div class="po-ck">Reports</div><div class="po-ck">Unlimited</div></div>
+      </div>
+    </div>
+    <div style="margin-top:22px;padding:14px;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.18);border-radius:12px;font-size:11px;color:var(--dim);line-height:1.7">
+      <strong style="color:var(--gd)">Get it free:</strong> Refer 5 paying users on your target plan and upgrade at no cost. <span style="color:var(--pu);cursor:pointer" onclick="goTo('referrals')">See referrals →</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SETTINGS ═══ -->
+<div class="screen" id="settings">
+  <div class="prof-sec">
+    <div class="prof-av" id="settingsAv">💃</div>
+    <div class="prof-name" id="settingsName">Loading...</div>
+    <div style="font-size:10px;color:var(--dim);letter-spacing:1px" id="settingsRole">-</div>
+  </div>
+  <div class="scroll" style="padding:16px 22px">
+    <div class="si" onclick="goTo('billing')"><div class="si-l"><span style="font-size:18px">💳</span><div><div style="font-size:13px">Subscription</div><div style="font-size:10px;color:var(--dim)" id="settingsPlan">Free Plan</div></div></div><span style="color:var(--dim)">→</span></div>
+    <div class="si" onclick="goTo('referrals')"><div class="si-l"><span style="font-size:18px">🎁</span><div><div style="font-size:13px">Referrals</div><div style="font-size:10px;color:var(--dim)" id="settingsRefCount">0 active</div></div></div><span style="color:var(--dim)">→</span></div>
+    <div class="si" onclick="window.location.href='/tracker.html'"><div class="si-l"><span style="font-size:18px">💰</span><div><div style="font-size:13px">Income Tracker</div><div style="font-size:10px;color:var(--dim)">Track your shifts</div></div></div><span style="color:var(--dim)">→</span></div>
+    <div class="si" id="clubNavItem" style="display:none" onclick="window.location.href='/club.html'"><div class="si-l"><span style="font-size:18px">🏛️</span><div><div style="font-size:13px">Club Dashboard</div><div style="font-size:10px;color:var(--dim)">Tip out management</div></div></div><span style="color:var(--dim)">→</span></div>
+    <div class="si" onclick="openPrivacySettings()"><div class="si-l"><span style="font-size:18px">🔒</span><div><div style="font-size:13px">Privacy Settings</div><div style="font-size:10px;color:var(--dim)" id="settingsPrivacy">Private</div></div></div><span style="color:var(--dim)">→</span></div>
+    <div class="si" style="color:var(--rd)" onclick="doSignOut()"><div class="si-l"><span style="font-size:18px">🚪</span><div style="font-size:13px">Sign Out</div></div><span style="color:var(--dim)">→</span></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav show" id="mainNav">
+  <div class="ni active" onclick="navTo('home',this)" id="navHome">
+    <div class="ni-i">🏠</div><div class="ni-l">Home</div>
+  </div>
+  <div class="ni" onclick="navTo('compose',this)">
+    <div class="ni-i">💥</div><div class="ni-l">Blast</div>
+  </div>
+  <div class="ni" onclick="navTo('contacts',this)">
+    <div class="ni-i">👥</div><div class="ni-l">Contacts</div>
+  </div>
+  <div class="ni" onclick="navTo('referrals',this)">
+    <div class="ni-i">🎁</div><div class="ni-l">Refer</div>
+  </div>
+  <div class="ni" onclick="navTo('tipjar',this)">
+    <div class="ni-i">💰</div><div class="ni-l">Tips</div>
+  </div>
+  <div class="ni" onclick="navTo('settings',this)">
+    <div class="ni-i">⚙️</div><div class="ni-l">Settings</div>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<!-- ADD CONTACT MODAL -->
+<div class="overlay" id="addContactOverlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Add Contact</div>
+    <div class="mbody">
+      <div class="ig"><div class="il">Name</div><input class="inp" id="ctName" type="text" placeholder="Contact name" autocomplete="off"></div>
+      <div class="ig"><div class="il">Phone Number</div><input class="inp" id="ctPhone" type="tel" placeholder="+1 (555) 000-0000" autocomplete="off"></div>
+      <div class="ig"><div class="il">Group</div>
+        <select class="inp" id="ctGroup" style="appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\" height=\"6\"><path d=\"M0 0l5 6 5-6z\" fill=\"%23545468\"/></svg>');background-repeat:no-repeat;background-position:right 14px center">
+          <option value="">No group</option>
+        </select>
+      </div>
+      <div class="ig"><div class="il">Notes (optional)</div><textarea class="inp" id="ctNotes" placeholder="Any notes about this contact..." style="min-height:70px"></textarea></div>
+      <button class="btn bp bfw" onclick="saveContact()">Save Contact</button>
+      <button class="btn bg bfw" onclick="closeModal('addContactOverlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT TIP JAR MODAL -->
+<div class="overlay" id="editTipJarOverlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Payment Links</div>
+    <div class="mbody">
+      <div class="ig"><div class="il">Cash App Tag</div><input class="inp" id="tjCashapp" type="text" placeholder="$YourTag"></div>
+      <div class="ig"><div class="il">Venmo Username</div><input class="inp" id="tjVenmo" type="text" placeholder="@YourUsername"></div>
+      <div class="ig"><div class="il">Zelle (phone or email)</div><input class="inp" id="tjZelle" type="text" placeholder="Phone or email"></div>
+      <div class="ig"><div class="il">Crypto Address</div><input class="inp" id="tjCrypto" type="text" placeholder="BTC/ETH address"></div>
+      <div class="ig"><div class="il">Tip Message</div><input class="inp" id="tjMsg" type="text" placeholder="Thanks for the love 💜"></div>
+      <button class="btn bp bfw" onclick="saveTipJar()">Save Links</button>
+      <button class="btn bg bfw" onclick="closeModal('editTipJarOverlay')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- SENDING OVERLAY -->
+<div class="sending" id="sendingOverlay">
+  <div class="rings">
+    <div class="ring r1"></div>
+    <div class="ring r2"></div>
+    <div class="ring r3"></div>
+    <div class="rctr">💥</div>
+  </div>
+  <div class="send-t">SENDING</div>
+  <div class="send-n" id="sendCount">0</div>
+  <div style="font-size:10px;letter-spacing:2.5px;color:var(--dim);text-transform:uppercase">recipients</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+// ─── APP STATE ──────────────────────────────
+let currentUser = null
+let currentProfile = null
+let currentSub = null
+let activeProfileId = localStorage.getItem('activeProfileId')
+let allContacts = []
+let allGroups = []
+let allBlasts = []
+let selectedMedia = 'text'
+let selectedGroups = []
+let subProfiles = []
+
+// ─── INIT ───────────────────────────────────
+;(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = '/onboarding.html'; return }
+  currentUser = session.user
+  await loadAll()
+})()
+
+async function loadAll() {
+  await Promise.all([
+    loadProfile(),
+    loadContacts(),
+    loadGroups(),
+    loadBlasts(),
+    loadReferrals(),
+    loadSubProfiles(),
+    loadNotifications(),
+    loadPaymentLinks()
+  ])
+  renderHome()
+  renderContacts()
+  renderReferrals()
+  renderTipJar()
+  applyPlanGating()
+}
+
+async function loadProfile() {
+  const { data: p } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single()
+  const { data: s } = await supabase.from('subscriptions').select('*').eq('user_id', currentUser.id).single()
+  currentProfile = p
+  currentSub = s
+  if (p) {
+    document.getElementById('roleTag').textContent = (ROLES[p.role]?.icon || '💫') + ' ' + (ROLES[p.role]?.name || p.role)
+    updatePlanUI(p.plan || 'free')
+  }
+}
+
+async function loadContacts() {
+  let q = supabase.from('contacts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false })
+  if (activeProfileId) q = q.eq('sub_profile_id', activeProfileId)
+  const { data } = await q
+  allContacts = data || []
+}
+
+async function loadGroups() {
+  let q = supabase.from('groups').select('*').eq('user_id', currentUser.id).order('sort_order')
+  if (activeProfileId) q = q.eq('sub_profile_id', activeProfileId)
+  const { data } = await q
+  allGroups = data || []
+}
+
+async function loadBlasts() {
+  let q = supabase.from('blasts').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(20)
+  if (activeProfileId) q = q.eq('sub_profile_id', activeProfileId)
+  const { data } = await q
+  allBlasts = data || []
+}
+
+async function loadReferrals() {
+  const { data } = await supabase.from('referrals').select('*').eq('referrer_id', currentUser.id).order('joined_at', { ascending: false })
+  window._referrals = data || []
+}
+
+async function loadSubProfiles() {
+  const { data } = await supabase.from('sub_profiles').select('*').eq('user_id', currentUser.id).eq('is_active', true).order('created_at')
+  subProfiles = data || []
+  if (!activeProfileId && subProfiles.length > 0) {
+    activeProfileId = subProfiles[0].id
+    localStorage.setItem('activeProfileId', activeProfileId)
+  }
+  renderProfileBar()
+}
+
+async function loadNotifications() {
+  const { data } = await supabase.from('notifications').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(10)
+  window._notifications = data || []
+  const unread = (data || []).filter(n => !n.is_read).length
+  const dot = document.getElementById('notifDot')
+  if (dot) dot.style.display = unread > 0 ? 'block' : 'none'
+  renderNotifications()
+}
+
+async function loadPaymentLinks() {
+  const { data } = await supabase.from('payment_links').select('*').eq('user_id', currentUser.id).single()
+  window._paymentLinks = data || null
+}
+
+// ─── RENDER HOME ────────────────────────────
+function renderHome() {
+  document.getElementById('statContacts').textContent = allContacts.length
+  document.getElementById('statBlasts').textContent = allBlasts.length
+  document.getElementById('statGroups').textContent = allGroups.length
+
+  const plan = currentProfile?.plan || 'free'
+  const limits = PLAN_LIMITS[plan]
+  if (limits.contacts !== Infinity) {
+    document.getElementById('contactsLeft').textContent = `${limits.contacts - allContacts.length} left`
+  } else {
+    document.getElementById('contactsLeft').textContent = 'Unlimited'
+  }
+
+  const refs = window._referrals || []
+  const active = refs.filter(r => r.is_active).length
+  document.getElementById('homeRF').style.width = Math.min(100, (active / 5) * 100) + '%'
+  document.getElementById('homeRT').textContent = `${active} of 5 referrals · tap to share your link`
+
+  const blastEl = document.getElementById('recentBlasts')
+  if (allBlasts.length === 0) {
+    blastEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No blasts yet. Send your first blast! 💥</div>'
+  } else {
+    const mediaIcons = { text: '💬', image: '🖼', video: '🎬', voice: '🎙' }
+    const mediaClass = { text: 'bt', image: 'bi', video: 'bv', voice: 'ba' }
+    blastEl.innerHTML = allBlasts.slice(0, 5).map(b => {
+      const ago = timeAgo(b.sent_at || b.created_at)
+      const groups = (b.groups_sent || []).join(' · ')
+      return `<div class="blast-row">
+        <div class="bico ${mediaClass[b.media_type] || 'bt'}">${mediaIcons[b.media_type] || '💬'}</div>
+        <div class="bd">
+          <div class="bp2">${escHtml(b.message || '')}</div>
+          <div class="bm"><span>${b.media_type || 'Text'}</span><div class="d3"></div><span>${groups} · ${b.recipient_count} sent</span><div class="d3"></div><span>${ago}</span></div>
+        </div>
+      </div>`
+    }).join('')
+  }
+}
+
+// ─── PLAN UI ────────────────────────────────
+function updatePlanUI(plan) {
+  const pillEl = document.getElementById('planPill')
+  const planMap = {
+    free:     { cls: 'pp-free',  label: '🆓 Free Plan' },
+    basic:    { cls: 'pp-basic', label: '💜 Basic' },
+    vip:      { cls: 'pp-vip',   label: '👑 VIP' },
+    business: { cls: 'pp-biz',   label: '🏛️ Business' }
+  }
+  const p = planMap[plan] || planMap.free
+  pillEl.className = 'plan-pill ' + p.cls
+  pillEl.textContent = p.label
+  document.getElementById('currPlanName').textContent = PLANS[plan]?.label || 'Free Plan'
+  document.getElementById('currPlanPrice').textContent = plan === 'free' ? '$0/month' : `$${PLANS[plan]?.price}/month`
+  document.getElementById('settingsPlan').textContent = PLANS[plan]?.label || 'Free Plan'
+  document.getElementById('settingsAv').textContent = currentProfile?.avatar_emoji || '💃'
+  document.getElementById('settingsName').textContent = currentProfile?.display_name || currentProfile?.full_name || ''
+  document.getElementById('settingsRole').textContent = ROLES[currentProfile?.role]?.name || ''
+  document.getElementById('settingsPrivacy').textContent = currentProfile?.privacy_setting || 'private'
+  // Club nav
+  if (plan === 'business') {
+    document.getElementById('clubNavItem').style.display = 'flex'
+  }
+  // Billing highlight
+  document.querySelectorAll('.po').forEach(el => el.classList.remove('curr'))
+  const planEl = document.getElementById('plan' + plan.charAt(0).toUpperCase() + plan.slice(1))
+  if (planEl) planEl.classList.add('curr')
+}
+
+// ─── PLAN GATING ────────────────────────────
+function applyPlanGating() {
+  const plan = currentProfile?.plan || 'free'
+  const limits = PLAN_LIMITS[plan]
+
+  // Media buttons — show/hide locks
+  const imgLock = !limits.media.includes('image')
+  const vidLock = !limits.media.includes('video')
+  const voiceLock = !limits.media.includes('voice')
+  updateMediaLock('mbImage', imgLock, 'basic', 'Image blasts')
+  updateMediaLock('mbVideo', vidLock, 'vip', 'Video blasts')
+  updateMediaLock('mbVoice', voiceLock, 'vip', 'Voice clone')
+
+  // Schedule
+  if (limits.scheduling) {
+    const sr = document.getElementById('scheduleRow')
+    sr.style.opacity = '1'
+    sr.innerHTML = `<div><div style="font-size:12px">📅 Schedule Send</div><div style="font-size:10px;color:var(--dim);margin-top:2px">Set a date and time</div></div><div class="tog" id="schedTog" onclick="this.classList.toggle('on')"></div>`
+    sr.onclick = null
+  }
+
+  // Tip jar lock for free
+  if (plan === 'free') {
+    const tipjarScreen = document.getElementById('tipjar')
+    const existing = tipjarScreen.querySelector('.lock-overlay')
+    if (!existing) {
+      const lock = document.createElement('div')
+      lock.className = 'lock-overlay'
+      lock.innerHTML = '<div class="lock-ico">🔒</div><div class="lock-txt">Tip Jar is available on Basic plan and above</div><button class="lock-btn" onclick="goTo(\'billing\')">Upgrade Now</button>'
+      tipjarScreen.style.position = 'relative'
+      tipjarScreen.appendChild(lock)
+    }
+  }
+}
+
+function updateMediaLock(id, locked, requiredPlan, featureName) {
+  const el = document.getElementById(id)
+  if (!el) return
+  const existingLock = el.querySelector('.mb-lock')
+  if (locked && !existingLock) {
+    const lock = document.createElement('div')
+    lock.className = 'mb-lock'
+    lock.innerHTML = `<div class="mb-lock-i">🔒</div><div class="mb-lock-t">${PLANS[requiredPlan]?.name}+</div>`
+    lock.onclick = (e) => { e.stopPropagation(); showUpgradeModal(featureName, requiredPlan) }
+    el.appendChild(lock)
+    el.onclick = null
+  } else if (!locked && existingLock) {
+    existingLock.remove()
+  }
+}
+
+// ─── CONTACTS ───────────────────────────────
+function renderContacts() {
+  renderGroupFilters()
+  renderContactList(allContacts)
+  populateGroupSelect()
+}
+
+function renderGroupFilters() {
+  const el = document.getElementById('groupFilters')
+  const chips = [{ label: '⚡ All', color: '#b496ff', filter: 'all' }]
+    .concat(allGroups.map(g => ({ label: g.name, color: g.color, filter: g.name })))
+  el.innerHTML = chips.map((c, i) =>
+    `<div class="chip" style="color:${c.color};border-color:${c.color}44;background:${i===0?c.color+'22':'transparent'}" onclick="filterByGroup('${c.filter}',this)">${c.label}</div>`
+  ).join('')
+}
+
+function renderContactList(contacts) {
+  const el = document.getElementById('contactList')
+  if (contacts.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:50px 22px;color:var(--dim);font-size:11px;line-height:1.8">No contacts yet.<br>Tap + to add your first contact.</div>'
+    return
+  }
+  el.innerHTML = contacts.map(c => {
+    const initials = c.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+    const color = c.group_color || '#b496ff'
+    return `<div class="ct-item" onclick="openContact('${c.id}')">
+      <div class="ct-av" style="background:${color}22;color:${color}">${initials}</div>
+      <div class="ct-info">
+        <div class="ct-name">${escHtml(c.name)}</div>
+        <div class="ct-ph">${escHtml(c.phone)}</div>
+      </div>
+      ${c.group_name ? `<div class="badge" style="color:${color};background:${color}18;border:1px solid ${color}33">${escHtml(c.group_name)}</div>` : ''}
+    </div>`
+  }).join('')
+}
+
+function filterContacts(query) {
+  const q = query.toLowerCase()
+  const filtered = q ? allContacts.filter(c => c.name.toLowerCase().includes(q) || c.phone.includes(q)) : allContacts
+  renderContactList(filtered)
+}
+
+function filterByGroup(group, el) {
+  document.querySelectorAll('#groupFilters .chip').forEach(c => {
+    c.style.background = 'transparent'
+    const col = c.style.color
+    c.style.background = 'transparent'
+  })
+  const color = el.style.color
+  el.style.background = color + '22'
+  const filtered = group === 'all' ? allContacts : allContacts.filter(c => c.group_name === group)
+  renderContactList(filtered)
+}
+
+function populateGroupSelect() {
+  const sel = document.getElementById('ctGroup')
+  if (!sel) return
+  sel.innerHTML = '<option value="">No group</option>' + allGroups.map(g =>
+    `<option value="${escHtml(g.name)}" data-color="${g.color}">${escHtml(g.name)}</option>`
+  ).join('')
+}
+
+function openAddContact() {
+  const plan = currentProfile?.plan || 'free'
+  const limits = PLAN_LIMITS[plan]
+  if (limits.contacts !== Infinity && allContacts.length >= limits.contacts) {
+    showUpgradeModal(`Contact Limit (${limits.contacts})`, plan === 'free' ? 'basic' : 'vip')
+    return
+  }
+  document.getElementById('ctName').value = ''
+  document.getElementById('ctPhone').value = ''
+  document.getElementById('ctNotes').value = ''
+  openModal('addContactOverlay')
+}
+
+function openContact(id) {
+  const c = allContacts.find(x => x.id === id)
+  if (!c) return
+  if (confirm(`Delete ${c.name}?`)) deleteContact(id)
+}
+
+async function saveContact() {
+  const name = document.getElementById('ctName').value.trim()
+  const phone = document.getElementById('ctPhone').value.trim()
+  const group = document.getElementById('ctGroup').value
+  const notes = document.getElementById('ctNotes').value.trim()
+  if (!name || !phone) { toast('Name and phone are required'); return }
+
+  const groupData = allGroups.find(g => g.name === group)
+  const { error } = await supabase.from('contacts').insert({
+    user_id: currentUser.id,
+    sub_profile_id: activeProfileId,
+    name, phone, notes,
+    group_name: group || null,
+    group_color: groupData?.color || null,
+    group_emoji: groupData?.emoji || null
+  })
+  if (error) { toast('Failed to save contact'); return }
+  await loadContacts()
+  renderContacts()
+  renderHome()
+  closeModal('addContactOverlay')
+  toast('✓ Contact saved')
+}
+
+async function deleteContact(id) {
+  await supabase.from('contacts').delete().eq('id', id)
+  await loadContacts()
+  renderContacts()
+  renderHome()
+}
+
+// ─── COMPOSE / BLAST ────────────────────────
+function renderRecipientGrid() {
+  const el = document.getElementById('recGrid')
+  if (allGroups.length === 0) {
+    el.innerHTML = '<div style="color:var(--dim);font-size:11px;padding:10px 0">No groups yet. Add contacts to create groups.</div>'
+    return
+  }
+  el.innerHTML = allGroups.map(g => {
+    const count = allContacts.filter(c => c.group_name === g.name).length
+    const on = selectedGroups.includes(g.name)
+    return `<div class="rcard ${on ? 'on' : ''}" onclick="toggleRec(this,'${escHtml(g.name)}')">
+      <div class="rdot" style="background:${g.color}"></div>
+      <div class="ri"><div class="rn">${escHtml(g.name)}</div><div class="rc2">${count} contact${count!==1?'s':''}</div></div>
+      <div class="rck">${on ? '✓' : ''}</div>
+    </div>`
+  }).join('')
+}
+
+function toggleRec(el, groupName) {
+  const idx = selectedGroups.indexOf(groupName)
+  if (idx === -1) selectedGroups.push(groupName)
+  else selectedGroups.splice(idx, 1)
+  el.classList.toggle('on')
+  const ck = el.querySelector('.rck')
+  ck.textContent = selectedGroups.includes(groupName) ? '✓' : ''
+}
+
+function setMedia(type) {
+  selectedMedia = type
+  document.querySelectorAll('.mb').forEach(m => m.classList.remove('on'))
+  const map = { text: 'mbText', image: 'mbImage', video: 'mbVideo', voice: 'mbVoice' }
+  document.getElementById(map[type])?.classList.add('on')
+  checkFlag()
+}
+
+function handleMediaClick(type, requiredPlan, featureName) {
+  const plan = currentProfile?.plan || 'free'
+  const limits = PLAN_LIMITS[plan]
+  if (!limits.media.includes(type)) {
+    showUpgradeModal(featureName, requiredPlan)
+    return
+  }
+  setMedia(type)
+}
+
+function handleScheduleClick() {
+  const plan = currentProfile?.plan || 'free'
+  if (!PLAN_LIMITS[plan].scheduling) showUpgradeModal('Scheduled Sends', 'basic')
+}
+
+function checkFlag() {
+  const priv = currentProfile?.privacy_setting || 'private'
+  const flag = document.getElementById('cFlag')
+  const txt = document.getElementById('cFlagTxt')
+  if (priv === 'private') {
+    flag.className = 'cflag cf-prv'
+    txt.textContent = '🔒 Private blast. No share buttons. Content is for recipients only.'
+  } else {
+    flag.className = 'cflag cf-safe'
+    txt.textContent = selectedMedia === 'text' ? '💬 Text blast ready.' : `${selectedMedia} blast ready.`
+  }
+}
+
+async function sendBlast() {
+  const msg = document.getElementById('msgTxt').value.trim()
+  if (!msg) { toast('Write your message first!'); return }
+  if (selectedGroups.length === 0) { toast('Select at least one group'); return }
+
+  const recipients = allContacts.filter(c => selectedGroups.includes(c.group_name))
+  const count = recipients.length
+
+  document.getElementById('sendCount').textContent = count
+  document.getElementById('sendingOverlay').classList.add('show')
+
+  await supabase.from('blasts').insert({
+    user_id: currentUser.id,
+    sub_profile_id: activeProfileId,
+    message: msg,
+    media_type: selectedMedia,
+    groups_sent: selectedGroups,
+    recipient_count: count,
+    is_private: currentProfile?.privacy_setting === 'private',
+    sent_at: new Date().toISOString()
+  })
+
+  await new Promise(r => setTimeout(r, 2200))
+  document.getElementById('sendingOverlay').classList.remove('show')
+  document.getElementById('msgTxt').value = ''
+  selectedGroups = []
+  selectedMedia = 'text'
+  await loadBlasts()
+  renderHome()
+  navTo('home', document.getElementById('navHome'))
+  toast('🔥 Blast sent to ' + count + ' contacts!')
+}
+
+// ─── REFERRALS ──────────────────────────────
+function renderReferrals() {
+  const refs = window._referrals || []
+  const active = refs.filter(r => r.is_active).length
+  document.getElementById('refCount').textContent = active
+  const profile = currentProfile
+  const code = profile?.referral_code || ''
+  const refUrl = `${window.location.origin}/join/${code}`
+  document.getElementById('refUrl').textContent = refUrl
+  document.getElementById('settingsRefCount').textContent = active + ' active'
+
+  const slots = document.getElementById('refSlots')
+  slots.innerHTML = Array.from({ length: 5 }, (_, i) =>
+    `<div class="rsb ${i < active ? 'rsb-on' : 'rsb-off'}">${i < active ? '✓' : (i + 1)}</div>`
+  ).join('')
+
+  const listEl = document.getElementById('refList')
+  if (refs.length === 0) {
+    listEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No referrals yet. Share your link!</div>'
+  } else {
+    listEl.innerHTML = refs.map(r => `
+      <div class="rh-item">
+        <div class="rh-av">👤</div>
+        <div class="rh-info">
+          <div class="rh-name">${r.referred_email}</div>
+          <div class="rh-plan">${PLANS[r.plan_level]?.label || r.plan_level}</div>
+        </div>
+        <div class="rh-st ${r.is_active ? 'rhs-a' : 'rhs-n'}">${r.is_active ? 'Active ✓' : 'Pending'}</div>
+      </div>`).join('')
+  }
+
+  // Ref link on home
+  document.getElementById('homeRT').textContent = `${active} of 5 · tap to share your link`
+  document.getElementById('homeRF').style.width = Math.min(100, (active / 5) * 100) + '%'
+}
+
+function copyRefLink() {
+  const url = document.getElementById('refUrl').textContent
+  navigator.clipboard.writeText(url).then(() => toast('✓ Referral link copied!'))
+}
+
+// ─── TIP JAR ────────────────────────────────
+function renderTipJar() {
+  const p = currentProfile
+  document.getElementById('tipAv').textContent = p?.avatar_emoji || '💃'
+  document.getElementById('tipName').textContent = p?.display_name || p?.full_name || 'Your Name'
+
+  const links = window._paymentLinks
+  const plan = p?.plan || 'free'
+  const el = document.getElementById('payLinks')
+
+  const paymentOptions = [
+    { key: 'cashapp_tag', name: 'Cash App', ico: '💚', bg: 'rgba(0,220,100,.1)', requiredPlan: 'basic' },
+    { key: 'venmo_username', name: 'Venmo', ico: '💙', bg: 'rgba(0,120,255,.1)', requiredPlan: 'basic' },
+    { key: 'zelle_contact', name: 'Zelle', ico: '💜', bg: 'rgba(100,0,255,.1)', requiredPlan: 'vip' },
+    { key: 'crypto_address', name: 'Crypto', ico: '🟡', bg: 'rgba(255,200,0,.1)', requiredPlan: 'vip' }
+  ]
+
+  el.innerHTML = paymentOptions.map(opt => {
+    const val = links?.[opt.key]
+    const allowed = PLAN_LIMITS[plan]?.tipjar !== false && (plan !== 'basic' || ['cashapp_tag','venmo_username'].includes(opt.key)) || plan === 'vip' || plan === 'business'
+    const basicOnly = plan === 'basic' && !['cashapp_tag','venmo_username'].includes(opt.key)
+
+    if (!allowed || basicOnly) {
+      return `<div class="pay-link" onclick="showUpgradeModal('${opt.name}','${opt.requiredPlan}')">
+        <div class="pay-link-ico" style="background:${opt.bg}">${opt.ico}</div>
+        <div class="pay-link-info"><div class="pay-link-name">${opt.name}</div><div class="pay-link-val">🔒 ${PLANS[opt.requiredPlan]?.name} plan required</div></div>
+        <div class="pls-off">Locked</div>
+      </div>`
+    }
+    return `<div class="pay-link ${val ? 'cfg' : ''}">
+      <div class="pay-link-ico" style="background:${opt.bg}">${opt.ico}</div>
+      <div class="pay-link-info"><div class="pay-link-name">${opt.name}</div><div class="pay-link-val">${val || 'Not configured'}</div></div>
+      <div class="${val ? 'pls-on' : 'pls-off'}">${val ? 'Active' : 'Add'}</div>
+    </div>`
+  }).join('')
+}
+
+function openEditTipJar() {
+  const links = window._paymentLinks
+  if (links) {
+    document.getElementById('tjCashapp').value = links.cashapp_tag || ''
+    document.getElementById('tjVenmo').value = links.venmo_username || ''
+    document.getElementById('tjZelle').value = links.zelle_contact || ''
+    document.getElementById('tjCrypto').value = links.crypto_address || ''
+    document.getElementById('tjMsg').value = links.tip_message || ''
+  }
+  openModal('editTipJarOverlay')
+}
+
+async function saveTipJar() {
+  const data = {
+    user_id: currentUser.id,
+    cashapp_tag: document.getElementById('tjCashapp').value.trim(),
+    venmo_username: document.getElementById('tjVenmo').value.trim(),
+    zelle_contact: document.getElementById('tjZelle').value.trim(),
+    crypto_address: document.getElementById('tjCrypto').value.trim(),
+    tip_message: document.getElementById('tjMsg').value.trim()
+  }
+  await supabase.from('payment_links').upsert(data, { onConflict: 'user_id' })
+  await loadPaymentLinks()
+  renderTipJar()
+  closeModal('editTipJarOverlay')
+  toast('✓ Payment links saved')
+}
+
+// ─── PROFILE SWITCHER ───────────────────────
+function renderProfileBar() {
+  const bar = document.getElementById('profileBar')
+  if (subProfiles.length <= 1) { bar.classList.remove('show'); return }
+  bar.classList.add('show')
+  bar.innerHTML = subProfiles.map(p =>
+    `<div class="pb-pill ${p.id === activeProfileId ? 'active' : ''}" onclick="switchProfile('${p.id}')">
+      <div class="pb-ico">${p.icon_emoji}</div>
+      <div class="pb-name">${p.profile_name}</div>
+    </div>`
+  ).join('') + `<button class="pb-add" onclick="addProfile()">+ Add Profile</button>`
+}
+
+async function switchProfile(id) {
+  activeProfileId = id
+  localStorage.setItem('activeProfileId', id)
+  await Promise.all([loadContacts(), loadGroups(), loadBlasts()])
+  renderHome()
+  renderContacts()
+  renderProfileBar()
+}
+
+async function addProfile() {
+  const plan = currentProfile?.plan || 'free'
+  const limits = PLAN_LIMITS[plan]
+  if (limits.profiles !== Infinity && subProfiles.length >= limits.profiles) {
+    showUpgradeModal('Multiple Profiles', plan === 'free' ? 'basic' : plan === 'basic' ? 'vip' : 'business')
+    return
+  }
+  const name = prompt('Profile name:')
+  if (!name) return
+  const { data } = await supabase.from('sub_profiles').insert({
+    user_id: currentUser.id,
+    profile_name: name,
+    role: currentProfile?.role,
+    icon_emoji: '👤',
+    privacy_setting: currentProfile?.privacy_setting || 'private',
+    is_active: true
+  }).select().single()
+  if (data) {
+    await loadSubProfiles()
+    await switchProfile(data.id)
+  }
+}
+
+// ─── NOTIFICATIONS ──────────────────────────
+function renderNotifications() {
+  const notifs = window._notifications || []
+  const el = document.getElementById('notifList')
+  if (notifs.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:20px;color:var(--dim);font-size:11px">All caught up! 🎉</div>'
+    return
+  }
+  el.innerHTML = notifs.map(n => `
+    <div class="notif-item ${!n.is_read ? 'notif-unread' : ''}">
+      <div class="notif-ico" style="background:rgba(180,150,255,.1)">${n.type === 'referral_joined' ? '🎉' : '🔔'}</div>
+      <div class="notif-info">
+        <div class="notif-title">${escHtml(n.title)}</div>
+        <div class="notif-sub">${escHtml(n.message)}</div>
+        <div style="font-size:9px;color:var(--dmr);margin-top:3px">${timeAgo(n.created_at)}</div>
+      </div>
+    </div>`).join('')
+}
+
+function toggleNotifs() {
+  document.getElementById('notifPanel').classList.toggle('show')
+  markAllRead()
+}
+
+async function markAllRead() {
+  await supabase.from('notifications').update({ is_read: true }).eq('user_id', currentUser.id).eq('is_read', false)
+  document.getElementById('notifDot').style.display = 'none'
+}
+
+// ─── BILLING ────────────────────────────────
+function selectBillingPlan(plan) {
+  const curr = currentProfile?.plan || 'free'
+  if (plan === curr) { toast('You\'re already on this plan!'); return }
+  toast('Contact support to change your plan: support@privateblast.com')
+}
+
+// ─── SETTINGS ───────────────────────────────
+async function doSignOut() {
+  await supabase.auth.signOut()
+  localStorage.clear()
+  window.location.href = '/onboarding.html'
+}
+
+function openPrivacySettings() {
+  toast('Privacy settings coming soon')
+}
+
+// ─── NAVIGATION ─────────────────────────────
+let navHistory = ['home']
+
+function navTo(id, navEl) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'))
+  if (navEl) navEl.classList.add('active')
+
+  if (id === 'compose') renderRecipientGrid()
+  navHistory.push(id)
+}
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+  navHistory.push(id)
+}
+
+function navBack() {
+  navHistory.pop()
+  const prev = navHistory[navHistory.length - 1] || 'home'
+  goTo(prev)
+}
+
+// ─── MODALS ─────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('show')
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('show')
+}
+
+// ─── UTILS ──────────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast show' + (type ? ' ' + type : ' tok')
+  setTimeout(() => t.classList.remove('show'), 3000)
+}
+
+function timeAgo(ts) {
+  if (!ts) return ''
+  const diff = Date.now() - new Date(ts).getTime()
+  const m = Math.floor(diff / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return m + 'm ago'
+  const h = Math.floor(m / 60)
+  if (h < 24) return h + 'h ago'
+  return Math.floor(h / 24) + 'd ago'
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+</script>
+</body>
+</html>

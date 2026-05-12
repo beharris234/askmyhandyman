@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06060d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>PrivateBlast — Join</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06060d;--s1:#0c0c1a;--s2:#121222;--s3:#181830;
+  --b:rgba(255,255,255,.055);--bhi:rgba(180,150,255,.3);
+  --tx:#eeeef8;--dim:#545468;--dmr:#222238;
+  --pu:#b496ff;--pk:#ff6eb4;--tl:#64ffda;--gd:#ffd700;--rd:#ff4d6d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'DM Mono',monospace;font-size:14px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 70% 50% at 15% 5%,rgba(180,150,255,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 40% at 85% 95%,rgba(255,110,180,.05) 0%,transparent 55%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .3s ease}
+.screen.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll::-webkit-scrollbar{display:none}
+
+.btn{padding:15px 22px;border-radius:13px;border:none;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bp{background:linear-gradient(135deg,#b496ff,#ff6eb4);color:#fff;font-weight:500;box-shadow:0 6px 28px rgba(180,150,255,.3)}
+.bp:active{transform:scale(.97)}
+.bg{background:transparent;color:var(--dim);border:1px solid var(--b)}
+.bg:active{background:var(--s2)}
+.bfw{width:100%}
+
+.ig{display:flex;flex-direction:column;gap:7px}
+.il{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.inp{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:14px 15px;color:var(--tx);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;width:100%}
+.inp:focus{border-color:var(--bhi)}
+.inp::placeholder{color:var(--dmr)}
+
+/* LANDING */
+#landing{justify-content:center;align-items:center;background:var(--bg)}
+.splash-wrap{display:flex;flex-direction:column;align-items:center;gap:18px;animation:splashIn 1s ease}
+@keyframes splashIn{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}
+.splash-mark{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 60px rgba(180,150,255,.45),0 0 120px rgba(255,110,180,.22);animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 60px rgba(180,150,255,.45),0 0 120px rgba(255,110,180,.22)}50%{box-shadow:0 0 90px rgba(180,150,255,.65),0 0 180px rgba(255,110,180,.35)}}
+.splash-name{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;letter-spacing:12px;text-transform:uppercase;background:linear-gradient(135deg,#b496ff,#ff6eb4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.splash-tag{font-size:10px;letter-spacing:5px;color:var(--dim);text-transform:uppercase}
+.splash-btns{margin-top:64px;display:flex;flex-direction:column;gap:10px;width:100%;padding:0 36px}
+
+/* AUTH FORMS */
+.auth-form{padding:56px 26px 40px;display:flex;flex-direction:column;gap:0;overflow-y:auto}
+.auth-form::-webkit-scrollbar{display:none}
+.auth-back{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--dim);font-size:11px;letter-spacing:1px;margin-bottom:28px;transition:color .2s;width:fit-content}
+.auth-back:active{color:var(--pu)}
+.auth-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300;margin-bottom:6px}
+.auth-sub{font-size:11px;color:var(--dim);line-height:1.7;margin-bottom:28px}
+.auth-fields{display:flex;flex-direction:column;gap:14px;margin-bottom:20px}
+.auth-link{font-size:11px;color:var(--pu);text-align:center;margin-top:14px;cursor:pointer;letter-spacing:.5px}
+.auth-link:active{opacity:.7}
+.err-box{background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.22);border-radius:11px;padding:12px 14px;font-size:11px;color:var(--rd);display:none;margin-bottom:12px;line-height:1.6}
+.err-box.show{display:block}
+.ok-box{background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.2);border-radius:11px;padding:12px 14px;font-size:11px;color:var(--tl);display:none;margin-bottom:12px;line-height:1.6}
+.ok-box.show{display:block}
+
+/* ONBOARDING STEPS */
+#onboard{overflow-y:auto}
+#onboard::-webkit-scrollbar{display:none}
+.ob-wrap{padding:56px 26px 100px}
+.step-dots{display:flex;gap:8px;margin-bottom:28px}
+.sd{height:3px;border-radius:100px;background:var(--dmr);transition:all .4s}
+.sd.on{background:linear-gradient(90deg,#b496ff,#ff6eb4);width:44px}
+.sd.done{background:var(--pu);width:24px}
+.sd.off{width:24px}
+.ob-step{display:none}
+.ob-step.active{display:flex;flex-direction:column;gap:18px;animation:fu .3s ease}
+.ob-heading{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;margin-bottom:2px}
+.ob-sub{font-size:11px;color:var(--dim);line-height:1.7;letter-spacing:.3px}
+.back-btn{display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--dim);font-size:11px;letter-spacing:1px;margin-bottom:20px;transition:color .2s;width:fit-content}
+.back-btn:active{color:var(--pu)}
+
+.role-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.rc{background:var(--s1);border:2px solid var(--b);border-radius:16px;padding:16px 14px;cursor:pointer;transition:all .22s;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden}
+.rc:active{transform:scale(.97)}
+.rc.sel{border-color:var(--pu);background:rgba(180,150,255,.08)}
+.rc.sel::after{content:'✓';position:absolute;top:11px;right:13px;color:var(--pu);font-size:14px;font-weight:600}
+.rc-biz{grid-column:1/-1;flex-direction:row;align-items:center;gap:14px}
+.rc-ico{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.rc-name{font-size:12px;line-height:1.3;font-weight:400}
+.rc-desc{font-size:10px;color:var(--dim);line-height:1.5}
+.rc-grps{font-size:9px;color:var(--pu);letter-spacing:.3px;margin-top:3px;line-height:1.4}
+
+.prv-opts{display:flex;flex-direction:column;gap:10px}
+.prv{padding:17px;background:var(--s1);border:2px solid var(--b);border-radius:14px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:13px}
+.prv.sel{border-color:var(--pu);background:rgba(180,150,255,.07)}
+.prv:active{transform:scale(.98)}
+.prv-ico{font-size:22px;flex-shrink:0;margin-top:1px}
+.prv-name{font-size:13px;margin-bottom:3px}
+.prv-desc{font-size:10px;color:var(--dim);line-height:1.55}
+
+.plan-grid{display:flex;flex-direction:column;gap:10px}
+.po{padding:18px;background:var(--s1);border:2px solid var(--b);border-radius:14px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.po:active{transform:scale(.98)}
+.po.sel{border-color:var(--pu);background:rgba(180,150,255,.07)}
+.po-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.po-name{font-size:14px}
+.po-price{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;color:var(--pu)}
+.po-period{font-size:10px;color:var(--dim);margin-bottom:10px}
+.po-tag{position:absolute;top:12px;right:12px;padding:3px 10px;border-radius:100px;background:rgba(255,215,0,.14);color:var(--gd);font-size:9px;letter-spacing:1.5px}
+.po-features{display:flex;gap:6px;flex-wrap:wrap}
+.po-feat{font-size:10px;color:var(--dim);background:var(--s2);border-radius:6px;padding:4px 8px}
+.po-feat.hi{color:var(--pu);background:rgba(180,150,255,.1)}
+
+.free-upgrade{background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.18);border-radius:12px;padding:14px;display:flex;gap:10px;align-items:flex-start}
+.fu-text{font-size:11px;color:var(--dim);line-height:1.65}
+.fu-text strong{color:var(--gd)}
+
+/* CONFIRM */
+#confirm{justify-content:center;align-items:center;background:var(--bg);padding:40px 30px;text-align:center}
+.confirm-wrap{display:flex;flex-direction:column;align-items:center;gap:16px;animation:splashIn .8s ease}
+.confirm-mark{width:88px;height:88px;border-radius:26px;background:linear-gradient(135deg,#b496ff,#ff6eb4);display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 0 60px rgba(180,150,255,.4);animation:glow 3s ease-in-out infinite}
+.confirm-title{font-family:'Cormorant Garamond',serif;font-size:36px;font-weight:300}
+.confirm-sub{font-size:12px;color:var(--dim);line-height:1.7;max-width:300px}
+.confirm-details{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:18px;width:100%;text-align:left;display:flex;flex-direction:column;gap:12px}
+.cd-row{display:flex;align-items:center;gap:12px}
+.cd-ico{font-size:18px;width:28px;text-align:center;flex-shrink:0}
+.cd-info{flex:1}
+.cd-label{font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.cd-value{font-size:13px}
+.confirm-groups{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.cg{padding:5px 11px;border-radius:100px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;border:1px solid;display:flex;align-items:center;gap:4px}
+
+.loading-overlay{position:fixed;inset:0;background:rgba(6,6,13,.9);z-index:999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-overlay.show{display:flex}
+.spin{width:36px;height:36px;border-radius:50%;border:2px solid rgba(180,150,255,.2);border-top-color:#b496ff;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.load-txt{font-size:11px;letter-spacing:2px;color:var(--dim)}
+
+#toast{position:fixed;top:54px;left:50%;transform:translateX(-50%) translateY(-18px);background:#111122;border:1px solid rgba(255,255,255,.055);border-radius:11px;padding:11px 16px;font-size:12px;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;max-width:calc(100vw - 44px);text-align:center}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- LANDING -->
+<div class="screen active" id="landing">
+  <div class="splash-wrap">
+    <div class="splash-mark">🔒</div>
+    <div>
+      <div class="splash-name">PrivateBlast</div>
+      <div class="splash-tag" style="text-align:center;margin-top:6px">Your message. Nobody's business.</div>
+    </div>
+  </div>
+  <div class="splash-btns">
+    <button class="btn bp" onclick="goTo('signup')">Get Started</button>
+    <button class="btn bg" onclick="goTo('signin')">Sign In</button>
+  </div>
+</div>
+
+<!-- SIGN UP -->
+<div class="screen" id="signup">
+  <div class="auth-form">
+    <div class="auth-back" onclick="goTo('landing')">← Back</div>
+    <div class="auth-title">Create Account</div>
+    <div class="auth-sub">Join thousands of nightlife professionals who keep their business private.</div>
+    <div class="err-box" id="signupErr"></div>
+    <div class="auth-fields">
+      <div class="ig"><div class="il">Full Name</div><input class="inp" id="signupName" type="text" placeholder="Your name" autocomplete="name"></div>
+      <div class="ig"><div class="il">Email</div><input class="inp" id="signupEmail" type="email" placeholder="your@email.com" autocomplete="email"></div>
+      <div class="ig"><div class="il">Password</div><input class="inp" id="signupPass" type="password" placeholder="Min 8 characters" autocomplete="new-password"></div>
+      <div class="ig"><div class="il">Confirm Password</div><input class="inp" id="signupPass2" type="password" placeholder="Confirm password" autocomplete="new-password"></div>
+    </div>
+    <button class="btn bp bfw" onclick="doSignup()">Create Account →</button>
+    <div class="auth-link" onclick="goTo('signin')">Already have an account? Sign In</div>
+  </div>
+</div>
+
+<!-- SIGN IN -->
+<div class="screen" id="signin">
+  <div class="auth-form">
+    <div class="auth-back" onclick="goTo('landing')">← Back</div>
+    <div class="auth-title">Welcome Back</div>
+    <div class="auth-sub">Sign in to your PrivateBlast account.</div>
+    <div class="err-box" id="signinErr"></div>
+    <div class="auth-fields">
+      <div class="ig"><div class="il">Email</div><input class="inp" id="signinEmail" type="email" placeholder="your@email.com" autocomplete="email"></div>
+      <div class="ig"><div class="il">Password</div><input class="inp" id="signinPass" type="password" placeholder="Your password" autocomplete="current-password"></div>
+    </div>
+    <button class="btn bp bfw" onclick="doSignin()">Sign In →</button>
+    <div class="auth-link" onclick="goTo('forgot')">Forgot Password?</div>
+    <div class="auth-link" onclick="goTo('signup')" style="margin-top:6px">New here? Create Account</div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD -->
+<div class="screen" id="forgot">
+  <div class="auth-form">
+    <div class="auth-back" onclick="goTo('signin')">← Back</div>
+    <div class="auth-title">Reset Password</div>
+    <div class="auth-sub">Enter your email and we'll send you a reset link.</div>
+    <div class="err-box" id="forgotErr"></div>
+    <div class="ok-box" id="forgotOk"></div>
+    <div class="auth-fields">
+      <div class="ig"><div class="il">Email</div><input class="inp" id="forgotEmail" type="email" placeholder="your@email.com" autocomplete="email"></div>
+    </div>
+    <button class="btn bp bfw" onclick="doForgot()">Send Reset Link →</button>
+    <div class="auth-link" onclick="goTo('signin')">Back to Sign In</div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="screen" id="onboard">
+<div class="ob-wrap">
+
+  <!-- STEP 1 — Role -->
+  <div class="ob-step active" id="step1">
+    <div>
+      <div class="step-dots">
+        <div class="sd on" id="dot1"></div>
+        <div class="sd off" id="dot2"></div>
+        <div class="sd off" id="dot3"></div>
+      </div>
+      <div class="ob-heading">Who are you?</div>
+      <div class="ob-sub">Pick your role and we'll set everything up for you — groups, features, and privacy tailored to how you work.</div>
+    </div>
+    <div class="role-grid">
+      <div class="rc" onclick="selectRole(this,'entertainer_f')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(255,110,180,.12)">💃</div>
+          <div class="rc-name">Female Entertainer</div>
+        </div>
+        <div class="rc-desc">Exotic performers, club entertainers, stage artists</div>
+        <div class="rc-grps">👑 VIP · 💜 Regulars · 🎯 Prospects · ✨ New</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'entertainer_m')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(180,150,255,.12)">🕺</div>
+          <div class="rc-name">Male Entertainer</div>
+        </div>
+        <div class="rc-desc">Male dancers, adult party performers, entertainers</div>
+        <div class="rc-grps">👑 VIP · 🎉 Bachelorette · 🔒 Private</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'companion')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(255,215,0,.12)">👠</div>
+          <div class="rc-name">Personal Escort / Companion</div>
+        </div>
+        <div class="rc-desc">Companions, escorts, private entertainment</div>
+        <div class="rc-grps">👑 VIP · 🔄 Regulars · ⚠️ Watch List</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'wellness')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(100,255,218,.12)">💆</div>
+          <div class="rc-name">Private Wellness Provider</div>
+        </div>
+        <div class="rc-desc">Private massage, body work, wellness</div>
+        <div class="rc-grps">👑 VIP · 🔄 Regulars · 😴 Lapsed</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'creator')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(100,255,218,.12)">📱</div>
+          <div class="rc-name">Content Creator</div>
+        </div>
+        <div class="rc-desc">OnlyFans, Fansly, cam models, adult creators</div>
+        <div class="rc-grps">❤️ Fans · 💳 Subscribers · 🐳 Whales</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'dj')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(180,150,255,.12)">🎧</div>
+          <div class="rc-name">DJ / Artist</div>
+        </div>
+        <div class="rc-desc">Club DJs, music artists, producers</div>
+        <div class="rc-grps">🔥 Day Ones · 🎉 Event Fans · 🏢 Booking</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'host')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(255,110,180,.12)">🍾</div>
+          <div class="rc-name">VIP Host / Bottle Girl</div>
+        </div>
+        <div class="rc-desc">VIP hosts, bottle girls, cocktail servers</div>
+        <div class="rc-grps">💸 Big Tippers · 💼 Corporate · 🎂 Birthdays</div>
+      </div>
+      <div class="rc" onclick="selectRole(this,'talent')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="rc-ico" style="background:rgba(255,215,0,.12)">💼</div>
+          <div class="rc-name">Talent Manager / Agent</div>
+        </div>
+        <div class="rc-desc">Adult talent agents, booking managers</div>
+        <div class="rc-grps">⭐ Talent · 🏛️ Venues · 🤝 Clients</div>
+      </div>
+      <div class="rc rc-biz" onclick="selectRole(this,'club')">
+        <div class="rc-ico" style="background:rgba(100,255,218,.12);width:52px;height:52px;font-size:24px;border-radius:15px">🏛️</div>
+        <div style="flex:1">
+          <div class="rc-name" style="font-size:14px;margin-bottom:4px">Club Owner / Manager</div>
+          <div class="rc-desc">Full business dashboard — tip out management, staff control, nightly reports, performer tracking</div>
+          <div class="rc-grps" style="color:var(--tl)">💼 Staff · 🎧 DJs · 💃 Performers · 🍾 VIP Clients</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn bp bfw" onclick="goStep(2)" style="margin-top:6px">Continue →</button>
+  </div>
+
+  <!-- STEP 2 — Privacy -->
+  <div class="ob-step" id="step2">
+    <div>
+      <div class="step-dots">
+        <div class="sd done"></div>
+        <div class="sd on"></div>
+        <div class="sd off"></div>
+      </div>
+      <div class="back-btn" onclick="goStep(1)">← Back</div>
+      <div class="ob-heading">Your Privacy</div>
+      <div class="ob-sub">How do you want your content treated? Sets your default for every blast. Change anytime or override per message.</div>
+    </div>
+    <div class="prv-opts">
+      <div class="prv sel" onclick="pickPriv(this,'private')">
+        <div class="prv-ico">🔒</div>
+        <div>
+          <div class="prv-name">Private — No Sharing</div>
+          <div class="prv-desc">All blasts are completely private. No share buttons ever appear. Best for companions, wellness providers, and anyone who needs maximum discretion.</div>
+        </div>
+      </div>
+      <div class="prv" onclick="pickPriv(this,'selective')">
+        <div class="prv-ico">🔓</div>
+        <div>
+          <div class="prv-name">Selective — I Choose Per Blast</div>
+          <div class="prv-desc">You decide each time. Safe content like flyers gets a share button. Sensitive personal content stays completely private. Best for entertainers and DJs.</div>
+        </div>
+      </div>
+      <div class="prv" onclick="pickPriv(this,'open')">
+        <div class="prv-ico">📤</div>
+        <div>
+          <div class="prv-name">Open — Always Show Share</div>
+          <div class="prv-desc">Share button always visible on every blast. Best for DJs, club owners, and talent managers who mainly share promotional material.</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn bp bfw" onclick="goStep(3)">Continue →</button>
+  </div>
+
+  <!-- STEP 3 — Plan -->
+  <div class="ob-step" id="step3">
+    <div>
+      <div class="step-dots">
+        <div class="sd done"></div>
+        <div class="sd done"></div>
+        <div class="sd on"></div>
+      </div>
+      <div class="back-btn" onclick="goStep(2)">← Back</div>
+      <div class="ob-heading">Choose Your Plan</div>
+      <div class="ob-sub">Start free — no card required. Upgrade when you're ready. Refer 5 paying users and upgrade completely free.</div>
+    </div>
+    <div class="free-upgrade">
+      <div style="font-size:18px;flex-shrink:0">🎁</div>
+      <div class="fu-text"><strong>Upgrade for free:</strong> Refer 5 friends on a paid plan and your plan upgrades at no cost. Keep them active and stay free every month.</div>
+    </div>
+    <div class="plan-grid">
+      <div class="po" onclick="pickPlan(this,'free')">
+        <div class="po-header"><div class="po-name">🆓 Free</div><div class="po-price">$0</div></div>
+        <div class="po-period">Forever free · no card needed</div>
+        <div class="po-features">
+          <div class="po-feat">10 contacts</div>
+          <div class="po-feat">3 groups</div>
+          <div class="po-feat">Text blasts</div>
+          <div class="po-feat">1 profile</div>
+        </div>
+      </div>
+      <div class="po" onclick="pickPlan(this,'basic')">
+        <div class="po-header"><div class="po-name">💜 Basic</div><div class="po-price">$9.99</div></div>
+        <div class="po-period">/ month · cancel anytime</div>
+        <div class="po-features">
+          <div class="po-feat">100 contacts</div>
+          <div class="po-feat">Unlimited groups</div>
+          <div class="po-feat hi">Images & flyers</div>
+          <div class="po-feat hi">Tip jar</div>
+          <div class="po-feat hi">Schedule sends</div>
+          <div class="po-feat">2 profiles</div>
+        </div>
+      </div>
+      <div class="po sel" onclick="pickPlan(this,'vip')">
+        <div class="po-tag">Popular</div>
+        <div class="po-header"><div class="po-name">👑 VIP</div><div class="po-price">$19.99</div></div>
+        <div class="po-period">/ month · cancel anytime</div>
+        <div class="po-features">
+          <div class="po-feat">Unlimited contacts</div>
+          <div class="po-feat hi">Video blasts</div>
+          <div class="po-feat hi">Voice clone</div>
+          <div class="po-feat hi">Blacklist access</div>
+          <div class="po-feat hi">Income tracker</div>
+          <div class="po-feat hi">3 profiles</div>
+          <div class="po-feat hi">$5/referral cash</div>
+        </div>
+      </div>
+      <div class="po" onclick="pickPlan(this,'business')">
+        <div class="po-header"><div class="po-name">🏛️ Business</div><div class="po-price">$49.99</div></div>
+        <div class="po-period">/ month · clubs and agencies</div>
+        <div class="po-features">
+          <div class="po-feat">Multi-user logins</div>
+          <div class="po-feat hi">Club tip out system</div>
+          <div class="po-feat hi">Staff management</div>
+          <div class="po-feat hi">Nightly reports</div>
+          <div class="po-feat hi">Unlimited profiles</div>
+        </div>
+      </div>
+    </div>
+    <div class="err-box" id="onboardErr" style="margin-top:8px"></div>
+    <button class="btn bp bfw" onclick="finishOnboard()" style="margin-top:6px;padding:17px;font-size:13px;letter-spacing:3px">Enter PrivateBlast 🔒</button>
+    <button class="btn bg bfw" onclick="selectedPlan='free';finishOnboard()" style="margin-top:-4px">Start Free Instead</button>
+  </div>
+
+</div>
+</div>
+
+<!-- CONFIRMATION -->
+<div class="screen" id="confirm">
+  <div class="confirm-wrap">
+    <div class="confirm-mark" id="confirmIcon">🔒</div>
+    <div class="confirm-title">Welcome to PrivateBlast</div>
+    <div class="confirm-sub">Everything is set up. Your privacy is protected. Your groups are built. Let's go.</div>
+    <div class="confirm-details">
+      <div class="cd-row">
+        <div class="cd-ico" id="cdRoleIco">💃</div>
+        <div class="cd-info">
+          <div class="cd-label">Your Role</div>
+          <div class="cd-value" id="cdRoleName">Female Entertainer</div>
+        </div>
+      </div>
+      <div class="cd-row">
+        <div class="cd-ico" id="cdPrivIco">🔒</div>
+        <div class="cd-info">
+          <div class="cd-label">Privacy Setting</div>
+          <div class="cd-value" id="cdPrivName">Private — No Sharing</div>
+        </div>
+      </div>
+      <div class="cd-row">
+        <div class="cd-ico" id="cdPlanIco">👑</div>
+        <div class="cd-info">
+          <div class="cd-label">Your Plan</div>
+          <div class="cd-value" id="cdPlanName">VIP — $19.99/mo</div>
+        </div>
+      </div>
+      <div>
+        <div class="cd-label" style="margin-bottom:8px">Your Groups</div>
+        <div class="confirm-groups" id="cdGroups"></div>
+      </div>
+    </div>
+    <button class="btn bp bfw" onclick="enterApp()" style="padding:17px;font-size:13px;letter-spacing:3px;margin-top:4px">Let's Go 🔥</button>
+  </div>
+</div>
+
+</div><!-- .app -->
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spin"></div>
+  <div class="load-txt" id="loadTxt">Creating your account...</div>
+</div>
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+const PRIVACY_MAP = {
+  private:   { icon: '🔒', name: 'Private — No Sharing' },
+  selective: { icon: '🔓', name: 'Selective — I Choose Per Blast' },
+  open:      { icon: '📤', name: 'Open — Always Show Share' }
+}
+
+let selectedRole = null
+let selectedPrivacy = 'private'
+let selectedPlan = 'vip'
+let currentUser = null
+
+// Check if already logged in
+;(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (session) {
+    window.location.href = '/app.html'
+    return
+  }
+  // Check for referral code in URL
+  const path = window.location.pathname
+  const refMatch = path.match(/\/join\/([a-z0-9]+)/i)
+  if (refMatch) {
+    localStorage.setItem('referral_code', refMatch[1])
+  }
+})()
+
+function goTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+}
+
+function showLoading(txt) {
+  document.getElementById('loadTxt').textContent = txt || 'Loading...'
+  document.getElementById('loadingOverlay').classList.add('show')
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('show')
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id)
+  el.textContent = msg
+  el.classList.add('show')
+}
+
+function hideErr(id) {
+  document.getElementById(id).classList.remove('show')
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.style.opacity = '1'
+  t.style.transform = 'translateX(-50%) translateY(0)'
+  t.style.borderColor = 'rgba(180,150,255,.3)'
+  t.style.color = '#b496ff'
+  setTimeout(() => {
+    t.style.opacity = '0'
+    t.style.transform = 'translateX(-50%) translateY(-18px)'
+  }, 2600)
+}
+
+// ─── SIGN UP ───────────────────────────────
+async function doSignup() {
+  hideErr('signupErr')
+  const name = document.getElementById('signupName').value.trim()
+  const email = document.getElementById('signupEmail').value.trim()
+  const pass = document.getElementById('signupPass').value
+  const pass2 = document.getElementById('signupPass2').value
+
+  if (!name) return showErr('signupErr', 'Please enter your name.')
+  if (!email) return showErr('signupErr', 'Please enter your email.')
+  if (pass.length < 8) return showErr('signupErr', 'Password must be at least 8 characters.')
+  if (pass !== pass2) return showErr('signupErr', 'Passwords do not match.')
+
+  showLoading('Creating your account...')
+  const { data, error } = await supabase.auth.signUp({ email, password: pass, options: { data: { full_name: name } } })
+  hideLoading()
+
+  if (error) return showErr('signupErr', error.message)
+
+  currentUser = data.user
+  localStorage.setItem('pending_name', name)
+  goTo('onboard')
+  goStep(1)
+}
+
+// ─── SIGN IN ───────────────────────────────
+async function doSignin() {
+  hideErr('signinErr')
+  const email = document.getElementById('signinEmail').value.trim()
+  const pass = document.getElementById('signinPass').value
+  if (!email || !pass) return showErr('signinErr', 'Please enter your email and password.')
+
+  showLoading('Signing in...')
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass })
+  hideLoading()
+
+  if (error) return showErr('signinErr', 'Invalid email or password. Please try again.')
+
+  const { data: profile } = await supabase.from('profiles').select('id').eq('id', data.user.id).single()
+  if (profile) {
+    window.location.href = '/app.html'
+  } else {
+    currentUser = data.user
+    localStorage.setItem('pending_name', data.user.user_metadata?.full_name || '')
+    goTo('onboard')
+    goStep(1)
+  }
+}
+
+// ─── FORGOT PASSWORD ───────────────────────
+async function doForgot() {
+  hideErr('forgotErr')
+  document.getElementById('forgotOk').classList.remove('show')
+  const email = document.getElementById('forgotEmail').value.trim()
+  if (!email) return showErr('forgotErr', 'Please enter your email.')
+
+  showLoading('Sending reset link...')
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/onboarding.html'
+  })
+  hideLoading()
+
+  if (error) return showErr('forgotErr', error.message)
+  const ok = document.getElementById('forgotOk')
+  ok.textContent = 'Reset link sent! Check your email inbox.'
+  ok.classList.add('show')
+}
+
+// ─── ONBOARDING STEPS ──────────────────────
+function goStep(n) {
+  if (n === 2 && !selectedRole) { toast('Pick your role first 👆'); return }
+  document.querySelectorAll('.ob-step').forEach(s => s.classList.remove('active'))
+  document.getElementById('step' + n).classList.add('active')
+  document.getElementById('onboard').scrollTop = 0
+
+  if (n === 2 && selectedRole) {
+    const defaultPriv = ROLES[selectedRole].privacy
+    selectedPrivacy = defaultPriv
+    document.querySelectorAll('.prv').forEach(p => p.classList.remove('sel'))
+    const privMap = { private: 0, selective: 1, open: 2 }
+    document.querySelectorAll('.prv')[privMap[defaultPriv]]?.classList.add('sel')
+  }
+}
+
+function selectRole(el, role) {
+  document.querySelectorAll('.rc').forEach(c => c.classList.remove('sel'))
+  el.classList.add('sel')
+  selectedRole = role
+  setTimeout(() => goStep(2), 300)
+}
+
+function pickPriv(el, priv) {
+  document.querySelectorAll('.prv').forEach(p => p.classList.remove('sel'))
+  el.classList.add('sel')
+  selectedPrivacy = priv
+}
+
+function pickPlan(el, plan) {
+  document.querySelectorAll('.po').forEach(p => {
+    p.classList.remove('sel')
+    const t = p.querySelector('.po-tag')
+    if (t && t.textContent === 'Selected') t.remove()
+  })
+  el.classList.add('sel')
+  selectedPlan = plan
+}
+
+// ─── FINISH ONBOARDING ─────────────────────
+async function finishOnboard() {
+  if (!selectedRole) { toast('Pick your role first'); goStep(1); return }
+  hideErr('onboardErr')
+
+  const role = ROLES[selectedRole]
+  const privData = PRIVACY_MAP[selectedPrivacy]
+  const planData = PLANS[selectedPlan]
+
+  // Show confirm screen first
+  document.getElementById('confirmIcon').textContent = role.icon
+  document.getElementById('cdRoleIco').textContent = role.icon
+  document.getElementById('cdRoleName').textContent = role.name
+  document.getElementById('cdPrivIco').textContent = privData.icon
+  document.getElementById('cdPrivName').textContent = privData.name
+  document.getElementById('cdPlanIco').textContent = planData.icon
+  document.getElementById('cdPlanName').textContent = planData.label
+
+  const groupsEl = document.getElementById('cdGroups')
+  groupsEl.innerHTML = role.groups.map(g =>
+    `<div class="cg" style="color:${g.color};border-color:${g.color}44;background:${g.color}11">${g.label}</div>`
+  ).join('')
+
+  goTo('confirm')
+}
+
+async function enterApp() {
+  showLoading('Setting up your account...')
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { hideLoading(); goTo('signin'); return }
+
+    const fullName = localStorage.getItem('pending_name') || user.email.split('@')[0]
+    const role = ROLES[selectedRole]
+    const referralCode = generateReferralCode(fullName)
+
+    // Create profile
+    await supabase.from('profiles').upsert({
+      id: user.id,
+      full_name: fullName,
+      display_name: fullName.split(' ')[0],
+      role: selectedRole,
+      privacy_setting: selectedPrivacy,
+      plan: selectedPlan,
+      avatar_emoji: role.icon,
+      referral_code: referralCode
+    })
+
+    // Create primary sub_profile
+    const { data: subProfile } = await supabase.from('sub_profiles').insert({
+      user_id: user.id,
+      profile_name: fullName.split(' ')[0],
+      role: selectedRole,
+      icon_emoji: role.icon,
+      privacy_setting: selectedPrivacy,
+      is_active: true
+    }).select().single()
+
+    if (subProfile) {
+      localStorage.setItem('activeProfileId', subProfile.id)
+
+      // Create default groups for the role
+      const groupInserts = role.groups.map((g, i) => ({
+        user_id: user.id,
+        sub_profile_id: subProfile.id,
+        name: g.label,
+        color: g.color,
+        emoji: g.label.split(' ')[0],
+        sort_order: i
+      }))
+      await supabase.from('groups').insert(groupInserts)
+    }
+
+    // Create subscription record
+    await supabase.from('subscriptions').upsert({
+      user_id: user.id,
+      plan: selectedPlan,
+      status: 'active',
+      price: PLANS[selectedPlan].price,
+      billing_date: new Date().toISOString().split('T')[0],
+      referral_count: 0
+    })
+
+    // Handle referral if came through referral link
+    const referralCodeUsed = localStorage.getItem('referral_code')
+    if (referralCodeUsed) {
+      const { data: referrer } = await supabase.from('profiles').select('id').eq('referral_code', referralCodeUsed).single()
+      if (referrer && referrer.id !== user.id) {
+        await supabase.from('referrals').insert({
+          referrer_id: referrer.id,
+          referred_id: user.id,
+          referred_email: user.email,
+          plan_level: selectedPlan,
+          is_active: false
+        })
+        // Notify referrer
+        await supabase.from('notifications').insert({
+          user_id: referrer.id,
+          type: 'referral_joined',
+          title: '🎉 New Referral!',
+          message: `${fullName.split(' ')[0]} joined via your link!`,
+          is_read: false
+        })
+      }
+      localStorage.removeItem('referral_code')
+    }
+
+    localStorage.removeItem('pending_name')
+    hideLoading()
+    window.location.href = '/app.html'
+  } catch (e) {
+    hideLoading()
+    showErr('onboardErr', 'Something went wrong. Please try again.')
+    goTo('onboard')
+  }
+}
+</script>
+</body>
+</html>

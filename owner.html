@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#06060d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>PrivateBlast — Owner Dashboard</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06060d;--s1:#0b0b17;--s2:#11111f;--s3:#171728;
+  --b:rgba(255,255,255,.055);--bhi:rgba(100,255,218,.3);
+  --tx:#eeeef8;--dim:#545468;--dmr:#262636;
+  --pu:#b496ff;--pk:#ff6eb4;--tl:#64ffda;--gd:#ffd700;--rd:#ff4d6d;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--tx);font-family:'DM Mono',monospace;font-size:14px}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 40% at 5% 0%,rgba(100,255,218,.05) 0%,transparent 55%),
+             radial-gradient(ellipse 50% 35% at 95% 100%,rgba(180,150,255,.04) 0%,transparent 55%)}
+.app{position:relative;z-index:1;max-width:430px;margin:0 auto;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden;animation:fu .28s ease}
+.screen.active{display:flex}
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:92px}
+.scroll::-webkit-scrollbar{display:none}
+.hdr{padding:54px 22px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--b);flex-shrink:0}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:5px;text-transform:uppercase;background:linear-gradient(135deg,#64ffda,#b496ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hbtn{width:38px;height:38px;border-radius:10px;background:var(--s2);border:1px solid var(--b);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .2s;flex-shrink:0}
+.hbtn:active{background:var(--s3);transform:scale(.93)}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(6,6,13,.97);backdrop-filter:blur(28px);border-top:1px solid var(--b);display:flex;padding:10px 0 28px;z-index:100}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px}
+.ni-i{font-size:19px;transition:transform .2s}
+.ni-l{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);transition:color .2s}
+.ni.active .ni-l{color:var(--tl)}
+.ni.active .ni-i{transform:scale(1.1)}
+.ni:active .ni-i{transform:scale(.87)}
+.btn{padding:13px 18px;border-radius:11px;border:none;font-family:'DM Mono',monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.bp{background:linear-gradient(135deg,#64ffda,#b496ff);color:#05050f;font-weight:600;box-shadow:0 6px 28px rgba(100,255,218,.2)}
+.bp:active{transform:scale(.97)}
+.bg{background:transparent;color:var(--dim);border:1px solid var(--b)}
+.bg:active{background:var(--s2)}
+.bfw{width:100%}
+.ig{display:flex;flex-direction:column;gap:7px}
+.il{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.inp{background:var(--s1);border:1px solid var(--b);border-radius:11px;padding:13px 15px;color:var(--tx);font-family:'DM Mono',monospace;font-size:13px;outline:none;transition:border-color .2s;width:100%}
+.inp:focus{border-color:var(--bhi)}
+.inp::placeholder{color:var(--dmr)}
+.sec{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--dim);margin:22px 0 10px}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.84);backdrop-filter:blur(12px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.overlay.show{display:flex;animation:fu .2s ease}
+.modal{background:var(--s1);border:1px solid var(--b);border-radius:22px 22px 0 0;width:100%;max-width:430px;padding:22px;padding-bottom:42px;animation:slideUp .3s ease}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:38px;height:4px;border-radius:2px;background:var(--b);margin:0 auto 18px}
+.mtitle{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:16px}
+.mbody{display:flex;flex-direction:column;gap:12px}
+.biz-card{background:var(--s1);border:1px solid var(--b);border-radius:16px;overflow:hidden;margin-bottom:12px;cursor:pointer;transition:all .2s}
+.biz-card:active{background:var(--s2)}
+.toast{position:fixed;top:54px;left:50%;transform:translateX(-50%) translateY(-18px);background:var(--s2);border:1px solid var(--b);border-radius:11px;padding:11px 16px;font-size:12px;z-index:300;opacity:0;transition:all .3s;white-space:nowrap;max-width:calc(100vw - 44px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- OVERVIEW -->
+<div class="screen active" id="overview">
+  <div class="hdr">
+    <div>
+      <div class="logo">Owner Hub</div>
+      <div style="font-size:9px;letter-spacing:1.5px;color:var(--dim);margin-top:2px">Multi-Business Dashboard</div>
+    </div>
+    <div class="hbtn" onclick="window.location.href='/app.html'">←</div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <!-- Combined revenue hero -->
+    <div style="background:linear-gradient(135deg,rgba(100,255,218,.08),rgba(180,150,255,.06));border:1px solid rgba(100,255,218,.2);border-radius:18px;padding:22px;text-align:center;margin-bottom:14px">
+      <div style="font-size:10px;letter-spacing:3px;color:var(--dim);text-transform:uppercase;margin-bottom:8px">Combined Monthly Revenue</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;background:linear-gradient(135deg,#64ffda,#b496ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1" id="totalRevenue">$0</div>
+      <div style="font-size:11px;color:var(--dim);margin-top:8px" id="bizCount">0 businesses tracked</div>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px">
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px 10px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--tl)" id="totalStaff">0</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Staff</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px 10px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--gd)" id="weekRevenue">$0</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">This Week</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:14px 10px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--pu)" id="yearRevenue">$0</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">YTD</div>
+      </div>
+    </div>
+
+    <div class="sec">Your Businesses</div>
+    <div id="bizList"><div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No businesses yet. Add your first one below.</div></div>
+
+    <button class="btn bp bfw" style="margin-top:8px" onclick="openModal('addBizOverlay')">+ Add Business</button>
+    <button class="btn bg bfw" style="margin-top:8px" onclick="navTo('reports')">View Combined Reports</button>
+  </div>
+</div>
+
+<!-- REPORTS -->
+<div class="screen" id="reports">
+  <div class="hdr">
+    <div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300">Reports</div></div>
+    <div class="hbtn" onclick="navTo('overview')">←</div>
+  </div>
+  <div class="scroll" style="padding:18px 22px">
+    <div style="display:flex;gap:8px;margin-bottom:18px">
+      <div onclick="setReportPeriod('month',this)" style="padding:8px 14px;border-radius:100px;background:rgba(100,255,218,.1);border:1px solid rgba(100,255,218,.3);color:var(--tl);font-size:10px;letter-spacing:1.5px;cursor:pointer">Monthly</div>
+      <div onclick="setReportPeriod('year',this)" style="padding:8px 14px;border-radius:100px;border:1px solid var(--b);color:var(--dim);font-size:10px;letter-spacing:1.5px;cursor:pointer">Yearly</div>
+    </div>
+    <div id="reportContent"></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="ni active" onclick="navTo('overview')" id="navOverview"><div class="ni-i">🏛️</div><div class="ni-l">Overview</div></div>
+  <div class="ni" onclick="navTo('reports')"><div class="ni-i">📊</div><div class="ni-l">Reports</div></div>
+</div>
+</div>
+
+<!-- ADD BUSINESS MODAL -->
+<div class="overlay" id="addBizOverlay">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">Add Business</div>
+    <div class="mbody">
+      <div class="ig"><div class="il">Business Name</div><input class="inp" id="bizName" type="text" placeholder="Business name"></div>
+      <div class="ig"><div class="il">Business Type</div>
+        <select class="inp" id="bizType" style="appearance:none">
+          <option value="club">Strip Club / Nightclub</option>
+          <option value="barbershop">Barbershop / Salon</option>
+          <option value="restaurant">Restaurant / Bar</option>
+          <option value="agency">Talent Agency</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="ig"><div class="il">City</div><input class="inp" id="bizCity" type="text" placeholder="City, State"></div>
+      <button class="btn bp bfw" onclick="saveBusiness()">Add Business</button>
+      <button class="btn bg bfw" onclick="closeModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/supabase-config.js"></script>
+<script>
+let currentUser = null
+let allVenues = []
+let allShifts = []
+let allPerformers = []
+let allPerformerShifts = []
+let reportPeriod = 'month'
+
+;(async () => {
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session) { window.location.href = '/onboarding.html'; return }
+  currentUser = session.user
+  await loadData()
+})()
+
+async function loadData() {
+  const now = new Date()
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+
+  const [{ data: venues }, { data: shifts }, { data: performers }, { data: perfShifts }] = await Promise.all([
+    supabase.from('venues').select('*').eq('user_id', currentUser.id).eq('is_owned', true),
+    supabase.from('shifts').select('*').eq('user_id', currentUser.id).order('shift_date', { ascending: false }),
+    supabase.from('performers').select('*').eq('owner_id', currentUser.id).eq('is_active', true),
+    supabase.from('performer_shifts').select('*').eq('owner_id', currentUser.id).gte('shift_date', monthStart)
+  ])
+  allVenues = venues || []
+  allShifts = shifts || []
+  allPerformers = performers || []
+  allPerformerShifts = perfShifts || []
+  renderOverview()
+  renderReport()
+}
+
+function renderOverview() {
+  const now = new Date()
+  const weekAgo = new Date(now - 7*86400000).toISOString().split('T')[0]
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+  const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0]
+
+  const monthShifts = allShifts.filter(s => s.shift_date >= monthStart)
+  const weekShifts = allShifts.filter(s => s.shift_date >= weekAgo)
+  const yearShifts = allShifts.filter(s => s.shift_date >= yearStart)
+
+  const monthTotal = monthShifts.reduce((a,s) => a + (s.gross_total||0), 0)
+  const weekTotal = weekShifts.reduce((a,s) => a + (s.gross_total||0), 0)
+  const yearTotal = yearShifts.reduce((a,s) => a + (s.gross_total||0), 0)
+
+  document.getElementById('totalRevenue').textContent = '$' + monthTotal.toFixed(0)
+  document.getElementById('bizCount').textContent = allVenues.length + ' businesses tracked'
+  document.getElementById('totalStaff').textContent = allPerformers.length
+  document.getElementById('weekRevenue').textContent = '$' + weekTotal.toFixed(0)
+  document.getElementById('yearRevenue').textContent = '$' + (yearTotal / 1000).toFixed(1) + 'k'
+
+  const bizEl = document.getElementById('bizList')
+  if (allVenues.length === 0) {
+    bizEl.innerHTML = '<div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No businesses yet. Add your first one below.</div>'
+    return
+  }
+
+  const typeIcons = { club: '🏛️', barbershop: '✂️', restaurant: '🍽️', agency: '💼', other: '🏢' }
+  const typeColors = { club: 'var(--tl)', barbershop: 'var(--pk)', restaurant: 'var(--gd)', agency: 'var(--pu)', other: 'var(--dim)' }
+
+  bizEl.innerHTML = allVenues.map(v => {
+    const venueShifts = monthShifts.filter(s => s.venue_id === v.id)
+    const revenue = venueShifts.reduce((a,s) => a + (s.gross_total||0), 0)
+    const performers = allPerformers.filter(p => p.business_name === v.name).length
+    const type = v.tipout_type || 'other'
+    const icon = typeIcons[type] || '🏢'
+    const color = typeColors[type] || 'var(--dim)'
+    return `<div class="biz-card">
+      <div style="display:flex;align-items:center;gap:14px;padding:16px">
+        <div style="width:48px;height:48px;border-radius:14px;background:${color}18;border:1px solid ${color}33;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">${icon}</div>
+        <div style="flex:1">
+          <div style="font-size:14px;margin-bottom:2px">${escHtml(v.name)}</div>
+          <div style="font-size:10px;color:var(--dim)">${escHtml(v.city||'')} · ${performers} staff</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--gd)">$${revenue.toFixed(0)}</div>
+          <div style="font-size:9px;color:var(--dim)">this month</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;padding:0 16px 14px">
+        <button onclick="goToClub('${v.id}')" style="flex:1;padding:10px;border-radius:9px;background:rgba(100,255,218,.08);border:1px solid rgba(100,255,218,.2);color:var(--tl);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;cursor:pointer">Dashboard</button>
+        <button onclick="deleteVenueConfirm('${v.id}','${escHtml(v.name)}')" style="padding:10px 14px;border-radius:9px;background:rgba(255,77,109,.08);border:1px solid rgba(255,77,109,.2);color:var(--rd);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer">🗑</button>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function renderReport() {
+  const now = new Date()
+  let filtered = allShifts
+  if (reportPeriod === 'month') {
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
+    filtered = allShifts.filter(s => s.shift_date >= monthStart)
+  } else {
+    const yearStart = new Date(now.getFullYear(), 0, 1).toISOString().split('T')[0]
+    filtered = allShifts.filter(s => s.shift_date >= yearStart)
+  }
+
+  const total = filtered.reduce((a,s) => a + (s.gross_total||0), 0)
+  const tipouts = filtered.reduce((a,s) => a + (s.tipout_dj||0) + (s.tipout_house||0) + (s.tipout_bar||0), 0)
+  const annualProjection = reportPeriod === 'month' ? total * 12 : total
+
+  document.getElementById('reportContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--tl)">$${total.toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Gross Revenue</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--rd)">$${tipouts.toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Total Tip Outs</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--gd)">$${(total - tipouts).toFixed(0)}</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">Net Revenue</div>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b);border-radius:13px;padding:16px;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--pu)">$${(annualProjection/1000).toFixed(0)}k</div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin-top:3px">${reportPeriod==='month'?'Annual Projection':'YTD Total'}</div>
+      </div>
+    </div>
+    <div style="background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.2);border-radius:13px;padding:16px">
+      <div style="font-size:11px;color:var(--tl);margin-bottom:6px">📊 Business Summary</div>
+      <div style="font-size:11px;color:var(--dim);line-height:1.8">
+        <div>Businesses tracked: ${allVenues.length}</div>
+        <div>Active staff: ${allPerformers.length}</div>
+        <div>Shifts recorded: ${filtered.length}</div>
+      </div>
+    </div>`
+}
+
+async function saveBusiness() {
+  const name = document.getElementById('bizName').value.trim()
+  const type = document.getElementById('bizType').value
+  const city = document.getElementById('bizCity').value.trim()
+  if (!name) { toast('Enter business name'); return }
+  await supabase.from('venues').insert({
+    user_id: currentUser.id,
+    name, city,
+    is_owned: true,
+    tipout_type: type === 'club' ? 'percentage' : 'flat'
+  })
+  document.getElementById('bizName').value = ''
+  document.getElementById('bizCity').value = ''
+  await loadData()
+  closeModal()
+  toast('✓ Business added')
+}
+
+async function deleteVenueConfirm(id, name) {
+  if (!confirm(`Remove "${name}" from your dashboard?`)) return
+  await supabase.from('venues').delete().eq('id', id)
+  await loadData()
+  toast('Business removed')
+}
+
+function goToClub() {
+  window.location.href = '/club.html'
+}
+
+function setReportPeriod(p, el) {
+  reportPeriod = p
+  document.querySelectorAll('#reports div[onclick^="setReport"]').forEach(d => {
+    d.style.background = 'transparent'
+    d.style.borderColor = 'var(--b)'
+    d.style.color = 'var(--dim)'
+  })
+  el.style.background = 'rgba(100,255,218,.1)'
+  el.style.borderColor = 'rgba(100,255,218,.3)'
+  el.style.color = 'var(--tl)'
+  renderReport()
+}
+
+function navTo(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'))
+  document.getElementById(id).classList.add('active')
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'))
+  const map = { overview: 0, reports: 1 }
+  document.querySelectorAll('.ni')[map[id]]?.classList.add('active')
+}
+
+function openModal(id) { document.getElementById(id).classList.add('show') }
+function closeModal() { document.querySelectorAll('.overlay').forEach(o => o.classList.remove('show')) }
+
+function toast(msg) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast show'
+  setTimeout(() => t.classList.remove('show'), 3000)
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+</script>
+</body>
+</html>

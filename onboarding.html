@@ -67,6 +67,13 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 .err-box.show{display:block}
 .ok-box{background:rgba(100,255,218,.06);border:1px solid rgba(100,255,218,.2);border-radius:11px;padding:12px 14px;font-size:11px;color:var(--tl);display:none;margin-bottom:12px;line-height:1.6}
 .ok-box.show{display:block}
+.pw-wrap{position:relative}
+.pw-wrap .inp{padding-right:44px}
+.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--dim);font-size:15px;padding:4px;line-height:1;transition:color .2s}
+.pw-eye:hover{color:var(--tx)}
+.pw-match{font-size:10px;margin-top:4px;letter-spacing:.5px;min-height:14px}
+.pw-match.ok{color:var(--tl)}
+.pw-match.no{color:var(--rd)}
 
 /* ONBOARDING STEPS */
 #onboard{overflow-y:auto}
@@ -172,8 +179,21 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
     <div class="auth-fields">
       <div class="ig"><div class="il">Full Name</div><input class="inp" id="signupName" type="text" placeholder="Your name" autocomplete="name"></div>
       <div class="ig"><div class="il">Email</div><input class="inp" id="signupEmail" type="email" placeholder="your@email.com" autocomplete="email"></div>
-      <div class="ig"><div class="il">Password</div><input class="inp" id="signupPass" type="password" placeholder="Min 8 characters" autocomplete="new-password"></div>
-      <div class="ig"><div class="il">Confirm Password</div><input class="inp" id="signupPass2" type="password" placeholder="Confirm password" autocomplete="new-password"></div>
+      <div class="ig">
+        <div class="il">Password</div>
+        <div class="pw-wrap">
+          <input class="inp" id="signupPass" type="password" placeholder="Min 8 characters" autocomplete="new-password" oninput="checkPassMatch()">
+          <button class="pw-eye" type="button" onclick="toggleEye('signupPass',this)" tabindex="-1">👁</button>
+        </div>
+      </div>
+      <div class="ig">
+        <div class="il">Confirm Password</div>
+        <div class="pw-wrap">
+          <input class="inp" id="signupPass2" type="password" placeholder="Confirm password" autocomplete="new-password" oninput="checkPassMatch()">
+          <button class="pw-eye" type="button" onclick="toggleEye('signupPass2',this)" tabindex="-1">👁</button>
+        </div>
+        <div class="pw-match" id="passMatchMsg"></div>
+      </div>
     </div>
     <button class="btn bp bfw" onclick="doSignup()">Create Account →</button>
     <div class="auth-link" onclick="goTo('signin')">Already have an account? Sign In</div>
@@ -315,28 +335,28 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
       </div>
       <div class="back-btn" onclick="goStep(1)">← Back</div>
       <div class="ob-heading">Your Privacy</div>
-      <div class="ob-sub">How do you want your content treated? Sets your default for every blast. Change anytime or override per message.</div>
+      <div class="ob-sub">This controls whether your contacts can forward or screenshot your messages. Pick your default — you can always change it per blast or in settings.</div>
     </div>
     <div class="prv-opts">
       <div class="prv sel" onclick="pickPriv(this,'private')">
         <div class="prv-ico">🔒</div>
         <div>
-          <div class="prv-name">Private — No Sharing</div>
-          <div class="prv-desc">All blasts are completely private. No share buttons ever appear. Best for companions, wellness providers, and anyone who needs maximum discretion.</div>
+          <div class="prv-name">Private — No Sharing Ever</div>
+          <div class="prv-desc">Your blasts stay between you and your contacts. No forward button, no share link — ever. <strong>Choose this if your work requires discretion.</strong> You can always switch later.</div>
         </div>
       </div>
       <div class="prv" onclick="pickPriv(this,'selective')">
         <div class="prv-ico">🔓</div>
         <div>
-          <div class="prv-name">Selective — I Choose Per Blast</div>
-          <div class="prv-desc">You decide each time. Safe content like flyers gets a share button. Sensitive personal content stays completely private. Best for entertainers and DJs.</div>
+          <div class="prv-name">Selective — I Decide Each Time</div>
+          <div class="prv-desc">You get a share toggle on every blast before you send it. Turn sharing on for flyers and promos, leave it off for personal updates. <strong>Most popular — gives you full control.</strong></div>
         </div>
       </div>
       <div class="prv" onclick="pickPriv(this,'open')">
         <div class="prv-ico">📤</div>
         <div>
-          <div class="prv-name">Open — Always Show Share</div>
-          <div class="prv-desc">Share button always visible on every blast. Best for DJs, club owners, and talent managers who mainly share promotional material.</div>
+          <div class="prv-name">Open — Always Shareable</div>
+          <div class="prv-desc">Every blast includes a share button automatically. <strong>Best for DJs and club promoters</strong> who send event flyers and want maximum reach.</div>
         </div>
       </div>
     </div>
@@ -528,6 +548,22 @@ function toast(msg) {
 }
 
 // ─── SIGN UP ───────────────────────────────
+function toggleEye(inputId, btn) {
+  const inp = document.getElementById(inputId)
+  const show = inp.type === 'password'
+  inp.type = show ? 'text' : 'password'
+  btn.textContent = show ? '🙈' : '👁'
+}
+
+function checkPassMatch() {
+  const p1 = document.getElementById('signupPass').value
+  const p2 = document.getElementById('signupPass2').value
+  const msg = document.getElementById('passMatchMsg')
+  if (!p2) { msg.textContent = ''; msg.className = 'pw-match'; return }
+  if (p1 === p2) { msg.textContent = '✓ Passwords match'; msg.className = 'pw-match ok' }
+  else { msg.textContent = '✗ Passwords do not match'; msg.className = 'pw-match no' }
+}
+
 async function doSignup() {
   hideErr('signupErr')
   const name = document.getElementById('signupName').value.trim()
@@ -663,8 +699,15 @@ async function finishOnboard() {
 async function enterApp() {
   showLoading('Setting up your account...')
   try {
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { hideLoading(); goTo('signin'); return }
+    // Try refreshing session first in case token is stale
+    const { data: refreshData } = await supabase.auth.refreshSession()
+    const user = refreshData?.user || (await supabase.auth.getUser()).data?.user
+    if (!user) {
+      hideLoading()
+      showErr('signupErr', 'Your session expired. Please sign in again — your selections will be saved.')
+      goTo('signin')
+      return
+    }
 
     const fullName = localStorage.getItem('pending_name') || user.email.split('@')[0]
     const role = ROLES[selectedRole]

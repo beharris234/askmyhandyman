@@ -420,20 +420,20 @@ function showUpgradeGate() {
 
 // ─── DATA LOADERS ────────────────────────────
 async function loadPerformers() {
-  const { data } = await supabase.from('performers').select('*').eq('user_id', currentUser.id).order('name')
+  const { data } = await supabase.from('performers').select('*').eq('owner_id', currentUser.id).order('name')
   allPerformers = data || []
 }
 
 async function loadRules() {
-  const { data } = await supabase.from('tip_out_rules').select('*').eq('user_id', currentUser.id).order('sort_order')
+  const { data } = await supabase.from('tip_out_rules').select('*').eq('owner_id', currentUser.id).order('created_at')
   allRules = data || []
 }
 
 async function loadShifts(dateStr) {
   const d = dateStr || new Date().toISOString().split('T')[0]
   const { data } = await supabase.from('performer_shifts')
-    .select('*, performers(name, emoji, role)')
-    .eq('user_id', currentUser.id)
+    .select('*, performers(name, emoji)')
+    .eq('owner_id', currentUser.id)
     .eq('shift_date', d)
     .order('created_at', { ascending: false })
   allShifts = data || []
@@ -441,18 +441,18 @@ async function loadShifts(dateStr) {
 
 // ─── DASHBOARD ───────────────────────────────
 function renderDashboard() {
-  const totalEarned = allShifts.reduce((s, sh) => s + (sh.gross_earned || 0), 0)
-  const totalTipOut = allShifts.reduce((s, sh) => s + (sh.tip_out_total || 0), 0)
-  const totalCollected = allShifts.filter(sh => sh.tip_out_status === 'paid').reduce((s, sh) => s + (sh.tip_out_total || 0), 0)
+  const totalEarned = allShifts.reduce((s, sh) => s + (sh.earned || 0), 0)
+  const totalTipOut = allShifts.reduce((s, sh) => s + (sh.total_tipout || 0), 0)
+  const totalCollected = allShifts.filter(sh => sh.is_paid).reduce((s, sh) => s + (sh.total_tipout || 0), 0)
 
   document.getElementById('nightStats').innerHTML = `
     <div class="stat"><div class="stat-n">$${fmt(totalEarned)}</div><div class="stat-l">Earned</div></div>
     <div class="stat"><div class="stat-n">$${fmt(totalTipOut)}</div><div class="stat-l">Tip Outs</div></div>
     <div class="stat"><div class="stat-n">$${fmt(totalCollected)}</div><div class="stat-l">Collected</div></div>`
 
-  const paid = allShifts.filter(s => s.tip_out_status === 'paid').length
-  const owe = allShifts.filter(s => s.tip_out_status === 'owe').length
-  const late = allShifts.filter(s => s.tip_out_status === 'late').length
+  const paid = allShifts.filter(s => s.is_paid).length
+  const owe = allShifts.filter(s => !s.is_paid && !s.is_late).length
+  const late = allShifts.filter(s => s.is_late).length
   document.getElementById('spPaid').textContent = paid
   document.getElementById('spOwe').textContent = owe
   document.getElementById('spLate').textContent = late
@@ -464,7 +464,7 @@ function renderDashboard() {
   }
   el.innerHTML = allShifts.map(sh => {
     const perf = sh.performers || {}
-    const status = sh.tip_out_status || 'owe'
+    const status = sh.is_paid ? 'paid' : sh.is_late ? 'late' : 'owe'
     const stClass = status === 'paid' ? 'ps-paid' : status === 'late' ? 'ps-late' : 'ps-owe'
     const stLabel = status === 'paid' ? 'Paid ✓' : status === 'late' ? 'Late ⚠' : 'Owes'
     const breakdown = sh.tip_out_breakdown || {}
@@ -475,16 +475,16 @@ function renderDashboard() {
         <div class="perf-av">${perf.emoji || '💃'}</div>
         <div class="perf-info">
           <div class="perf-name">${escHtml(perf.name || 'Unknown')}</div>
-          <div class="perf-sub">Earned $${fmt(sh.gross_earned || 0)} · Tip out $${fmt(sh.tip_out_total || 0)}</div>
+          <div class="perf-sub">Earned $${fmt(sh.earned || 0)} · Tip out $${fmt(sh.total_tipout || 0)}</div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-          <div class="perf-amt" style="color:var(--tl)">$${fmt(sh.performer_net || 0)}</div>
+          <div class="perf-amt" style="color:var(--tl)">$${fmt(sh.keeps || 0)}</div>
           <div class="perf-status ${stClass}">${stLabel}</div>
         </div>
       </div>
       <div class="perf-expand" id="exp-${sh.id}">
         ${bdRows}
-        <div class="bd-total"><span>Keeps</span><span style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:20px">$${fmt(sh.performer_net || 0)}</span></div>
+        <div class="bd-total"><span>Keeps</span><span style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:20px">$${fmt(sh.keeps || 0)}</span></div>
         ${status !== 'paid' ? `<button class="btn btl btn-sm bfw" style="margin-top:8px" onclick="markPaid('${sh.id}')">Mark Paid ✓</button>` : ''}
       </div>
     </div>`
@@ -497,14 +497,14 @@ function toggleExpand(id) {
 }
 
 async function markPaid(shiftId) {
-  await supabase.from('performer_shifts').update({ tip_out_status: 'paid' }).eq('id', shiftId)
+  await supabase.from('performer_shifts').update({ is_paid: true }).eq('id', shiftId)
   await loadShifts()
   renderDashboard()
   toast('✓ Marked as paid', 'tok')
 }
 
 function sendReminders() {
-  const oweList = allShifts.filter(s => s.tip_out_status !== 'paid')
+  const oweList = allShifts.filter(s => !s.is_paid)
   if (oweList.length === 0) { toast('Everyone is paid up! 🎉', 'tgd'); return }
   toast(`📲 Reminders sent to ${oweList.length} performer${oweList.length > 1 ? 's' : ''}`, 'tok')
 }
@@ -519,18 +519,18 @@ function renderRules() {
   el.innerHTML = allRules.map((r, i) => `
     <div class="rule-card" id="ruleCard-${i}">
       <div class="rule-top">
-        <div class="rule-ico">${r.emoji || '💰'}</div>
+        <div class="rule-ico">${r.recipient_emoji || '💰'}</div>
         <div class="rule-name">${escHtml(r.recipient_name)}</div>
         <div class="tog ${r.is_active ? 'on' : ''}" onclick="this.classList.toggle('on')" data-rule-idx="${i}"></div>
       </div>
       <div class="type-toggle" style="margin-bottom:12px">
-        <button class="tt-btn ${r.type === 'percent' ? 'active' : ''}" onclick="setRuleType(${i},'percent',this)">%</button>
-        <button class="tt-btn ${r.type === 'flat' ? 'active' : ''}" onclick="setRuleType(${i},'flat',this)">Flat $</button>
+        <button class="tt-btn ${r.rule_type === 'percentage' ? 'active' : ''}" onclick="setRuleType(${i},'percentage',this)">%</button>
+        <button class="tt-btn ${r.rule_type === 'flat' ? 'active' : ''}" onclick="setRuleType(${i},'flat',this)">Flat $</button>
       </div>
       <div class="rule-inputs">
         <div class="ig"><div class="il">Amount</div><input class="inp" type="number" value="${r.amount || 0}" inputmode="decimal" placeholder="0" data-rule="${i}" data-field="amount" oninput="ruleChanged()"></div>
-        <div class="ig"><div class="il">Min $</div><input class="inp" type="number" value="${r.min_amount || ''}" inputmode="decimal" placeholder="None" data-rule="${i}" data-field="min_amount" oninput="ruleChanged()"></div>
-        <div class="ig"><div class="il">Max $</div><input class="inp" type="number" value="${r.max_amount || ''}" inputmode="decimal" placeholder="None" data-rule="${i}" data-field="max_amount" oninput="ruleChanged()"></div>
+        <div class="ig"><div class="il">Min $</div><input class="inp" type="number" value="${r.minimum_amount || ''}" inputmode="decimal" placeholder="None" data-rule="${i}" data-field="minimum_amount" oninput="ruleChanged()"></div>
+        <div class="ig"><div class="il">Max $</div><input class="inp" type="number" value="${r.maximum_amount || ''}" inputmode="decimal" placeholder="None" data-rule="${i}" data-field="maximum_amount" oninput="ruleChanged()"></div>
       </div>
       <div class="rule-footer">
         <div style="font-size:10px;color:var(--dim)" id="rulePreview-${i}">${rulePreviewText(r)}</div>
@@ -540,12 +540,12 @@ function renderRules() {
 }
 
 function rulePreviewText(r) {
-  if (r.type === 'percent') return `${r.amount || 0}% of earnings`
+  if (r.rule_type === 'percentage') return `${r.amount || 0}% of earnings`
   return `Flat $${fmt(r.amount || 0)}`
 }
 
 function setRuleType(idx, type, btn) {
-  allRules[idx].type = type
+  allRules[idx].rule_type = type
   btn.closest('.type-toggle').querySelectorAll('.tt-btn').forEach(b => b.classList.remove('active'))
   btn.classList.add('active')
   ruleChanged()
@@ -555,13 +555,12 @@ function ruleChanged() { editRulesDirty = true }
 
 async function addRule() {
   const { data } = await supabase.from('tip_out_rules').insert({
-    user_id: currentUser.id,
+    owner_id: currentUser.id,
     recipient_name: 'New Rule',
-    emoji: '💰',
-    type: 'percent',
+    recipient_emoji: '💰',
+    rule_type: 'percentage',
     amount: 10,
-    is_active: true,
-    sort_order: allRules.length
+    is_active: true
   }).select().single()
   if (data) {
     await loadRules()
@@ -612,7 +611,7 @@ async function checkExistingShift() {
   const warn = document.getElementById('existingShiftWarn')
   if (!perfId) { warn.style.display = 'none'; return }
   const { data } = await supabase.from('performer_shifts')
-    .select('id').eq('performer_id', perfId).eq('shift_date', date).eq('user_id', currentUser.id).maybeSingle()
+    .select('id').eq('performer_id', perfId).eq('shift_date', date).eq('owner_id', currentUser.id).maybeSingle()
   warn.style.display = data ? 'block' : 'none'
   recalculate()
 }
@@ -632,11 +631,11 @@ function recalculate() {
   const activeRules = allRules.filter(r => r.is_active)
   calcBreakdown = activeRules.map(r => {
     let amt = 0
-    if (r.type === 'percent') amt = earned * ((r.amount || 0) / 100)
+    if (r.rule_type === 'percentage') amt = earned * ((r.amount || 0) / 100)
     else amt = r.amount || 0
-    if (r.min_amount != null && amt < r.min_amount) amt = r.min_amount
-    if (r.max_amount != null && amt > r.max_amount) amt = r.max_amount
-    return { name: r.recipient_name, emoji: r.emoji || '💰', amount: amt }
+    if (r.minimum_amount != null && amt < r.minimum_amount) amt = r.minimum_amount
+    if (r.maximum_amount != null && amt > r.maximum_amount) amt = r.maximum_amount
+    return { name: r.recipient_name, emoji: r.recipient_emoji || '💰', amount: amt }
   })
 
   const totalOut = calcBreakdown.reduce((s, b) => s + b.amount, 0)
@@ -666,17 +665,16 @@ async function clockOut() {
 
   // Check for existing shift to override
   const { data: existing } = await supabase.from('performer_shifts')
-    .select('id').eq('performer_id', perfId).eq('shift_date', date).eq('user_id', currentUser.id).maybeSingle()
+    .select('id').eq('performer_id', perfId).eq('shift_date', date).eq('owner_id', currentUser.id).maybeSingle()
 
   const shiftData = {
-    user_id: currentUser.id,
+    owner_id: currentUser.id,
     performer_id: perfId,
     shift_date: date,
-    gross_earned: earned,
-    tip_out_total: totalOut,
-    performer_net: keeps,
-    tip_out_breakdown: bdObj,
-    tip_out_status: 'owe'
+    earned: earned,
+    total_tipout: totalOut,
+    keeps: keeps,
+    is_paid: false
   }
 
   let err
@@ -722,8 +720,8 @@ function renderRecipients() {
 
   el.innerHTML = allPerformers.map(p => {
     const shifts = allShifts.filter(s => s.performer_id === p.id)
-    const totalEarned = shifts.reduce((s, sh) => s + (sh.gross_earned || 0), 0)
-    const totalNet = shifts.reduce((s, sh) => s + (sh.performer_net || 0), 0)
+    const totalEarned = shifts.reduce((s, sh) => s + (sh.earned || 0), 0)
+    const totalNet = shifts.reduce((s, sh) => s + (sh.keeps || 0), 0)
     const shiftCount = shifts.length
     return `<div class="recip-card" onclick="openPerformerShifts('${p.id}')">
       <div class="recip-top">
@@ -754,7 +752,7 @@ async function openPerformerShifts(perfId) {
   const perf = allPerformers.find(p => p.id === perfId)
   if (!perf) return
   const { data: shifts } = await supabase.from('performer_shifts')
-    .select('*').eq('performer_id', perfId).eq('user_id', currentUser.id)
+    .select('*').eq('performer_id', perfId).eq('owner_id', currentUser.id)
     .order('shift_date', { ascending: false }).limit(10)
 
   document.getElementById('shiftDetailTitle').textContent = `${perf.emoji || '💃'} ${perf.name}`
@@ -763,11 +761,11 @@ async function openPerformerShifts(perfId) {
       <div class="srow" style="margin-bottom:7px">
         <div>
           <div style="font-size:12px">${formatDate(new Date(s.shift_date))}</div>
-          <div style="font-size:10px;color:var(--dim)">Earned $${fmt(s.gross_earned)} · Tip out $${fmt(s.tip_out_total)}</div>
+          <div style="font-size:10px;color:var(--dim)">Earned $${fmt(s.earned)} · Tip out $${fmt(s.total_tipout)}</div>
         </div>
         <div style="text-align:right">
-          <div style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:18px">$${fmt(s.performer_net)}</div>
-          <div class="perf-status ${s.tip_out_status === 'paid' ? 'ps-paid' : s.tip_out_status === 'late' ? 'ps-late' : 'ps-owe'}" style="margin-top:4px">${s.tip_out_status || 'owe'}</div>
+          <div style="color:var(--tl);font-family:'Cormorant Garamond',serif;font-size:18px">$${fmt(s.keeps)}</div>
+          <div class="perf-status ${s.is_paid ? 'ps-paid' : s.is_late ? 'ps-late' : 'ps-owe'}" style="margin-top:4px">${s.is_paid ? 'paid' : s.is_late ? 'late' : 'owe'}</div>
         </div>
       </div>`).join('')
     : `<div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No shift history yet.</div>`
@@ -779,7 +777,7 @@ async function savePerformer() {
   const emoji = document.getElementById('perfEmoji').value.trim() || '💃'
   const role = document.getElementById('perfRole').value.trim() || 'Performer'
   if (!name) { toast('Name is required', 'terr'); return }
-  const { error } = await supabase.from('performers').insert({ user_id: currentUser.id, name, emoji, role })
+  const { error } = await supabase.from('performers').insert({ owner_id: currentUser.id, name, emoji })
   if (error) { toast('Failed to save performer', 'terr'); return }
   await loadPerformers()
   renderCalcPerformers()
@@ -814,14 +812,14 @@ async function renderReports() {
 
   const { data: shifts } = await supabase.from('performer_shifts')
     .select('*, performers(name, emoji)')
-    .eq('user_id', currentUser.id)
+    .eq('owner_id', currentUser.id)
     .gte('shift_date', startDate.toISOString().split('T')[0])
     .order('shift_date', { ascending: false })
 
   const s = shifts || []
-  const totalGross = s.reduce((acc, sh) => acc + (sh.gross_earned || 0), 0)
-  const totalNet = s.reduce((acc, sh) => acc + (sh.performer_net || 0), 0)
-  const totalTipOut = s.reduce((acc, sh) => acc + (sh.tip_out_total || 0), 0)
+  const totalGross = s.reduce((acc, sh) => acc + (sh.earned || 0), 0)
+  const totalNet = s.reduce((acc, sh) => acc + (sh.keeps || 0), 0)
+  const totalTipOut = s.reduce((acc, sh) => acc + (sh.total_tipout || 0), 0)
   const numShifts = s.length
   const avgPerShift = numShifts > 0 ? totalGross / numShifts : 0
 
@@ -830,8 +828,8 @@ async function renderReports() {
   s.forEach(sh => {
     const pid = sh.performer_id
     if (!perfMap[pid]) perfMap[pid] = { name: sh.performers?.name || 'Unknown', emoji: sh.performers?.emoji || '💃', gross: 0, net: 0, shifts: 0 }
-    perfMap[pid].gross += sh.gross_earned || 0
-    perfMap[pid].net += sh.performer_net || 0
+    perfMap[pid].gross += sh.earned || 0
+    perfMap[pid].net += sh.keeps || 0
     perfMap[pid].shifts++
   })
   const perfs = Object.values(perfMap).sort((a, b) => b.gross - a.gross)

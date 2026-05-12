@@ -579,19 +579,18 @@ async function saveShift() {
     user_id: currentUser.id,
     venue_id: selectedVenueId || null,
     shift_date: date,
-    cash_tips: getV('iCash'),
-    chip_tips: getV('iChip'),
+    cash: getV('iCash'),
+    chips: getV('iChip'),
     card_tips: getV('iCard'),
     digital_tips: getV('iDigital'),
     vip_room: getV('iVip'),
     private_dances: getV('iPrivate'),
-    guarantee: getV('iGuarantee'),
-    other_income: getV('iOther'),
-    dj_tipout: getV('tDj'),
-    house_fee: getV('tHouse'),
-    bar_tipout: getV('tBar'),
-    other_tipout: getV('tOther'),
-    tip_out_total: totalTipOut,
+    guarantee_fee: getV('iGuarantee'),
+    other: getV('iOther'),
+    tipout_dj: getV('tDj'),
+    tipout_house: getV('tHouse'),
+    tipout_bar: getV('tBar'),
+    tipout_other: getV('tOther'),
     gross_total: gross,
     net_total: net,
     notes: document.getElementById('trackNotes').value.trim()
@@ -646,14 +645,14 @@ async function openShiftDetail(shiftId) {
   if (!s) return
   const vname = s.venues?.name || 'Unknown Venue'
   const incomeRows = [
-    ['Cash Tips', s.cash_tips], ['Chip Tips', s.chip_tips], ['Card Tips', s.card_tips],
+    ['Cash Tips', s.cash], ['Chip Tips', s.chips], ['Card Tips', s.card_tips],
     ['Digital Tips', s.digital_tips], ['VIP Room', s.vip_room], ['Private Dances', s.private_dances],
-    ['Guarantee', s.guarantee], ['Other Income', s.other_income]
+    ['Guarantee', s.guarantee_fee], ['Other Income', s.other]
   ].filter(([,v]) => v > 0)
     .map(([l,v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--b);font-size:11px"><span style="color:var(--dim)">${l}</span><span>$${fmt(v)}</span></div>`).join('')
 
   const tipRows = [
-    ['DJ Tip Out', s.dj_tipout], ['House Fee', s.house_fee], ['Bar Tip Out', s.bar_tipout], ['Other', s.other_tipout]
+    ['DJ Tip Out', s.tipout_dj], ['House Fee', s.tipout_house], ['Bar Tip Out', s.tipout_bar], ['Other', s.tipout_other]
   ].filter(([,v]) => v > 0)
     .map(([l,v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,77,109,.12);font-size:11px"><span style="color:var(--dim)">${l}</span><span style="color:var(--rd)">-$${fmt(v)}</span></div>`).join('')
 
@@ -707,7 +706,7 @@ function renderReports() {
 
   const totalGross = filtered.reduce((a, s) => a + (s.gross_total || 0), 0)
   const totalNet = filtered.reduce((a, s) => a + (s.net_total || 0), 0)
-  const totalTipOut = filtered.reduce((a, s) => a + (s.tip_out_total || 0), 0)
+  const totalTipOut = filtered.reduce((a, s) => a + (s.tipout_dj||0) + (s.tipout_house||0) + (s.tipout_bar||0) + (s.tipout_other||0), 0)
   const numShifts = filtered.length
   const avgPerShift = numShifts > 0 ? totalNet / numShifts : 0
 

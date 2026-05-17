@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0A1628">
+<title>TaxAutopilot — The AI Office Manager Built for Tax Pros</title>
+<meta name="description" content="AI that auto-collects client docs, answers questions, tracks refunds, wins back lost clients, and grows your tax office year-round. Built for tax preparers.">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy-900: #0A1628;
+  --navy-800: #112338;
+  --navy-700: #1B3A57;
+  --navy-600: #2C5282;
+  --navy-100: #E6EEF7;
+  --green-500: #10B981;
+  --green-600: #059669;
+  --green-100: #D1FAE5;
+  --gold: #F5B947;
+  --gold-light: #FDE68A;
+  --white: #FFFFFF;
+  --surface: #F8FAFC;
+  --surface-2: #F1F5F9;
+  --border: #E2E8F0;
+  --text: #0A1628;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
+  --danger: #EF4444;
+  --shadow-sm: 0 1px 3px rgba(10,22,40,.08);
+  --shadow-md: 0 4px 20px rgba(10,22,40,.08);
+  --shadow-lg: 0 20px 60px rgba(10,22,40,.12);
+  --shadow-glow: 0 0 60px rgba(16,185,129,.15);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: var(--text);
+  background: var(--white);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--navy-900);
+}
+
+h1 { font-size: clamp(2.2rem, 5.5vw, 4.2rem); }
+h2 { font-size: clamp(1.8rem, 4vw, 3rem); }
+h3 { font-size: clamp(1.2rem, 2.2vw, 1.6rem); }
+
+p { color: var(--text-muted); }
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-narrow { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+
+/* === NAV === */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(255,255,255,.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.25rem;
+  color: var(--navy-900);
+  text-decoration: none;
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-900));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(10,22,40,.25);
+}
+
+.logo-mark::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 6px;
+  background: linear-gradient(135deg, var(--green-500), var(--gold));
+  opacity: .9;
+}
+
+.logo-mark span {
+  position: relative;
+  z-index: 1;
+  color: white;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: -1px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  color: var(--text);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: .95rem;
+  transition: color .2s;
+}
+
+.nav-links a:hover { color: var(--green-600); }
+
+.nav-cta {
+  background: var(--navy-900);
+  color: white !important;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600 !important;
+  font-size: .9rem !important;
+  transition: all .2s;
+}
+
+.nav-cta:hover {
+  background: var(--green-600) !important;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .nav-links a:not(.nav-cta) { display: none; }
+}
+
+/* === HERO === */
+.hero {
+  padding: 140px 0 80px;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(16,185,129,.10), transparent),
+    radial-gradient(ellipse 60% 40% at 90% 20%, rgba(245,185,71,.08), transparent),
+    linear-gradient(180deg, var(--white) 0%, var(--surface) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+@media (max-width: 968px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 50px; }
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--green-100);
+  color: var(--green-600);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: .85rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+.hero-badge .dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green-500);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.3); }
+}
+
+.hero h1 {
+  margin-bottom: 24px;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(135deg, var(--green-500), var(--green-600));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-subhead {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  margin-bottom: 36px;
+  max-width: 560px;
+}
+
+.hero-ctas {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--navy-900);
+  color: white;
+  box-shadow: 0 8px 24px rgba(10,22,40,.2);
+}
+
+.btn-primary:hover {
+  background: var(--green-600);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(16,185,129,.3);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--navy-900);
+  border: 2px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--navy-900);
+  transform: translateY(-2px);
+}
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--gold), #E5A82F);
+  color: var(--navy-900);
+  box-shadow: 0 8px 24px rgba(245,185,71,.3);
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(245,185,71,.45);
+}
+
+.hero-trust {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: .9rem;
+}
+
+.hero-trust .stars { color: var(--gold); letter-spacing: 2px; font-size: 1.1rem; }
+
+/* === HERO DASHBOARD MOCKUP === */
+.hero-visual {
+  position: relative;
+}
+
+.dashboard-mockup {
+  background: white;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  overflow: hidden;
+  position: relative;
+  border: 1px solid var(--border);
+}
+
+.dashboard-header {
+  background: var(--navy-900);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-header .dots { display: flex; gap: 6px; }
+.dashboard-header .dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.2);
+}
+.dashboard-header .dot:nth-child(1) { background: #FF5F57; }
+.dashboard-header .dot:nth-child(2) { background: #FEBC2E; }
+.dashboard-header .dot:nth-child(3) { background: #28C840; }
+
+.dashboard-header .url {
+  margin-left: 16px;
+  background: rgba(255,255,255,.1);
+  padding: 4px 14px;
+  border-radius: 8px;
+  font-size: .75rem;
+  color: rgba(255,255,255,.7);
+  flex: 1;
+  text-align: center;
+  font-family: 'Inter', monospace;
+}
+
+.dashboard-body { padding: 22px; }
+
+.dashboard-greeting {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--navy-900);
+  margin-bottom: 4px;
+}
+
+.dashboard-sub {
+  font-size: .85rem;
+  color: var(--text-muted);
+  margin-bottom: 18px;
+}
+
+.dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.stat-card {
+  background: var(--surface);
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.stat-card .label {
+  font-size: .7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.stat-card .value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--navy-900);
+}
+
+.stat-card .value.green { color: var(--green-600); }
+
+.dashboard-activity {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.dashboard-activity-title {
+  font-size: .75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: .85rem;
+  color: var(--text);
+}
+
+.activity-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--green-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .9rem;
+  flex-shrink: 0;
+}
+
+.activity-icon.blue { background: var(--navy-100); }
+.activity-icon.gold { background: var(--gold-light); }
+
+.activity-time {
+  margin-left: auto;
+  font-size: .75rem;
+  color: var(--text-light);
+}
+
+/* Floating notification card */
+.float-card {
+  position: absolute;
+  background: white;
+  padding: 14px 18px;
+  border-radius: 14px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: .85rem;
+  border: 1px solid var(--border);
+  z-index: 2;
+  max-width: 240px;
+  animation: float 4s ease-in-out infinite;
+}
+
+.float-card-1 {
+  top: -20px;
+  left: -40px;
+  animation-delay: 0s;
+}
+
+.float-card-2 {
+  bottom: 30px;
+  right: -30px;
+  animation-delay: 2s;
+}
+
+@media (max-width: 968px) {
+  .float-card { display: none; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.float-card .emoji {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--green-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.float-card .title {
+  font-weight: 600;
+  color: var(--navy-900);
+  font-size: .85rem;
+  margin-bottom: 2px;
+}
+
+.float-card .sub {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+/* === TRUST BAR === */
+.trust-bar {
+  padding: 40px 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+}
+
+.trust-label {
+  text-align: center;
+  font-size: .8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 24px;
+}
+
+.trust-logos {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+  flex-wrap: wrap;
+  opacity: .55;
+}
+
+.trust-logo {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--navy-900);
+  letter-spacing: -.5px;
+}
+
+/* === SECTION === */
+section { padding: 100px 0; }
+
+.section-header {
+  text-align: center;
+  max-width: 720px;
+  margin: 0 auto 60px;
+}
+
+.section-eyebrow {
+  display: inline-block;
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--green-600);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+}
+
+.section-header h2 {
+  margin-bottom: 18px;
+}
+
+.section-header p {
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+
+/* === PAIN POINTS === */
+.pain-section {
+  background: var(--surface);
+}
+
+.pain-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .pain-grid { grid-template-columns: 1fr; }
+}
+
+.pain-card {
+  background: white;
+  padding: 36px 28px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  transition: all .3s;
+}
+
+.pain-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--green-500);
+}
+
+.pain-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 18px;
+  display: block;
+}
+
+.pain-card h3 {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.pain-card p { font-size: .95rem; }
+
+.pain-cta {
+  text-align: center;
+  margin-top: 50px;
+  font-size: 1.25rem;
+  color: var(--navy-900);
+  font-weight: 600;
+}
+
+.pain-cta .arrow {
+  display: inline-block;
+  color: var(--green-500);
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* === FEATURES === */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 968px) {
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .features-grid { grid-template-columns: 1fr; }
+}
+
+.feature-card {
+  background: white;
+  padding: 32px 28px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  transition: all .3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--green-500), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .3s;
+}
+
+.feature-card:hover::before { transform: scaleX(1); }
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--green-500);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--navy-100), white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+}
+
+.feature-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.feature-card p { font-size: .95rem; line-height: 1.6; }
+
+.feature-tag {
+  display: inline-block;
+  margin-top: 14px;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--green-600);
+  background: var(--green-100);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+/* === HOW IT WORKS (Timeline) === */
+.how-section {
+  background: var(--navy-900);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.how-section::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(16,185,129,.15), transparent 70%);
+  pointer-events: none;
+}
+
+.how-section .section-header h2 { color: white; }
+.how-section .section-header p { color: rgba(255,255,255,.7); }
+.how-section .section-eyebrow { color: var(--gold); }
+
+.timeline {
+  position: relative;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 27px;
+  top: 20px;
+  bottom: 20px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--green-500), var(--gold));
+}
+
+.timeline-item {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.timeline-dot {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-800));
+  border: 2px solid var(--green-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: .85rem;
+  color: var(--green-500);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 6px var(--navy-900);
+}
+
+.timeline-content {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 22px 26px;
+  border-radius: 14px;
+  flex: 1;
+  backdrop-filter: blur(10px);
+}
+
+.timeline-content h4 {
+  color: white;
+  font-size: 1.15rem;
+  margin-bottom: 6px;
+}
+
+.timeline-content p {
+  color: rgba(255,255,255,.7);
+  font-size: .95rem;
+  margin: 0;
+}
+
+.timeline-content .badge {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(245,185,71,.12);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+/* === REPORT SECTION === */
+.report-section { background: var(--surface); }
+
+.report-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (max-width: 968px) {
+  .report-grid { grid-template-columns: 1fr; }
+}
+
+.report-text h2 { margin-bottom: 20px; }
+.report-text p { font-size: 1.1rem; line-height: 1.7; margin-bottom: 16px; }
+
+.report-text .highlight {
+  background: linear-gradient(180deg, transparent 60%, var(--gold-light) 60%);
+  padding: 0 4px;
+  color: var(--navy-900);
+  font-weight: 700;
+}
+
+/* Year-end report mockup */
+.report-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.report-card-header {
+  background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+  color: white;
+  padding: 26px 28px;
+}
+
+.report-card-header .label {
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--green-500);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.report-card-header h3 {
+  color: white;
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+.report-card-header .date {
+  font-size: .9rem;
+  color: rgba(255,255,255,.7);
+}
+
+.report-card-body { padding: 24px 28px; }
+
+.report-section-title {
+  font-size: .85rem;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 18px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-section-title:first-child { margin-top: 0; }
+
+.report-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: .9rem;
+  color: var(--text);
+  border-bottom: 1px dashed var(--border);
+}
+
+.report-line:last-child { border-bottom: none; }
+
+.report-line .num {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  color: var(--navy-900);
+}
+
+.report-line .num.green { color: var(--green-600); }
+
+.report-total {
+  margin-top: 20px;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--green-100), var(--gold-light));
+  border-radius: 12px;
+  text-align: center;
+}
+
+.report-total .total-label {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--navy-900);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.report-total .total-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  color: var(--navy-900);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.report-total .total-sub {
+  font-size: .85rem;
+  color: var(--navy-900);
+  opacity: .8;
+}
+
+/* === OFF-SEASON SECTION === */
+.offseason-section {
+  background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-700) 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.offseason-section::before {
+  content: "";
+  position: absolute;
+  bottom: -40%;
+  left: -20%;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(245,185,71,.12), transparent 70%);
+  pointer-events: none;
+}
+
+.offseason-section .section-header h2 { color: white; }
+.offseason-section .section-header p { color: rgba(255,255,255,.75); }
+.offseason-section .section-eyebrow { color: var(--gold); }
+
+.offseason-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .offseason-grid { grid-template-columns: 1fr; }
+}
+
+.offseason-card {
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 28px;
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  transition: all .3s;
+}
+
+.offseason-card:hover {
+  background: rgba(255,255,255,.08);
+  border-color: var(--green-500);
+  transform: translateY(-3px);
+}
+
+.offseason-card-icon {
+  font-size: 2rem;
+  margin-bottom: 14px;
+}
+
+.offseason-card h4 {
+  color: white;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.offseason-card p {
+  color: rgba(255,255,255,.7);
+  font-size: .9rem;
+  margin: 0;
+}
+
+.offseason-card .money {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(245,185,71,.12);
+  padding: 4px 10px;
+  border-radius: 100px;
+}
+
+/* === PRICING === */
+.pricing-section { background: var(--white); }
+
+.pricing-card {
+  max-width: 540px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  border: 2px solid var(--green-500);
+  position: relative;
+}
+
+.pricing-banner {
+  background: linear-gradient(135deg, var(--gold), #E5A82F);
+  color: var(--navy-900);
+  text-align: center;
+  padding: 12px 20px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.pricing-body { padding: 40px 36px; }
+
+.pricing-tier {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--green-600);
+  margin-bottom: 8px;
+}
+
+.pricing-name {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.8rem;
+  color: var(--navy-900);
+  margin-bottom: 18px;
+}
+
+.pricing-price {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.pricing-price .old {
+  font-size: 1.5rem;
+  color: var(--text-light);
+  text-decoration: line-through;
+  font-weight: 600;
+}
+
+.pricing-price .new {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 3.2rem;
+  color: var(--navy-900);
+  line-height: 1;
+}
+
+.pricing-price .per {
+  font-size: 1rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.pricing-locked {
+  font-size: .9rem;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.pricing-features {
+  list-style: none;
+  margin: 24px 0;
+}
+
+.pricing-features li {
+  padding: 8px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: .95rem;
+  color: var(--text);
+}
+
+.pricing-features li::before {
+  content: "✓";
+  color: var(--green-500);
+  font-weight: 800;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.pricing-card .btn {
+  width: 100%;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.pricing-guarantee {
+  text-align: center;
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--green-100);
+  border-radius: 10px;
+  font-size: .85rem;
+  color: var(--navy-900);
+  font-weight: 600;
+}
+
+/* === FAQ === */
+.faq-section { background: var(--surface); }
+
+.faq-list {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  background: white;
+  border-radius: 14px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: all .2s;
+}
+
+.faq-item:hover { border-color: var(--green-500); }
+
+.faq-question {
+  padding: 22px 26px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  color: var(--navy-900);
+  font-size: 1.05rem;
+  user-select: none;
+  list-style: none;
+}
+
+.faq-question::-webkit-details-marker { display: none; }
+
+.faq-question::after {
+  content: "+";
+  font-size: 1.6rem;
+  color: var(--green-500);
+  font-weight: 400;
+  transition: transform .3s;
+  flex-shrink: 0;
+}
+
+.faq-item[open] .faq-question::after {
+  transform: rotate(45deg);
+}
+
+.faq-answer {
+  padding: 0 26px 22px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* === FINAL CTA === */
+.final-cta {
+  background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+  color: white;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: 110px 0;
+}
+
+.final-cta::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(16,185,129,.18), transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(245,185,71,.18), transparent 50%);
+  pointer-events: none;
+}
+
+.final-cta .container { position: relative; z-index: 1; }
+
+.final-cta h2 {
+  color: white;
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  margin-bottom: 18px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.final-cta p {
+  color: rgba(255,255,255,.8);
+  font-size: 1.2rem;
+  max-width: 600px;
+  margin: 0 auto 36px;
+}
+
+.final-cta .hero-ctas {
+  justify-content: center;
+}
+
+/* === FOOTER === */
+footer {
+  background: var(--navy-900);
+  color: rgba(255,255,255,.6);
+  padding: 50px 0 30px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.footer-inner .logo { color: white; }
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  color: rgba(255,255,255,.6);
+  text-decoration: none;
+  font-size: .9rem;
+  transition: color .2s;
+}
+
+.footer-links a:hover { color: var(--green-500); }
+
+.footer-copy {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  font-size: .85rem;
+  color: rgba(255,255,255,.4);
+}
+
+/* === ANIMATIONS === */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .8s, transform .8s;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Mobile menu button - reserved */
+.menu-btn { display: none; }
+
+/* Demo video placeholder */
+.video-frame {
+  margin: 40px auto;
+  max-width: 880px;
+  aspect-ratio: 16/9;
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-900));
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-play {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--green-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .3s;
+  box-shadow: 0 0 0 12px rgba(16,185,129,.15);
+}
+
+.video-frame:hover .video-play {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 20px rgba(16,185,129,.2);
+}
+
+.video-play::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 22px solid white;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  margin-left: 6px;
+}
+
+.video-label {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.video-duration {
+  position: absolute;
+  bottom: 20px;
+  right: 24px;
+  background: rgba(0,0,0,.6);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: .8rem;
+  font-weight: 600;
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="logo">
+      <div class="logo-mark"><span>T</span></div>
+      TaxAutopilot
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#pricing" class="nav-cta">Lock in Founders Pricing</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-badge">
+          <span class="dot"></span>
+          Built by tax-office insiders. Backed by AI.
+        </div>
+        <h1>The AI Office Manager Built for <span class="accent">Tax Pros.</span></h1>
+        <p class="hero-subhead">Auto-collects client docs. Answers client questions. Tracks refunds. Wins back lost clients. Drafts IRS notice responses. All while you sleep — year-round, not just January–April.</p>
+        <div class="hero-ctas">
+          <a href="#pricing" class="btn btn-primary">Lock in Founders Pricing →</a>
+          <a href="#demo" class="btn btn-secondary">▶ Watch 2-Min Demo</a>
+        </div>
+        <div class="hero-trust">
+          <span class="stars">★★★★★</span>
+          <span>60-day money-back guarantee · Cancel anytime</span>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <!-- Floating notification 1 -->
+        <div class="float-card float-card-1">
+          <div class="emoji">📸</div>
+          <div>
+            <div class="title">W-2 photo received</div>
+            <div class="sub">Maria Jackson · Data extracted in 2.3s</div>
+          </div>
+        </div>
+
+        <!-- Floating notification 2 -->
+        <div class="float-card float-card-2">
+          <div class="emoji" style="background: var(--gold-light);">💰</div>
+          <div>
+            <div class="title">Refund released!</div>
+            <div class="sub">$3,240 → Maria's Chase account</div>
+          </div>
+        </div>
+
+        <!-- Dashboard mockup -->
+        <div class="dashboard-mockup">
+          <div class="dashboard-header">
+            <div class="dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+            <div class="url">app.taxautopilot.ai/dashboard</div>
+          </div>
+          <div class="dashboard-body">
+            <div class="dashboard-greeting">Good morning, Marcus 👋</div>
+            <div class="dashboard-sub">Here's what your AI did overnight</div>
+
+            <div class="dashboard-stats">
+              <div class="stat-card">
+                <div class="label">Docs Processed</div>
+                <div class="value green">+47</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Clients Texted</div>
+                <div class="value">128</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Calls Avoided</div>
+                <div class="value green">~34</div>
+              </div>
+            </div>
+
+            <div class="dashboard-activity">
+              <div class="dashboard-activity-title">Recent Activity</div>
+              <div class="activity-item">
+                <div class="activity-icon">📨</div>
+                <div>IRS accepted return for <strong>T. Williams</strong></div>
+                <div class="activity-time">2 min</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon blue">💬</div>
+                <div>Replied to 8 client questions automatically</div>
+                <div class="activity-time">14 min</div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon gold">⭐</div>
+                <div>New 5-star Google review from <strong>J. Davis</strong></div>
+                <div class="activity-time">1 hr</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="container">
+    <div class="trust-label">Works alongside the tax software you already use</div>
+    <div class="trust-logos">
+      <div class="trust-logo">Drake</div>
+      <div class="trust-logo">Lacerte</div>
+      <div class="trust-logo">ProSeries</div>
+      <div class="trust-logo">UltraTax</div>
+      <div class="trust-logo">TaxWise</div>
+      <div class="trust-logo">TaxSlayer Pro</div>
+    </div>
+  </div>
+</div>
+
+<!-- PAIN POINTS -->
+<section class="pain-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Sound familiar?</div>
+      <h2>Your tax office is drowning. We get it.</h2>
+      <p>Every tax pro we talk to is fighting the same battles. Here's what's eating your hours.</p>
+    </div>
+
+    <div class="pain-grid">
+      <div class="pain-card">
+        <span class="pain-emoji">😩</span>
+        <h3>Chasing clients for documents</h3>
+        <p>You spend 15+ hours a week texting "hey, still need your W-2." It's killing your evenings and you charge clients zero for it.</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-emoji">📞</span>
+        <h3>Phone ringing nonstop</h3>
+        <p>"Where's my refund?" "Did you file yet?" "What's your address?" — answered 200 times a day, taking you away from the actual returns.</p>
+      </div>
+      <div class="pain-card">
+        <span class="pain-emoji">👻</span>
+        <h3>Last year's clients ghosted you</h3>
+        <p>Hundreds of clients from past years vanished. You don't have time to win them back — so they're gone forever.</p>
+      </div>
+    </div>
+
+    <div class="pain-cta">
+      We fix all of this. <span class="arrow">↓</span>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO VIDEO -->
+<section id="demo" style="background: var(--white);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">2-Minute Demo</div>
+      <h2>See it run a tax office in real time</h2>
+      <p>Watch how TaxAutopilot collects docs, answers clients, tracks refunds, and grows your business — all without you lifting a finger.</p>
+    </div>
+
+    <div class="video-frame">
+      <div class="video-play"></div>
+      <div class="video-label">TaxAutopilot Demo</div>
+      <div class="video-duration">2:14</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" style="background: var(--surface);">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Meet Your AI Office Manager</div>
+      <h2>One AI. Seven jobs. Zero overtime.</h2>
+      <p>TaxAutopilot runs the client side of your office so you can focus on the actual tax work — and so your office finally runs year-round.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📥</div>
+        <h3>Reads Every Email & Text</h3>
+        <p>AI watches your inbox 24/7. Pulls W-2 photos, 1099s, IDs, and Social Security cards out of every message. Files them under the right client automatically.</p>
+        <span class="feature-tag">Saves 12+ hrs/week</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📸</div>
+        <h3>Photo → Tax Software in 3 Seconds</h3>
+        <p>Client snaps a phone pic of their W-2. AI reads it, extracts every number, and drops it into your tax software. Blurry? AI asks them to retake automatically.</p>
+        <span class="feature-tag">Works with Drake, Lacerte, ProSeries</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <h3>Answers Clients 24/7</h3>
+        <p>"Where's my refund?" "How much do I owe?" "Did you file yet?" — AI answers in your office's voice. Only flags the complicated ones for you.</p>
+        <span class="feature-tag">Deflects ~200 calls/week</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📨</div>
+        <h3>IRS Notice Handling</h3>
+        <p>Client snaps a pic of the scary IRS letter. AI explains it in plain English and drafts the response. You review, sign, send. $200–$500 in fees per notice.</p>
+        <span class="feature-tag">Year-round revenue</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Refund Tracking Auto-Texts</h3>
+        <p>The moment the IRS accepts, rejects, or releases a refund — your client gets a text. They never call asking "where's my money" again.</p>
+        <span class="feature-tag">Cuts phone calls in half</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔁</div>
+        <h3>Wins Back Lost Clients</h3>
+        <p>AI scans your software for clients who haven't filed in 1, 2, 5+ years. Sends personalized "come back" texts and books them right back on your schedule.</p>
+        <span class="feature-tag">$5K–$15K hidden revenue</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🌟</div>
+        <h3>Referrals & Reviews on Autopilot</h3>
+        <p>The day a client's refund hits, AI asks for a referral and a Google review. Tracks every link, applies credits automatically, grows your office while you sleep.</p>
+        <span class="feature-tag">More 5-star reviews → more walk-ins</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🗓</div>
+        <h3>Year-Round Off-Season Engine</h3>
+        <p>Monthly check-ins capture life events (new baby, new job, side hustle) so next season is a breeze. Q2/Q3/Q4 estimated tax reminders earn you fees year-round.</p>
+        <span class="feature-tag">Stops the seasonality problem</span>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🛡</div>
+        <h3>The Morning Briefing</h3>
+        <p>Walk into your office. Open one screen. See exactly what AI did overnight, who needs your eyes today, and where every return stands. That's it.</p>
+        <span class="feature-tag">Your new command center</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Your First 30 Days</div>
+      <h2>From signup to "holy sh*t this is working" in 30 days flat.</h2>
+      <p>Most tax software takes months to set up. TaxAutopilot starts making you money in week one.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot">DAY 1</div>
+        <div class="timeline-content">
+          <h4>We plug into your tax software</h4>
+          <p>AI imports every client from the last 5 years. Cleans up your database. Fixes missing emails, phones, and duplicates. By tomorrow morning your client list is finally clean.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot">DAY 3</div>
+        <div class="timeline-content">
+          <h4>"Money Left on the Table" report delivered</h4>
+          <p>AI scans every prior return for amendable refunds, missed credits, and back-filing opportunities. We hand you a list of $5K–$15K in hidden revenue your office didn't know existed.</p>
+          <span class="badge">💰 Pays for the subscription on day one</span>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot">DAY 10</div>
+        <div class="timeline-content">
+          <h4>Lapsed clients re-engaged. Reviews flooding in.</h4>
+          <p>AI launches your win-back campaign for clients who haven't filed with you in 1+ years. Same day, it starts asking this past season's happy clients for Google reviews and referrals.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot">DAY 20</div>
+        <div class="timeline-content">
+          <h4>Off-season revenue engine humming</h4>
+          <p>Q2/Q3 estimated tax reminders going out. IRS notices being drafted. Life-event check-ins scheduled monthly. Your office is making money in months it never did before.</p>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot">DAY 30</div>
+        <div class="timeline-content">
+          <h4>The dashboard becomes your favorite tab</h4>
+          <p>AI is trained on your voice and brand. Morning briefings are dialed in. You open your laptop, see what's done, see what needs you, and you're out the door in 20 minutes.</p>
+          <span class="badge">⚡ By January, you're operating at superhuman speed</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- YEAR-END REPORT -->
+<section class="report-section">
+  <div class="container">
+    <div class="report-grid">
+      <div class="report-text">
+        <div class="section-eyebrow">The Renewal Hook</div>
+        <h2>At the end of every year, we send you this.</h2>
+        <p>A detailed report showing <span class="highlight">every dollar of value TaxAutopilot delivered</span> to your office in the last 12 months. Hours saved. Calls deflected. Reviews collected. Lapsed clients won back. New referrals booked.</p>
+        <p>When the report shows <strong>$50K+ of value for your $3K subscription</strong>, renewing isn't a decision. It's a no-brainer.</p>
+        <p>You can also watch it update <strong>live every month</strong> on your dashboard — so the value piles up in real-time.</p>
+      </div>
+
+      <div class="report-card">
+        <div class="report-card-header">
+          <div class="label">Your Year in Numbers</div>
+          <h3>Johnson Tax Office</h3>
+          <div class="date">May 2025 → May 2026</div>
+        </div>
+        <div class="report-card-body">
+          <div class="report-section-title">📊 Work We Did For You</div>
+          <div class="report-line"><span>Documents processed</span><span class="num">4,287</span></div>
+          <div class="report-line"><span>Client texts sent</span><span class="num">18,406</span></div>
+          <div class="report-line"><span>Client emails answered</span><span class="num">6,123</span></div>
+          <div class="report-line"><span>Staff hours saved</span><span class="num green">312 hrs</span></div>
+
+          <div class="report-section-title">📈 Growth We Drove</div>
+          <div class="report-line"><span>Lapsed clients won back</span><span class="num green">31</span></div>
+          <div class="report-line"><span>New Google reviews</span><span class="num">142</span></div>
+          <div class="report-line"><span>Referrals → paying clients</span><span class="num green">38</span></div>
+
+          <div class="report-section-title">🛡 Headaches Handled</div>
+          <div class="report-line"><span>IRS notices resolved</span><span class="num">47</span></div>
+          <div class="report-line"><span>Amendments filed (hidden $)</span><span class="num">19</span></div>
+
+          <div class="report-total">
+            <div class="total-label">Total Value Delivered</div>
+            <div class="total-value">$58,200</div>
+            <div class="total-sub">Your subscription cost: $3,000 · ROI: 1,840%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OFF-SEASON SECTION -->
+<section class="offseason-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Why Sign Up Before Tax Season</div>
+      <h2>Your "off-season" just became your busiest revenue months.</h2>
+      <p>Most tax software is dead weight 8 months a year. TaxAutopilot turns May–December into revenue months you didn't know you had.</p>
+    </div>
+
+    <div class="offseason-grid">
+      <div class="offseason-card">
+        <div class="offseason-card-icon">💰</div>
+        <h4>Amendment Hunting</h4>
+        <p>AI scans prior returns for amendable refunds. An average office has 20–50 amendable returns hiding in their database.</p>
+        <span class="money">$5K–$15K immediate revenue</span>
+      </div>
+
+      <div class="offseason-card">
+        <div class="offseason-card-icon">📅</div>
+        <h4>Quarterly Estimated Taxes</h4>
+        <p>AI auto-texts your Schedule C and S-corp clients before every quarterly deadline. Each filing = $75–$150 in fees.</p>
+        <span class="money">$6K–$12K/yr in quarterly fees</span>
+      </div>
+
+      <div class="offseason-card">
+        <div class="offseason-card-icon">📨</div>
+        <h4>IRS Notice Handling</h4>
+        <p>The IRS sends out the most notices June–October. AI drafts the response in minutes. You charge the client $200–$500.</p>
+        <span class="money">Year-round revenue stream</span>
+      </div>
+
+      <div class="offseason-card">
+        <div class="offseason-card-icon">📋</div>
+        <h4>Extension Roundup</h4>
+        <p>AI starts chasing your extension clients in July, not October 14th. They file calmly. You finish the season strong.</p>
+        <span class="money">No more October scrambles</span>
+      </div>
+
+      <div class="offseason-card">
+        <div class="offseason-card-icon">🔁</div>
+        <h4>Summer Win-Back Campaign</h4>
+        <p>Reach lapsed clients while every other tax office is on vacation. Lock them in 6 months before next January.</p>
+        <span class="money">Beat your competition to the punch</span>
+      </div>
+
+      <div class="offseason-card">
+        <div class="offseason-card-icon">🌟</div>
+        <h4>Review & Referral Harvest</h4>
+        <p>This past season's clients still feel grateful. Capture reviews and referrals NOW — wait til January and the goodwill is gone.</p>
+        <span class="money">Higher Google ranking = more walk-ins</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing" class="pricing-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Founders Pricing</div>
+      <h2>Lock in lifetime pricing before tax season hits.</h2>
+      <p>Sign up before tax season and we'll lock your rate for life — plus you get all the off-season tools as a bonus.</p>
+    </div>
+
+    <div class="pricing-card">
+      <div class="pricing-banner">🔥 Founders Pricing · Limited Spots</div>
+      <div class="pricing-body">
+        <div class="pricing-tier">Solo & Small Office</div>
+        <div class="pricing-name">TaxAutopilot — Full Suite</div>
+
+        <div class="pricing-price">
+          <span class="old">$3,997</span>
+          <span class="new">$2,497</span>
+          <span class="per">/year</span>
+        </div>
+        <div class="pricing-locked">🔒 Locked at this price for life</div>
+
+        <ul class="pricing-features">
+          <li>Everything in the 7 AI capabilities above</li>
+          <li>Full integration with your tax software</li>
+          <li>30-Day Quick Wins package (we run it for you)</li>
+          <li>"Money Left on the Table" report (Week 1)</li>
+          <li>Year-end Analytics Report (auto-emailed)</li>
+          <li>Live monthly value dashboard</li>
+          <li>Off-season tools FREE until January (when you sign up before tax season)</li>
+          <li>Unlimited clients</li>
+          <li>Priority support during tax season</li>
+        </ul>
+
+        <a href="#" class="btn btn-gold">Lock in Founders Pricing →</a>
+
+        <div class="pricing-guarantee">
+          🛡 <strong>60-Day Money-Back Guarantee:</strong> If we don't find at least $3,000 of revenue opportunities in your database in the first 60 days — full refund.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="faq-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Questions</div>
+      <h2>Real questions from real tax pros.</h2>
+    </div>
+
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary class="faq-question">Which tax software does it work with?</summary>
+        <div class="faq-answer">TaxAutopilot integrates with Drake, ProSeries, Lacerte, UltraTax, TaxWise, and TaxSlayer Pro. If you use something else, let us know — we add integrations on request and it's typically live within 2 weeks.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">How long does setup take?</summary>
+        <div class="faq-answer">From signup to a fully running AI: about 5 business days. We do the setup for you — connect your software, import your clients, clean up your database, and train the AI on your office's brand and voice. You don't have to do any technical work.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Is my client data secure?</summary>
+        <div class="faq-answer">Yes. All data is encrypted at rest and in transit. We're SOC 2 aligned, IRS Publication 4557 compliant, and we never train AI models on your client data. Your data stays yours and is never shared.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">What if my clients are older and don't want to text?</summary>
+        <div class="faq-answer">TaxAutopilot handles email, text, and phone-call transcription. Older clients keep getting emails or letters — younger clients get texts. Each client can pick how they want to be contacted, and the AI remembers it forever.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Do I lose control? Will AI text my clients without me knowing?</summary>
+        <div class="faq-answer">You're always in control. You can set the AI to "auto-send" (it handles everything itself) or "draft mode" (it writes everything, you approve before sending) — per feature. Most offices start in draft mode for the first 2 weeks, then flip to auto once they trust it.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">What's the difference between Founders Pricing and regular pricing?</summary>
+        <div class="faq-answer">Founders Pricing is $2,497/year locked for life. Regular pricing after launch will be $3,997/year and will likely increase as we add features. Founders also get priority support, free off-season tools, and direct access to our product team to request features.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">Can I cancel?</summary>
+        <div class="faq-answer">Anytime. No long-term contracts. If you cancel within the first 60 days and we haven't found $3,000+ of revenue opportunities in your database, you get a full refund. After 60 days you can cancel any time — you just won't be refunded for the remaining months.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">What if I own multiple tax offices?</summary>
+        <div class="faq-answer">We have an Enterprise tier with a multi-office command center — see all locations, preparers, and performance in one dashboard. <a href="#" style="color: var(--green-600); font-weight: 600;">Book a call</a> and we'll set up custom pricing.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="container">
+    <h2>Stop drowning in tax season. Start growing year-round.</h2>
+    <p>Join the tax offices using AI to handle the chaos, find hidden revenue, and finally take their evenings back.</p>
+    <div class="hero-ctas">
+      <a href="#pricing" class="btn btn-gold">Lock in Founders Pricing →</a>
+      <a href="#demo" class="btn btn-secondary" style="background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: white;">Book a 15-Min Demo</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark"><span>T</span></div>
+        TaxAutopilot
+      </a>
+      <div class="footer-links">
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#faq">FAQ</a>
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+    <div class="footer-copy">
+      © 2026 TaxAutopilot. The AI Office Manager for Tax Pros.
+    </div>
+  </div>
+</footer>
+
+<script>
+// Fade-in on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.feature-card, .pain-card, .timeline-item, .offseason-card').forEach(el => {
+  el.classList.add('fade-in');
+  observer.observe(el);
+});
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>

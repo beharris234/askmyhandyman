@@ -35,7 +35,11 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  max-width: 100vw;
+}
 
 body {
   font-family: 'Inter', -apple-system, sans-serif;
@@ -44,6 +48,7 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  max-width: 100vw;
 }
 
 h1, h2, h3, h4 {
@@ -1049,10 +1054,12 @@ section { padding: 100px 0; }
   align-items: baseline;
   gap: 12px;
   margin-bottom: 6px;
+  flex-wrap: wrap;
+  min-width: 0;
 }
 
 .pricing-price .old {
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 3vw, 1.5rem);
   color: var(--text-light);
   text-decoration: line-through;
   font-weight: 600;
@@ -1061,13 +1068,14 @@ section { padding: 100px 0; }
 .pricing-price .new {
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
-  font-size: 3.2rem;
+  font-size: clamp(2.2rem, 7vw, 3.2rem);
   color: var(--navy-900);
   line-height: 1;
+  word-break: keep-all;
 }
 
 .pricing-price .per {
-  font-size: 1rem;
+  font-size: clamp(.85rem, 2.5vw, 1rem);
   color: var(--text-muted);
   font-weight: 500;
 }
@@ -1478,6 +1486,65 @@ footer {
   border-radius: 6px;
   font-size: .8rem;
   font-weight: 600;
+}
+
+/* === MOBILE FIXES === */
+@media (max-width: 640px) {
+  .container, .container-narrow { padding: 0 16px; }
+
+  section { padding: 64px 0; }
+
+  .hero { padding: 110px 0 60px; }
+
+  .nav-inner { padding: 0 16px; }
+  .nav-cta { padding: 8px 14px; font-size: .82rem !important; }
+
+  .hero-ctas { flex-direction: column; align-items: stretch; }
+  .hero-ctas .btn { width: 100%; justify-content: center; }
+
+  .btn { padding: 14px 22px; font-size: .95rem; }
+
+  .pricing-body { padding: 28px 22px !important; }
+  .pricing-banner { padding: 10px 16px; font-size: .75rem; letter-spacing: 1px; }
+  .pricing-name { font-size: 1.5rem; }
+  .pricing-features li { font-size: .9rem; }
+  .pricing-card-featured { transform: none; }
+
+  .pricing-math { padding: 22px 20px; margin-bottom: 28px; }
+  .math-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    font-size: .95rem;
+  }
+
+  .dashboard-stats { gap: 8px; }
+  .stat-card { padding: 10px 8px; }
+  .stat-card .value { font-size: 1.1rem; }
+  .stat-card .label { font-size: .65rem; }
+
+  .dashboard-body { padding: 18px; }
+  .dashboard-header .url { font-size: .65rem; padding: 3px 10px; }
+
+  .report-total .total-value { font-size: 1.8rem; }
+  .report-card-body, .report-card-header { padding: 20px 22px; }
+
+  .timeline::before { left: 22px; }
+  .timeline-dot { width: 46px; height: 46px; font-size: .75rem; }
+  .timeline-content { padding: 18px 20px; }
+
+  .footer-inner { flex-direction: column; text-align: center; gap: 16px; }
+  .footer-links { justify-content: center; }
+
+  .trust-logos { gap: 24px; }
+  .trust-logo { font-size: 1rem; }
+}
+
+/* Extra-narrow safety net */
+@media (max-width: 360px) {
+  .pricing-price .new { font-size: 1.9rem; }
+  .pricing-price .old { font-size: 1rem; }
+  h1 { font-size: 1.9rem !important; }
 }
 </style>
 </head>

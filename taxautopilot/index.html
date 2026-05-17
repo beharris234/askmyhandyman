@@ -1118,6 +1118,149 @@ section { padding: 100px 0; }
   font-weight: 600;
 }
 
+/* Two-card pricing grid */
+.pricing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: 24px;
+  align-items: start;
+  max-width: 1080px;
+  margin: 0 auto;
+}
+
+@media (max-width: 880px) {
+  .pricing-grid { grid-template-columns: 1fr; }
+}
+
+.pricing-grid .pricing-card { max-width: none; margin: 0; }
+
+.pricing-card-basic {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.pricing-card-featured {
+  border: 2px solid var(--green-500);
+  background: white;
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(16,185,129,.12);
+  transform: translateY(-8px);
+}
+
+@media (max-width: 880px) {
+  .pricing-card-featured { transform: none; }
+}
+
+.pricing-card-basic .pricing-body { padding: 36px 30px; }
+
+.pricing-locked-warn {
+  font-size: .85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 24px;
+}
+
+.pricing-features li.excluded {
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+
+.pricing-features li.excluded::before {
+  content: "✗";
+  color: var(--text-light);
+  font-weight: 800;
+}
+
+.pricing-card-basic .btn {
+  background: white;
+  color: var(--navy-900);
+  border: 2px solid var(--navy-900);
+  box-shadow: none;
+}
+
+.pricing-card-basic .btn:hover {
+  background: var(--navy-900);
+  color: white;
+}
+
+/* Math callout box */
+.pricing-math {
+  max-width: 720px;
+  margin: 0 auto 40px;
+  background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+  border-radius: 18px;
+  padding: 28px 36px;
+  color: white;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-math::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(245,185,71,.15), transparent 70%);
+  pointer-events: none;
+}
+
+.pricing-math-label {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 14px;
+  text-align: center;
+  position: relative;
+}
+
+.math-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.05rem;
+  position: relative;
+  border-bottom: 1px dashed rgba(255,255,255,.1);
+}
+
+.math-row:last-child { border-bottom: none; }
+
+.math-label {
+  color: rgba(255,255,255,.85);
+  font-weight: 500;
+}
+
+.math-value { font-weight: 700; color: white; }
+
+.math-bad {
+  color: #FCA5A5;
+  text-decoration: line-through;
+  font-weight: 800;
+}
+
+.math-good {
+  color: var(--green-500);
+  font-weight: 800;
+  font-size: 1.15em;
+}
+
+.pricing-footnote {
+  text-align: center;
+  margin-top: 32px;
+  font-size: .95rem;
+  color: var(--text-muted);
+  max-width: 720px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pricing-footnote strong { color: var(--navy-900); }
+
 /* === FAQ === */
 .faq-section { background: var(--surface); }
 
@@ -1751,42 +1894,97 @@ footer {
   <div class="container">
     <div class="section-header">
       <div class="section-eyebrow">Founders Pricing</div>
-      <h2>Lock in lifetime pricing before tax season hits.</h2>
-      <p>Sign up before tax season and we'll lock your rate for life — plus you get all the off-season tools as a bonus.</p>
+      <h2>Pick your plan. (Annual is the obvious one.)</h2>
+      <p>Two ways in. Monthly to dip a toe. Annual to actually run your office on AI — and save $2,267.</p>
     </div>
 
-    <div class="pricing-card">
-      <div class="pricing-banner">🔥 Founders Pricing · Limited Spots</div>
-      <div class="pricing-body">
-        <div class="pricing-tier">Solo & Small Office</div>
-        <div class="pricing-name">TaxAutopilot — Full Suite</div>
-
-        <div class="pricing-price">
-          <span class="old">$3,997</span>
-          <span class="new">$2,497</span>
-          <span class="per">/year</span>
-        </div>
-        <div class="pricing-locked">🔒 Locked at this price for life</div>
-
-        <ul class="pricing-features">
-          <li>Everything in the 7 AI capabilities above</li>
-          <li>Full integration with your tax software</li>
-          <li>30-Day Quick Wins package (we run it for you)</li>
-          <li>"Money Left on the Table" report (Week 1)</li>
-          <li>Year-end Analytics Report (auto-emailed)</li>
-          <li>Live monthly value dashboard</li>
-          <li>Off-season tools FREE until January (when you sign up before tax season)</li>
-          <li>Unlimited clients</li>
-          <li>Priority support during tax season</li>
-        </ul>
-
-        <a href="#" class="btn btn-gold">Lock in Founders Pricing →</a>
-
-        <div class="pricing-guarantee">
-          🛡 <strong>60-Day Money-Back Guarantee:</strong> If we don't find at least $3,000 of revenue opportunities in your database in the first 60 days — full refund.
-        </div>
+    <!-- Math callout -->
+    <div class="pricing-math">
+      <div class="pricing-math-label">⚡ Do the math first</div>
+      <div class="math-row">
+        <span class="math-label">Pay monthly:</span>
+        <span class="math-value">$397/mo × 12 = <span class="math-bad">$4,764/yr</span></span>
+      </div>
+      <div class="math-row">
+        <span class="math-label">Pay annual:</span>
+        <span class="math-value"><span class="math-good">$2,497/yr</span> · save $2,267 🔥</span>
       </div>
     </div>
+
+    <div class="pricing-grid">
+
+      <!-- MONTHLY CARD -->
+      <div class="pricing-card pricing-card-basic">
+        <div class="pricing-body">
+          <div class="pricing-tier" style="color: var(--text-muted);">For "Just Testing"</div>
+          <div class="pricing-name">Monthly Flex</div>
+
+          <div class="pricing-price">
+            <span class="new">$397</span>
+            <span class="per">/month</span>
+          </div>
+          <div class="pricing-locked-warn">⚠ Price may rise at any renewal</div>
+
+          <ul class="pricing-features">
+            <li>Core AI: doc collection, refund alerts, FAQ auto-replies</li>
+            <li>Phone-photo → tax software pipeline</li>
+            <li>Up to 500 clients</li>
+            <li>Cancel anytime</li>
+            <li class="excluded">"Money Left on the Table" report</li>
+            <li class="excluded">Win-back campaigns for lapsed clients</li>
+            <li class="excluded">IRS notice handling</li>
+            <li class="excluded">Off-season revenue engine</li>
+            <li class="excluded">Year-end value report</li>
+            <li class="excluded">Locked-in lifetime pricing</li>
+            <li class="excluded">White-glove setup (DIY only)</li>
+            <li class="excluded">Priority phone support</li>
+          </ul>
+
+          <a href="#" class="btn">Start Monthly →</a>
+        </div>
+      </div>
+
+      <!-- ANNUAL CARD (FEATURED) -->
+      <div class="pricing-card pricing-card-featured">
+        <div class="pricing-banner">⭐ Most Tax Pros Pick This · Founders Pricing</div>
+        <div class="pricing-body">
+          <div class="pricing-tier">For Serious Offices</div>
+          <div class="pricing-name">Annual Founders</div>
+
+          <div class="pricing-price">
+            <span class="old">$3,997</span>
+            <span class="new">$2,497</span>
+            <span class="per">/year</span>
+          </div>
+          <div class="pricing-locked">🔒 Locked at this price FOR LIFE</div>
+
+          <ul class="pricing-features">
+            <li><strong>Everything in Monthly Flex, plus:</strong></li>
+            <li>"Money Left on the Table" report (Week 1 · $5K–$15K)</li>
+            <li>Win-back campaigns for lapsed clients</li>
+            <li>IRS notice drafting ($200–$500/notice in fees)</li>
+            <li>Full off-season revenue engine (year-round)</li>
+            <li>Year-end Analytics Report (auto-emailed)</li>
+            <li>Live monthly value dashboard</li>
+            <li>Unlimited clients</li>
+            <li>White-glove 5-day setup (we do it for you)</li>
+            <li>Priority phone support (2-hr response)</li>
+            <li>Founders rate locked for life — never goes up</li>
+          </ul>
+
+          <a href="#" class="btn btn-gold">Lock in Founders Pricing →</a>
+
+          <div class="pricing-guarantee">
+            🛡 <strong>60-Day Money-Back Guarantee:</strong> If we don't find at least $3,000 of revenue opportunities in your database in the first 60 days — full refund.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <p class="pricing-footnote">
+      💡 <strong>Heads up:</strong> Most offices pay back the annual cost in week 1 from the Money Report alone. Founders pricing closes when we hit our first 100 offices — after that, annual goes to $3,997/yr.
+    </p>
   </div>
 </section>
 
@@ -1825,13 +2023,18 @@ footer {
       </details>
 
       <details class="faq-item">
+        <summary class="faq-question">Why is annual so much cheaper than monthly?</summary>
+        <div class="faq-answer">Annual works out to about $208/month — vs $397/month on Monthly Flex. We can offer the lower rate because we know you're committed for the year, so we invest in the white-glove setup, the Money Report, and the off-season tools. Monthly Flex exists for people who want to test the water first, but most tax pros do the math and pick annual. Plus, annual locks your rate for life — monthly pricing can change at any renewal.</div>
+      </details>
+
+      <details class="faq-item">
         <summary class="faq-question">What's the difference between Founders Pricing and regular pricing?</summary>
-        <div class="faq-answer">Founders Pricing is $2,497/year locked for life. Regular pricing after launch will be $3,997/year and will likely increase as we add features. Founders also get priority support, free off-season tools, and direct access to our product team to request features.</div>
+        <div class="faq-answer">Founders Pricing is $2,497/year locked for LIFE — even when we raise prices later, your rate never goes up. After we hit our first 100 offices, annual goes to $3,997/year. Founders also get priority support, the Money Left on the Table report, all off-season tools, and direct access to our product team to request features. Monthly Flex doesn't include any of these.</div>
       </details>
 
       <details class="faq-item">
         <summary class="faq-question">Can I cancel?</summary>
-        <div class="faq-answer">Anytime. No long-term contracts. If you cancel within the first 60 days and we haven't found $3,000+ of revenue opportunities in your database, you get a full refund. After 60 days you can cancel any time — you just won't be refunded for the remaining months.</div>
+        <div class="faq-answer">Anytime. No long-term contracts. <strong>Annual:</strong> if you cancel within the first 60 days and we haven't found $3,000+ of revenue opportunities in your database, you get a full refund. After 60 days you can cancel but won't be refunded for the remaining months. <strong>Monthly Flex:</strong> cancel anytime, no refund needed since you only paid for that month.</div>
       </details>
 
       <details class="faq-item">

@@ -160,6 +160,8 @@ nav {
   font-weight: 600 !important;
   font-size: .9rem !important;
   transition: all .2s;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .nav-cta:hover {
@@ -167,8 +169,14 @@ nav {
   transform: translateY(-1px);
 }
 
+.nav-cta-short { display: none; }
+
 @media (max-width: 768px) {
   .nav-links a:not(.nav-cta) { display: none; }
+  .nav-cta-long { display: none; }
+  .nav-cta-short { display: inline; }
+  .logo { font-size: 1.1rem; }
+  .logo-mark { width: 32px; height: 32px; }
 }
 
 /* === HERO === */
@@ -1561,7 +1569,7 @@ footer {
       <a href="#features">Features</a>
       <a href="#pricing">Pricing</a>
       <a href="#faq">FAQ</a>
-      <a href="#pricing" class="nav-cta">Lock in Founders Pricing</a>
+      <a href="#pricing" class="nav-cta"><span class="nav-cta-long">Lock in Founders Pricing</span><span class="nav-cta-short">Get Started</span></a>
     </div>
   </div>
 </nav>

@@ -90,6 +90,20 @@ export default async function SettingsPage({
         )}
       </section>
 
+      {/* Billing section */}
+      <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
+        <h2 className="font-bold text-[var(--navy-900)] mb-1">Billing & subscription</h2>
+        <p className="text-sm text-[var(--text-muted)] mb-4">
+          Lock in Founders Pricing, manage your plan, view invoices, or apply referral credits.
+        </p>
+        <a
+          href="/settings/billing"
+          className="inline-flex items-center gap-2 bg-[var(--navy-900)] text-white font-bold px-4 py-2 rounded-lg hover:bg-[var(--green-600)] transition text-sm"
+        >
+          💳 Open Billing →
+        </a>
+      </section>
+
       {/* SMS section */}
       <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
         <h2 className="font-bold text-[var(--navy-900)] mb-1">SMS messaging</h2>

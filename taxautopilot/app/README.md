@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaxAutopilot — Engine
 
-## Getting Started
+The actual product. The marketing landing page lives one folder up at `taxautopilot/index.html`.
 
-First, run the development server:
+## What this is
+
+A Next.js app that does the real work:
+
+- **Phase 1** ✅ — Document Extraction (Claude Vision pulls every field out of W-2s, 1099s, etc.)
+- **Phase 2** ✅ — Multi-tenant auth (tax offices sign up, get private client databases)
+- **Phase 3** — Inbox intelligence (Gmail/Outlook OAuth, auto-file emails)
+- **Phase 4** — Client comms (Twilio number, auto-replies, refund alerts)
+- **Phase 5** — Desktop agent (writes into Drake/CrossLink/etc.)
+
+## Quick start
 
 ```bash
+npm install
+cp .env.local.example .env.local
+# Fill in ANTHROPIC_API_KEY and Supabase keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Setup — what you need
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1. Anthropic API key (~$5-20/mo for testing)
+- Go to https://console.anthropic.com/settings/keys
+- Create a key, paste into `.env.local` as `ANTHROPIC_API_KEY`
+- Powers document extraction
 
-## Learn More
+### 2. Supabase project (free tier is fine)
+- Create a project at https://supabase.com/dashboard
+- Go to Settings → API, copy the URL and `anon` key into `.env.local`
+- Go to SQL Editor, paste in the contents of `supabase/migrations/0001_initial.sql`, run it
+- This creates all tables with proper Row-Level Security
 
-To learn more about Next.js, take a look at the following resources:
+That's it. You're live.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Auth | What it does |
+|-------|------|--------------|
+| `/` | — | Redirects to `/dashboard` if signed in, `/login` if not |
+| `/demo` | Public | The extraction engine demo (no signup — use this for sales) |
+| `/login`, `/signup` | Public | Auth pages |
+| `/dashboard` | Required | Office home screen |
+| `/clients` | Required | Client list |
+| `/clients/new` | Required | Add a client |
+| `/clients/[id]` | Required | Client detail with docs |
+| `/api/extract` | Public | POST a document, get JSON back |
 
-## Deploy on Vercel
+## Architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Frontend**: Next.js 16 App Router + Tailwind v4
+- **Auth + DB**: Supabase (Postgres + RLS)
+- **AI**: Anthropic Claude Sonnet 4.6 with vision and prompt caching
+- **Hosting**: Vercel (deploy from `taxautopilot/app/` as project root)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Multi-tenancy
+
+Each tax office is one `organization` row. Users belong to an organization via `profiles.organization_id`. Every query on clients/documents/extractions is automatically scoped to the user's org via Postgres Row-Level Security — even if the app has a bug, the DB refuses cross-org access.

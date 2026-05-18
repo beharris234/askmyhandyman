@@ -573,6 +573,206 @@ section { padding: 100px 0; }
   line-height: 1.6;
 }
 
+/* === COMPATIBILITY WIDGET === */
+.compat-section {
+  background: linear-gradient(180deg, var(--white) 0%, var(--surface) 100%);
+  padding: 80px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.compat-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 36px;
+}
+
+.compat-header h2 {
+  font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+  margin-bottom: 10px;
+}
+
+.compat-header p {
+  font-size: 1rem;
+  color: var(--text-muted);
+}
+
+.compat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  max-width: 820px;
+  margin: 0 auto 28px;
+}
+
+.compat-chip {
+  background: white;
+  border: 2px solid var(--border);
+  color: var(--navy-900);
+  padding: 12px 20px;
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: .92rem;
+  cursor: pointer;
+  transition: all .2s;
+  white-space: nowrap;
+}
+
+.compat-chip:hover {
+  border-color: var(--green-500);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(16,185,129,.15);
+}
+
+.compat-chip.active {
+  background: var(--navy-900);
+  color: white;
+  border-color: var(--navy-900);
+  box-shadow: 0 8px 20px rgba(10,22,40,.25);
+}
+
+.compat-result {
+  max-width: 720px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  padding: 28px 32px;
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity .35s, transform .35s;
+  min-height: 0;
+  overflow: hidden;
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+}
+
+.compat-result.visible {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 1000px;
+  padding-top: 28px;
+  padding-bottom: 28px;
+  border-width: 1px;
+}
+
+.compat-result-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.compat-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 100px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.compat-status-pill.live { background: var(--green-100); color: var(--green-600); }
+.compat-status-pill.beta { background: var(--gold-light); color: #92590B; }
+.compat-status-pill.roadmap { background: #FED7AA; color: #9A3412; }
+.compat-status-pill.other { background: var(--navy-100); color: var(--navy-700); }
+
+.compat-result-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--navy-900);
+}
+
+.compat-result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) {
+  .compat-result-grid { grid-template-columns: 1fr; }
+  .compat-result { padding: 22px 20px !important; }
+  .compat-result-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+.compat-block {
+  background: var(--surface);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.compat-block-label {
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.compat-block-content {
+  font-size: .92rem;
+  color: var(--text);
+  line-height: 1.55;
+}
+
+.compat-other-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.compat-other-form input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  font-size: .95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color .2s;
+}
+
+.compat-other-form input:focus {
+  border-color: var(--green-500);
+}
+
+.compat-other-form button {
+  background: var(--navy-900);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+  font-size: .92rem;
+  cursor: pointer;
+  transition: background .2s;
+  white-space: nowrap;
+}
+
+.compat-other-form button:hover { background: var(--green-600); }
+
+.compat-empty {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: .9rem;
+  padding: 20px;
+}
+
 /* === PAIN POINTS === */
 .pain-section {
   background: var(--surface);
@@ -1674,6 +1874,7 @@ footer {
     <div class="trust-label">Works alongside the tax software you already use</div>
     <div class="trust-logos">
       <div class="trust-logo">Drake</div>
+      <div class="trust-logo">CrossLink</div>
       <div class="trust-logo">Lacerte</div>
       <div class="trust-logo">ProSeries</div>
       <div class="trust-logo">UltraTax</div>
@@ -1682,6 +1883,33 @@ footer {
     </div>
   </div>
 </div>
+
+<!-- COMPATIBILITY WIDGET -->
+<section class="compat-section">
+  <div class="container">
+    <div class="compat-header">
+      <div class="section-eyebrow">Will it work for my office?</div>
+      <h2>Quick check — what tax software do you use?</h2>
+      <p>Tap yours below to see what works today and when full integration goes live.</p>
+    </div>
+
+    <div class="compat-chips" id="compat-chips">
+      <button class="compat-chip" data-software="drake">Drake</button>
+      <button class="compat-chip" data-software="crosslink-online">CrossLink Online</button>
+      <button class="compat-chip" data-software="crosslink-desktop">CrossLink Desktop</button>
+      <button class="compat-chip" data-software="lacerte">Lacerte</button>
+      <button class="compat-chip" data-software="proseries">ProSeries</button>
+      <button class="compat-chip" data-software="ultratax">UltraTax CS</button>
+      <button class="compat-chip" data-software="taxwise">TaxWise</button>
+      <button class="compat-chip" data-software="taxslayer">TaxSlayer Pro</button>
+      <button class="compat-chip" data-software="other">Something Else</button>
+    </div>
+
+    <div class="compat-result" id="compat-result">
+      <div class="compat-empty">Click your software above to check compatibility.</div>
+    </div>
+  </div>
+</section>
 
 <!-- PAIN POINTS -->
 <section class="pain-section">
@@ -2074,7 +2302,12 @@ footer {
     <div class="faq-list">
       <details class="faq-item">
         <summary class="faq-question">Which tax software does it work with?</summary>
-        <div class="faq-answer">TaxAutopilot integrates with Drake, ProSeries, Lacerte, UltraTax, TaxWise, and TaxSlayer Pro. If you use something else, let us know — we add integrations on request and it's typically live within 2 weeks.</div>
+        <div class="faq-answer">We're rolling out integrations in this order: <strong>CrossLink Online (Q1 2026 — first launch)</strong>, then Drake, CrossLink Desktop, TaxWise, and TaxSlayer Pro (Q2 2026), then Lacerte, ProSeries, and UltraTax CS (Q3 2026). Scroll up to the "Quick check" widget to see exactly what's live for your software. <strong>Important:</strong> our AI document extraction, inbox monitoring, and client communications work TODAY for every customer — even before your specific software's direct push integration goes live. Most offices save 12+ hours/week from day one.</div>
+      </details>
+
+      <details class="faq-item">
+        <summary class="faq-question">What if my tax software isn't supported yet?</summary>
+        <div class="faq-answer">Two things: <strong>(1)</strong> the standalone tools — AI document extraction, automated client texts/emails, refund tracking, win-back campaigns, IRS notice handling — work regardless of your tax software. You still get massive value from day one. <strong>(2)</strong> Tell us what you use in the "Something Else" option above. We prioritize new integrations based on customer demand and Founders Pricing customers get a direct line to our product team to push their software up the queue.</div>
       </details>
 
       <details class="faq-item">
@@ -2178,6 +2411,116 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       e.preventDefault();
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  });
+});
+
+// === Compatibility Widget ===
+const COMPAT_DATA = {
+  'drake': {
+    name: 'Drake Tax',
+    status: 'beta',
+    statusLabel: 'Beta · Q2 2026',
+    today: 'AI extracts every doc field (W-2, 1099s, etc.) and hands you ready-to-paste data. Saves 12+ hrs/week even without auto-push.',
+    coming: 'Desktop agent runs locally on your office computer, reads/writes Drake files directly. No passwords, no API headaches, no permission needed from Drake.'
+  },
+  'crosslink-online': {
+    name: 'CrossLink Online',
+    status: 'live',
+    statusLabel: 'First launch target · Q1 2026',
+    today: 'Full AI document extraction live now. Inbox monitoring and client comms in private beta.',
+    coming: 'Direct browser-based push of extracted data into CrossLink Online. Founders get priority onboarding and a dedicated success manager.'
+  },
+  'crosslink-desktop': {
+    name: 'CrossLink Desktop',
+    status: 'beta',
+    statusLabel: 'Beta · Q2 2026',
+    today: 'AI extraction + client comms work today. Data lands in our dashboard for you to copy in.',
+    coming: 'Lightweight Windows agent that auto-pushes data into CrossLink Desktop. Same architecture as our Drake integration.'
+  },
+  'lacerte': {
+    name: 'Lacerte',
+    status: 'roadmap',
+    statusLabel: 'Roadmap · Q3 2026',
+    today: 'AI extracts every doc field and prepares clean data ready to paste into Lacerte. Inbox monitoring and client comms fully supported.',
+    coming: 'Desktop agent for Lacerte. Reads Lacerte\'s local database, auto-pushes extracted data. Includes Intuit Link sync.'
+  },
+  'proseries': {
+    name: 'ProSeries',
+    status: 'roadmap',
+    statusLabel: 'Roadmap · Q3 2026',
+    today: 'AI extracts every doc field and prepares clean data ready to paste into ProSeries. Inbox + client comms fully supported.',
+    coming: 'Desktop agent built specifically for ProSeries. Auto-fills client records from extracted data.'
+  },
+  'ultratax': {
+    name: 'UltraTax CS',
+    status: 'roadmap',
+    statusLabel: 'Roadmap · Q3 2026',
+    today: 'AI extraction + client comms work today. Data lands in our dashboard for your team to copy into UltraTax.',
+    coming: 'Desktop agent using UltraTax\'s SDK integration. Full bidirectional sync.'
+  },
+  'taxwise': {
+    name: 'TaxWise',
+    status: 'beta',
+    statusLabel: 'Beta · Q2 2026',
+    today: 'AI extraction + client comms live. Works with both TaxWise Online and TaxWise Desktop today (data lands in our dashboard).',
+    coming: 'Direct API integration with TaxWise Online (cloud). Desktop agent for TaxWise Desktop users.'
+  },
+  'taxslayer': {
+    name: 'TaxSlayer Pro',
+    status: 'beta',
+    statusLabel: 'Beta · Q2 2026',
+    today: 'AI extraction + client comms live. Works with TaxSlayer Pro Web and Desktop today (data in our dashboard).',
+    coming: 'Browser-based direct push for TaxSlayer Pro Web. Desktop agent for TaxSlayer Pro Desktop.'
+  },
+  'other': {
+    name: 'Something Else',
+    status: 'other',
+    statusLabel: 'Tell us what you use',
+    today: 'Even without a direct integration, our AI inbox + document extraction + client comms tools work standalone — saves you 12+ hours/week regardless of which tax software you run.',
+    coming: 'We prioritize integrations based on customer demand. Drop your software name below and we\'ll email you the moment we lock in a build date.'
+  }
+};
+
+function renderCompatResult(software) {
+  const data = COMPAT_DATA[software];
+  if (!data) return;
+  const resultEl = document.getElementById('compat-result');
+
+  let extra = '';
+  if (data.status === 'other') {
+    extra = `
+      <form class="compat-other-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='✓ Got it — we\\'ll be in touch';">
+        <input type="text" placeholder="What software do you use?" required />
+        <button type="submit">Notify Me</button>
+      </form>
+    `;
+  }
+
+  resultEl.innerHTML = `
+    <div class="compat-result-header">
+      <span class="compat-status-pill ${data.status}">${data.statusLabel}</span>
+      <div class="compat-result-title">${data.name}</div>
+    </div>
+    <div class="compat-result-grid">
+      <div class="compat-block">
+        <div class="compat-block-label">✅ Works today</div>
+        <div class="compat-block-content">${data.today}</div>
+      </div>
+      <div class="compat-block">
+        <div class="compat-block-label">🚀 Coming soon</div>
+        <div class="compat-block-content">${data.coming}</div>
+      </div>
+    </div>
+    ${extra}
+  `;
+  resultEl.classList.add('visible');
+}
+
+document.querySelectorAll('.compat-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.compat-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    renderCompatResult(chip.dataset.software);
   });
 });
 </script>

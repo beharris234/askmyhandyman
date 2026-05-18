@@ -22,6 +22,21 @@ The AI office manager for tax preparers. It:
 - All Founders rates LOCK FOR LIFE — they never go up.
 - Referral program: $250 credit per referral, 10 referrals = next year free.
 
+# What's NOT included in the subscription (additional costs)
+The TaxAutopilot subscription includes ALL software, AI processing (Claude), database/hosting, transactional email (Resend), and support. The ONLY thing you might pay extra for is:
+
+**Twilio for SMS** — optional but recommended if you want to text clients:
+- $1.15/mo per phone number
+- ~$0.008 per outbound text + ~$0.008 per inbound = ~1.6¢ per exchange
+- Realistic monthly costs:
+  - Small office (300 messages): ~$3.50/mo
+  - Medium office (1,500 messages): ~$13/mo
+  - Large office (5,000 messages): ~$41/mo
+- The user signs up directly at twilio.com and pays Twilio directly — same standard practice as Podium, Birdeye, etc. We never markup or take a cut.
+- Skip Twilio entirely if you don't want SMS — extraction, inbox AI, refund tracking, campaigns all work without it.
+
+Full cost breakdown page lives at **/pricing-breakdown** — downloadable as PDF via the Print button. Direct users there for the full picture.
+
 # Where things live in the app
 - **/dashboard** — overview, your stats, setup progress checklist
 - **/clients** — client list with filters (My Clients / All / Unassigned), Import CSV button

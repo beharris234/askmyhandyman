@@ -38,6 +38,23 @@ export default async function TwilioSettingsPage() {
         </div>
 
         {/* Existing numbers */}
+        {numbers && numbers.length === 0 && (
+          <div className="mb-6 rounded-xl bg-amber-50 border border-amber-200 p-4">
+            <div className="font-bold text-amber-900 text-sm mb-1">💰 Heads up about Twilio costs</div>
+            <div className="text-xs text-amber-800 leading-relaxed mb-2">
+              Twilio is a separate service — you pay them directly (not us). Plan on ~<strong>$1.15/month per number</strong> plus ~<strong>$0.008 per text</strong>. A busy office typically spends <strong>$15-30/month total</strong>.
+            </div>
+            <a
+              href="/pricing-breakdown"
+              target="_blank"
+              className="text-xs font-bold text-amber-900 underline hover:text-amber-700"
+            >
+              See full cost breakdown →
+            </a>
+          </div>
+        )}
+
+        {/* Existing numbers */}
         {numbers && numbers.length > 0 && (
           <div className="space-y-2 mb-6">
             <div className="text-xs uppercase font-bold tracking-wider text-[var(--text-muted)] mb-2">

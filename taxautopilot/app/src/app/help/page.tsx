@@ -28,6 +28,31 @@ export default function HelpPage() {
           of any logged-in page answers questions in real time about YOUR specific state.
         </p>
 
+        <Section title="💰 Pricing &amp; Costs">
+          <Faq q="What does TaxAutopilot REALLY cost? Are there hidden fees?">
+            No hidden fees. Your subscription covers all software, AI, hosting, support. The
+            ONLY extra cost is <strong>Twilio for SMS</strong> if you want to text clients —
+            about <strong>$15-30/month</strong> for most offices, paid directly to Twilio.
+            Full breakdown at{" "}
+            <Link href="/pricing-breakdown" className="text-[var(--green-600)] underline font-semibold">
+              /pricing-breakdown
+            </Link>{" "}
+            (downloadable as PDF).
+          </Faq>
+
+          <Faq q="What if I don't want to use Twilio for SMS?">
+            Totally optional. Document extraction, inbox AI, email replies, refund tracking,
+            campaigns, and team features all work without Twilio. You just won&apos;t have the
+            SMS-to-client capability.
+          </Faq>
+
+          <Faq q="Do I need to keep paying for Drake/CrossLink/Lacerte separately?">
+            Yes. TaxAutopilot sits ALONGSIDE your tax software, not instead of it. You keep
+            using your tax software for actual return preparation and e-filing — we handle
+            the surrounding office work (docs, comms, refund alerts, win-backs).
+          </Faq>
+        </Section>
+
         <Section title="🚀 Getting Started">
           <Faq q="How do I import my existing clients?">
             Go to <Code>Clients → Import CSV</Code>. Export from your tax software, drop the file,

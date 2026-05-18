@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logoutAction } from "../(auth)/actions";
+import { AssistantWidget } from "./AssistantWidget";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -77,6 +78,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="flex-1 md:ml-0 mt-14 md:mt-0 overflow-x-hidden">
         {children}
       </main>
+
+      <AssistantWidget />
     </div>
   );
 }

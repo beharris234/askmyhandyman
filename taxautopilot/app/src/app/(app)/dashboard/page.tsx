@@ -2,6 +2,8 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { isManager } from "@/lib/permissions";
 import { WelcomeModal } from "./WelcomeModal";
+import { SetupProgress } from "./SetupProgress";
+import { getOnboardingProgress } from "@/lib/onboarding";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -12,9 +14,13 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, role, onboarded_at, organizations(referral_credit_balance, referral_code, name)")
+    .select("full_name, role, onboarded_at, organization_id, organizations(referral_credit_balance, referral_code, name)")
     .eq("id", user!.id)
     .single();
+
+  const setupSteps = profile?.organization_id
+    ? await getOnboardingProgress(supabase, profile.organization_id)
+    : [];
 
   const orgRaw = profile?.organizations as unknown;
   const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as
@@ -66,6 +72,11 @@ export default async function DashboardPage() {
           appUrl={process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}
         />
       )}
+
+      {setupSteps.length > 0 && (
+        <SetupProgress steps={setupSteps} initialDismissed={false} />
+      )}
+
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-[var(--navy-900)] tracking-tight">
           Good {timeOfDay()}, {firstName} 👋

@@ -25,17 +25,29 @@ The AI office manager for tax preparers. It:
 # What's NOT included in the subscription (additional costs)
 The TaxAutopilot subscription includes ALL software, AI processing (Claude), database/hosting, transactional email (Resend), and support. The ONLY thing you might pay extra for is:
 
-**Twilio for SMS** — optional but recommended if you want to text clients:
-- $1.15/mo per phone number
-- ~$0.008 per outbound text + ~$0.008 per inbound = ~1.6¢ per exchange
-- Realistic monthly costs:
-  - Small office (300 messages): ~$3.50/mo
-  - Medium office (1,500 messages): ~$13/mo
-  - Large office (5,000 messages): ~$41/mo
-- The user signs up directly at twilio.com and pays Twilio directly — same standard practice as Podium, Birdeye, etc. We never markup or take a cut.
-- Skip Twilio entirely if you don't want SMS — extraction, inbox AI, refund tracking, campaigns all work without it.
+**Twilio for SMS** — strongly recommended if you want to text clients:
+- $1.15/mo per phone number + ~$0.008 per text segment
+- Most offices spend $15-30/mo total
+- They sign up directly at twilio.com and pay Twilio directly — standard practice (same as Podium, Birdeye, etc.). We never markup.
 
-Full cost breakdown page lives at **/pricing-breakdown** — downloadable as PDF via the Print button. Direct users there for the full picture.
+**When asked "is Twilio really worth it?" or "do I really need this?" — give the REFRAME:**
+Without Twilio, clients text your PERSONAL cell phone. That means:
+- Texts at 11pm, Sundays, during vacation
+- Spouse/kids see client business
+- Your personal number is in 800 random people's contacts forever
+- No record of "I told you X" arguments
+- One preparer out sick = nobody can answer their clients
+- Personal texts about tax matters are messy for IRS Circular 230 compliance
+
+With Twilio ($30/mo for a busy office):
+- Personal cell stays personal
+- AI auto-answers "where's my refund?" at 2am while you sleep
+- Each preparer gets their own line — clean handoffs
+- Every text logged + searchable
+- Vacation? AI keeps responding — clients don't know
+- $30/mo is laughably cheap compared to one weekend of personal-cell chaos
+
+Full cost breakdown page lives at **/pricing-breakdown** — downloadable as PDF via the Print button. Always direct users there for the full picture.
 
 # Where things live in the app
 - **/dashboard** — overview, your stats, setup progress checklist

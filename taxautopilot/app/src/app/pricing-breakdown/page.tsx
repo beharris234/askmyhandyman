@@ -76,7 +76,43 @@ export default function PricingBreakdownPage() {
         </Section>
 
         {/* Twilio */}
-        <Section title="📱 Twilio (SMS — optional but recommended)" subtitle="You sign up directly at twilio.com and pay Twilio directly. Industry standard — same as Podium, Birdeye, etc.">
+        <Section title="📱 Twilio (SMS — strongly recommended)" subtitle="You sign up directly at twilio.com and pay Twilio directly. Industry standard — same as Podium, Birdeye, etc.">
+
+          {/* WHY TWILIO IS WORTH IT — the reframe */}
+          <div className="rounded-xl bg-gradient-to-br from-[var(--navy-900)] to-[var(--navy-700)] text-white p-5 mb-5 print:bg-slate-100 print:text-[var(--navy-900)] print:border print:border-slate-300">
+            <div className="text-xs uppercase font-bold tracking-wider text-[var(--gold)] mb-2 print:text-amber-700">
+              ✋ Real talk — why $30/mo is the best $30 you&apos;ll spend
+            </div>
+            <div className="font-bold text-base mb-3">
+              Right now, your clients probably text your PERSONAL cell phone.
+              That&apos;s a problem you don&apos;t realize you have.
+            </div>
+            <ul className="space-y-1.5 text-sm text-white/90 print:text-[var(--text)]">
+              <li>📵 Clients text you at 11pm. On Sundays. During your vacation.</li>
+              <li>👨‍👩‍👧 Your spouse sees client business on your screen. So does your kid.</li>
+              <li>🤝 Your personal number is now in 800 random people&apos;s contacts. Forever.</li>
+              <li>🚫 No record of conversations — &ldquo;I told you X&rdquo; arguments you can&apos;t prove.</li>
+              <li>🤷 Preparer is out sick — nobody else can answer their clients.</li>
+              <li>⚠️ IRS Circular 230 compliance — personal texts about tax matters are messy.</li>
+            </ul>
+            <div className="mt-4 pt-3 border-t border-white/20 print:border-slate-300">
+              <div className="font-bold text-base mb-1.5">With a Twilio number ($30/mo for a busy office):</div>
+              <ul className="space-y-1 text-sm text-white/90 print:text-[var(--text)]">
+                <li>✅ Office number on business cards. Personal cell stays personal.</li>
+                <li>✅ AI auto-replies to &ldquo;where&apos;s my refund?&rdquo; at 2am — you sleep.</li>
+                <li>✅ Every preparer can have their own line — clean handoffs.</li>
+                <li>✅ All conversations logged + searchable — IRS-ready records.</li>
+                <li>✅ Vacation? AI keeps responding. Clients don&apos;t know.</li>
+              </ul>
+            </div>
+            <div className="mt-3 text-xs italic text-white/70 print:text-[var(--text-muted)]">
+              Most tax pros realize they should have done this 5 years ago. $30/mo is laughably cheap compared to one weekend of messy personal-cell texts.
+            </div>
+          </div>
+
+          <div className="text-xs uppercase font-bold tracking-wider text-[var(--text-muted)] mb-2">
+            What it actually costs
+          </div>
           <Table
             rows={[
               ["Phone number", "Per US local number per month", "$1.15 / mo"],

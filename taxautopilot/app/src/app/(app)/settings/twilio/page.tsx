@@ -37,19 +37,32 @@ export default async function TwilioSettingsPage() {
           </div>
         </div>
 
-        {/* Existing numbers */}
+        {/* The "why bother" pitch — before any setup steps */}
         {numbers && numbers.length === 0 && (
-          <div className="mb-6 rounded-xl bg-amber-50 border border-amber-200 p-4">
-            <div className="font-bold text-amber-900 text-sm mb-1">💰 Heads up about Twilio costs</div>
-            <div className="text-xs text-amber-800 leading-relaxed mb-2">
-              Twilio is a separate service — you pay them directly (not us). Plan on ~<strong>$1.15/month per number</strong> plus ~<strong>$0.008 per text</strong>. A busy office typically spends <strong>$15-30/month total</strong>.
+          <div className="mb-6 rounded-xl bg-gradient-to-br from-[var(--navy-900)] to-[var(--navy-700)] text-white p-5">
+            <div className="text-xs uppercase font-bold tracking-wider text-[var(--gold)] mb-2">
+              ✋ Why this matters more than you think
+            </div>
+            <div className="font-bold text-base mb-3">
+              Right now your clients probably text your personal cell at 11pm.
+              This fixes that for ~$30/month.
+            </div>
+            <ul className="space-y-1 text-sm text-white/90 mb-3">
+              <li>📵 Personal cell stays personal — kids/spouse don&apos;t see client texts</li>
+              <li>🤖 AI auto-answers &ldquo;where&apos;s my refund?&rdquo; at 2am while you sleep</li>
+              <li>👥 Each preparer gets their own line for clean handoffs</li>
+              <li>📝 Every text logged + searchable — IRS-ready records</li>
+              <li>🏖 Vacation? AI keeps responding. Clients don&apos;t know.</li>
+            </ul>
+            <div className="text-xs text-white/70 italic mb-3">
+              Most tax pros realize they should have done this 5 years ago.
             </div>
             <a
               href="/pricing-breakdown"
               target="_blank"
-              className="text-xs font-bold text-amber-900 underline hover:text-amber-700"
+              className="inline-block text-xs font-bold text-[var(--gold)] underline hover:text-[var(--gold-light)]"
             >
-              See full cost breakdown →
+              See full cost breakdown + worked examples →
             </a>
           </div>
         )}

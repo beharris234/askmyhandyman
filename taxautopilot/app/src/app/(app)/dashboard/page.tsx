@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { isManager } from "@/lib/permissions";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -10,23 +11,40 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, organizations(referral_credit_balance, referral_code)")
+    .select("full_name, role, organizations(referral_credit_balance, referral_code, name)")
     .eq("id", user!.id)
     .single();
 
   const orgRaw = profile?.organizations as unknown;
   const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as
-    | { referral_credit_balance: number; referral_code: string }
+    | { referral_credit_balance: number; referral_code: string; name: string }
     | null;
   const creditBalance = Number(org?.referral_credit_balance || 0);
+  const showOrgWide = isManager(profile?.role);
 
-  const { count: clientCount } = await supabase
+  // "Your" stats (current user's assigned)
+  const { count: myClientCount } = await supabase
+    .from("clients")
+    .select("*", { count: "exact", head: true })
+    .eq("assigned_preparer_id", user!.id);
+
+  const { count: myActiveRefunds } = await supabase
+    .from("refund_tracks")
+    .select("*, clients!inner(assigned_preparer_id)", { count: "exact", head: true })
+    .neq("current_status", "received")
+    .eq("clients.assigned_preparer_id", user!.id);
+
+  // Org-wide stats (for owners/admins)
+  const { count: orgClientCount } = await supabase
     .from("clients")
     .select("*", { count: "exact", head: true });
-
-  const { count: docCount } = await supabase
+  const { count: orgDocCount } = await supabase
     .from("documents")
     .select("*", { count: "exact", head: true });
+  const { count: orgActiveRefunds } = await supabase
+    .from("refund_tracks")
+    .select("*", { count: "exact", head: true })
+    .neq("current_status", "received");
 
   const { data: recentExtractions } = await supabase
     .from("extractions")
@@ -42,15 +60,51 @@ export default async function DashboardPage() {
         <h1 className="text-3xl font-extrabold text-[var(--navy-900)] tracking-tight">
           Good {timeOfDay()}, {firstName} 👋
         </h1>
-        <p className="text-[var(--text-muted)] mt-1">Here&apos;s what&apos;s happening in your office.</p>
+        <p className="text-[var(--text-muted)] mt-1">
+          {showOrgWide
+            ? `Here's what's happening at ${org?.name || "your office"}.`
+            : "Here's your work for today."}
+        </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
-        <Stat label="Clients" value={clientCount ?? 0} hint="Total in your database" />
-        <Stat label="Documents Processed" value={docCount ?? 0} hint="All-time" />
-        <Stat label="Active This Week" value={0} hint="Returns in progress" />
+      {/* Your stats */}
+      <div className="mb-2 flex items-center justify-between flex-wrap">
+        <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">
+          Your work
+        </h2>
+        <Link
+          href="/clients?filter=mine"
+          className="text-xs font-semibold text-[var(--green-600)] hover:underline"
+        >
+          See all →
+        </Link>
       </div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <Stat label="Your Clients" value={myClientCount ?? 0} hint="Assigned to you" />
+        <Stat label="Active Refunds" value={myActiveRefunds ?? 0} hint="In flight" />
+        <Stat label="To Do" value={0} hint="Coming soon" />
+      </div>
+
+      {showOrgWide && (
+        <>
+          <div className="mb-2 flex items-center justify-between flex-wrap mt-8">
+            <h2 className="text-sm font-bold uppercase tracking-wider text-[var(--text-muted)]">
+              Office-wide
+            </h2>
+            <Link
+              href="/clients"
+              className="text-xs font-semibold text-[var(--green-600)] hover:underline"
+            >
+              See all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <Stat label="Total Clients" value={orgClientCount ?? 0} hint="Across all preparers" />
+            <Stat label="Docs Processed" value={orgDocCount ?? 0} hint="All-time" />
+            <Stat label="Refunds in Flight" value={orgActiveRefunds ?? 0} hint="Office-wide" />
+          </div>
+        </>
+      )}
 
       {creditBalance > 0 && (
         <Link
@@ -85,10 +139,10 @@ export default async function DashboardPage() {
             sub="Manually create a new client record"
           />
           <ActionCard
-            href="/clients"
-            icon="👥"
-            title="View clients"
-            sub="See your full client list"
+            href="/campaigns/new"
+            icon="📣"
+            title="Run a campaign"
+            sub="Win-back lapsed clients or send updates"
           />
           <ActionCard
             href="/demo"

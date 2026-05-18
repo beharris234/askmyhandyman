@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { canReassignClients } from "@/lib/permissions";
+import { AssignmentWidget } from "./AssignmentWidget";
 
 export default async function ClientDetailPage({
   params,
@@ -10,6 +12,16 @@ export default async function ClientDetailPage({
   const { id } = await params;
   const supabase = await createClient();
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("organization_id, role")
+    .eq("id", user!.id)
+    .single();
+
   const { data: client } = await supabase
     .from("clients")
     .select("*")
@@ -17,6 +29,13 @@ export default async function ClientDetailPage({
     .single();
 
   if (!client) notFound();
+
+  const { data: preparersRaw } = await supabase
+    .from("profiles")
+    .select("id, full_name, email")
+    .eq("organization_id", profile!.organization_id)
+    .order("full_name");
+  const preparers = (preparersRaw || []) as { id: string; full_name: string; email: string }[];
 
   const { data: documents } = await supabase
     .from("documents")
@@ -65,6 +84,19 @@ export default async function ClientDetailPage({
             {client.notes}
           </div>
         )}
+
+        <div className="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
+          <div className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
+            Assigned Preparer
+          </div>
+          <AssignmentWidget
+            clientId={client.id}
+            currentAssignedId={client.assigned_preparer_id}
+            currentUserId={user!.id}
+            preparers={preparers}
+            canReassign={canReassignClients(profile?.role)}
+          />
+        </div>
       </div>
 
       {/* Refund Tracking link card */}

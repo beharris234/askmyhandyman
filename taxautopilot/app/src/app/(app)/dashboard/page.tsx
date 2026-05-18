@@ -10,9 +10,15 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name")
+    .select("full_name, organizations(referral_credit_balance, referral_code)")
     .eq("id", user!.id)
     .single();
+
+  const orgRaw = profile?.organizations as unknown;
+  const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as
+    | { referral_credit_balance: number; referral_code: string }
+    | null;
+  const creditBalance = Number(org?.referral_credit_balance || 0);
 
   const { count: clientCount } = await supabase
     .from("clients")
@@ -40,11 +46,33 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <Stat label="Clients" value={clientCount ?? 0} hint="Total in your database" />
         <Stat label="Documents Processed" value={docCount ?? 0} hint="All-time" />
         <Stat label="Active This Week" value={0} hint="Returns in progress" />
       </div>
+
+      {creditBalance > 0 && (
+        <Link
+          href="/referrals"
+          className="block bg-gradient-to-r from-[var(--green-100)] to-amber-50 border border-[var(--green-500)]/40 rounded-2xl p-4 mb-8 hover:shadow-md transition"
+        >
+          <div className="flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-3">
+              <div className="text-2xl">🎁</div>
+              <div>
+                <div className="font-bold text-[var(--navy-900)]">
+                  ${creditBalance.toLocaleString("en-US", { minimumFractionDigits: 0 })} referral credit earned
+                </div>
+                <div className="text-xs text-[var(--text-muted)]">
+                  Auto-applied to your next renewal — keep earning to make it free
+                </div>
+              </div>
+            </div>
+            <span className="text-[var(--green-600)] font-bold text-sm">View →</span>
+          </div>
+        </Link>
+      )}
 
       {/* Quick actions */}
       <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-8">

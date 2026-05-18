@@ -17,8 +17,10 @@ const SOFTWARES = [
 
 export function SignUpForm({
   action,
+  initialReferralCode,
 }: {
   action: (formData: FormData) => Promise<{ error?: string } | void>;
+  initialReferralCode?: string | null;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +36,9 @@ export function SignUpForm({
       }}
       className="space-y-4"
     >
+      {initialReferralCode && (
+        <input type="hidden" name="referral_code" value={initialReferralCode} />
+      )}
       <Field label="Your name" name="full_name" type="text" required autoComplete="name" />
       <Field label="Tax office name" name="office_name" type="text" required placeholder="e.g. Johnson Tax Office" />
 

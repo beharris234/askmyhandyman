@@ -573,6 +573,112 @@ section { padding: 100px 0; }
   line-height: 1.6;
 }
 
+/* === REFERRAL CALLOUT === */
+.referral-section {
+  background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-700) 100%);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  padding: 80px 0;
+}
+
+.referral-section::before {
+  content: "";
+  position: absolute;
+  top: -40%;
+  right: -10%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(245,185,71,.15), transparent 70%);
+  pointer-events: none;
+}
+
+.referral-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 880px) {
+  .referral-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+
+.referral-section h2 { color: white; margin-bottom: 20px; }
+.referral-section .section-eyebrow { color: var(--gold); }
+.referral-section p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.referral-section .highlight {
+  background: linear-gradient(180deg, transparent 60%, rgba(245,185,71,.5) 60%);
+  padding: 0 4px;
+  color: white;
+  font-weight: 700;
+}
+
+.referral-math {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 28px;
+  backdrop-filter: blur(10px);
+}
+
+.referral-math-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.referral-math-row:last-child { border-bottom: none; }
+
+.referral-math-label {
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.referral-math-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  color: var(--gold);
+}
+
+.referral-math-final {
+  margin-top: 18px;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--green-500), var(--green-600));
+  border-radius: 14px;
+  text-align: center;
+}
+
+.referral-math-final-label {
+  font-size: .75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 4px;
+}
+
+.referral-math-final-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: white;
+  line-height: 1;
+}
+
 /* === COMPATIBILITY WIDGET === */
 .compat-section {
   background: linear-gradient(180deg, var(--white) 0%, var(--surface) 100%);
@@ -2192,6 +2298,41 @@ footer {
   </div>
 </section>
 
+<!-- REFERRAL PROGRAM -->
+<section class="referral-section">
+  <div class="container">
+    <div class="referral-grid">
+      <div>
+        <div class="section-eyebrow">Refer & Earn — Built In</div>
+        <h2>Refer 10 tax offices and your next year is <span class="highlight">free.</span></h2>
+        <p>Every tax pro you refer earns you <strong style="color: var(--gold);">$250 credit</strong> toward your renewal. Credits stack. Hit 10 referrals and your $2,497 renewal drops to zero.</p>
+        <p>Your buddy who signs up through your link gets <strong style="color: var(--gold);">$250 off</strong> their first year too — so you're not just earning, you're saving them money. Everyone wins.</p>
+        <p style="font-size: .95rem; color: rgba(255,255,255,.65); margin-top: 18px;">💡 Most tax pros know 4-8 other tax pros directly. Cover your subscription in your first season.</p>
+      </div>
+
+      <div class="referral-math">
+        <div class="referral-math-row">
+          <span class="referral-math-label">1 referral</span>
+          <span class="referral-math-value">$250 off</span>
+        </div>
+        <div class="referral-math-row">
+          <span class="referral-math-label">5 referrals</span>
+          <span class="referral-math-value">$1,250 off</span>
+        </div>
+        <div class="referral-math-row">
+          <span class="referral-math-label">10 referrals</span>
+          <span class="referral-math-value">$2,497 off</span>
+        </div>
+
+        <div class="referral-math-final">
+          <div class="referral-math-final-label">Renewal cost at 10 referrals</div>
+          <div class="referral-math-final-value">$0 · FREE YEAR 🎉</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PRICING -->
 <section id="pricing" class="pricing-section">
   <div class="container">
@@ -2273,6 +2414,7 @@ footer {
             <li>White-glove 5-day setup (we do it for you)</li>
             <li>Priority phone support (2-hr response)</li>
             <li>Founders rate locked for life — never goes up</li>
+            <li><strong>Refer & Earn:</strong> $250 credit per referral, free year at 10</li>
           </ul>
 
           <a href="#" class="btn btn-gold">Lock in Founders Pricing →</a>

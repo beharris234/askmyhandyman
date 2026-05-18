@@ -67,6 +67,27 @@ export default async function ClientDetailPage({
         )}
       </div>
 
+      {/* Refund Tracking link card */}
+      <Link
+        href={`/clients/${id}/refund`}
+        className="block bg-white rounded-2xl border border-slate-200 p-6 mb-6 hover:border-[var(--green-500)] transition group"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="text-2xl">💰</div>
+            <div>
+              <div className="font-bold text-[var(--navy-900)] group-hover:text-[var(--green-600)]">
+                Refund Tracking
+              </div>
+              <div className="text-xs text-[var(--text-muted)]">
+                File a return, schedule auto-text alerts, track status to deposit
+              </div>
+            </div>
+          </div>
+          <span className="text-[var(--green-600)] font-bold">→</span>
+        </div>
+      </Link>
+
       {/* Documents */}
       <div className="bg-white rounded-2xl border border-slate-200 p-6">
         <div className="flex items-center justify-between mb-4">

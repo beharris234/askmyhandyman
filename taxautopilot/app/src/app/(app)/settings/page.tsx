@@ -84,7 +84,23 @@ export default async function SettingsPage({
         )}
       </section>
 
-      {/* Connect new */}
+      {/* SMS section */}
+      <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
+        <h2 className="font-bold text-[var(--navy-900)] mb-1">SMS messaging</h2>
+        <p className="text-sm text-[var(--text-muted)] mb-5">
+          Give clients a phone number to text. AI drafts replies you approve in one click.
+        </p>
+        <ProviderCard
+          emoji="📱"
+          title="Twilio SMS"
+          sub="Set up incoming + outgoing texts"
+          href="/settings/twilio"
+          enabled={encryptionConfigured}
+          disabledReason="Set ENCRYPTION_KEY (32+ chars) in .env first"
+        />
+      </section>
+
+      {/* Connect new inbox section */}
       <section className="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 className="font-bold text-[var(--navy-900)] mb-1">Connect a new inbox</h2>
         <p className="text-sm text-[var(--text-muted)] mb-5">

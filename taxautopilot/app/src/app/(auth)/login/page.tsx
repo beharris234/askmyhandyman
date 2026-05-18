@@ -13,6 +13,12 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
       <LoginForm action={loginAction} next={params.next} initialError={params.error} />
 
+      <div className="mt-4 text-xs text-center">
+        <Link href="/forgot-password" className="text-[var(--text-muted)] hover:text-[var(--navy-900)] hover:underline">
+          Forgot your password?
+        </Link>
+      </div>
+
       <div className="mt-6 text-sm text-center text-[var(--text-muted)]">
         Don&apos;t have an account?{" "}
         <Link href="/signup" className="text-[var(--green-600)] font-semibold hover:underline">

@@ -90,6 +90,20 @@ export default async function SettingsPage({
         )}
       </section>
 
+      {/* Account section */}
+      <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
+        <h2 className="font-bold text-[var(--navy-900)] mb-1">Your account</h2>
+        <p className="text-sm text-[var(--text-muted)] mb-4">
+          Change your name, email, or password. Export or delete your data.
+        </p>
+        <a
+          href="/settings/account"
+          className="inline-flex items-center gap-2 bg-white border-2 border-[var(--navy-900)] text-[var(--navy-900)] font-bold px-4 py-2 rounded-lg hover:bg-[var(--navy-900)] hover:text-white transition text-sm"
+        >
+          👤 Manage Account →
+        </a>
+      </section>
+
       {/* Billing section */}
       <section className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
         <h2 className="font-bold text-[var(--navy-900)] mb-1">Billing & subscription</h2>

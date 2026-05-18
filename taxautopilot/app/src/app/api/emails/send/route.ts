@@ -98,6 +98,7 @@ export async function POST(request: NextRequest) {
         channel: "email",
         external_address: pe.sender_email,
         display_name: pe.sender_name || pe.sender_email,
+        owning_preparer_id: conn.preparer_id || null,
       })
       .select()
       .single();

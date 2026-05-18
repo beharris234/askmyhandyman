@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildInviteUrl, generateInviteToken } from "@/lib/invitations";
+import { inviteEmailTemplate, sendTransactional } from "@/lib/transactional-email";
 
 export const runtime = "nodejs";
 
@@ -60,9 +61,34 @@ export async function POST(request: NextRequest) {
   }
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const inviteUrl = buildInviteUrl(token, appUrl);
+
+  // Fire transactional email — fire-and-forget, don't block the API response
+  const { data: inviterProfile } = await supabase
+    .from("profiles")
+    .select("full_name, organizations(name)")
+    .eq("id", user.id)
+    .single();
+  const orgRaw = inviterProfile?.organizations as unknown;
+  const org = (Array.isArray(orgRaw) ? orgRaw[0] : orgRaw) as { name?: string } | null;
+
+  const template = inviteEmailTemplate({
+    inviteUrl,
+    officeName: org?.name ?? "the tax office",
+    inviterName: inviterProfile?.full_name ?? "A teammate",
+    role,
+  });
+  const emailResult = await sendTransactional({
+    to: email,
+    subject: template.subject,
+    html: template.html,
+  });
+
   return NextResponse.json({
     ok: true,
     invite_id: invite.id,
-    invite_url: buildInviteUrl(token, appUrl),
+    invite_url: inviteUrl,
+    email_sent: emailResult.ok,
+    email_error: emailResult.ok ? null : emailResult.error,
   });
 }

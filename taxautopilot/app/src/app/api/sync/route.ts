@@ -98,6 +98,7 @@ type Conn = {
   access_token: string;
   refresh_token: string;
   last_synced_at: string | null;
+  preparer_id?: string | null;
   imap_host?: string | null;
   imap_port?: number | null;
   imap_secure?: boolean | null;
@@ -318,6 +319,28 @@ async function processEmail(
   const matchedClientId = input.sender.email
     ? clientByEmail.get(input.sender.email.toLowerCase())
     : undefined;
+
+  // Ensure a conversation exists for this email thread, stamped with the
+  // owning preparer (personal inbox → that preparer; office-wide → null)
+  if (input.sender.email) {
+    const { data: existingConv } = await supabase
+      .from("conversations")
+      .select("id, owning_preparer_id")
+      .eq("organization_id", conn.organization_id)
+      .eq("channel", "email")
+      .eq("external_address", input.sender.email)
+      .maybeSingle();
+    if (!existingConv) {
+      await supabase.from("conversations").insert({
+        organization_id: conn.organization_id,
+        client_id: matchedClientId || null,
+        channel: "email",
+        external_address: input.sender.email,
+        display_name: input.sender.name || input.sender.email,
+        owning_preparer_id: conn.preparer_id || null,
+      });
+    }
+  }
 
   const classification = await classifyEmail({
     subject: input.subject,

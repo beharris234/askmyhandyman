@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { isManager } from "@/lib/permissions";
+import { WelcomeModal } from "./WelcomeModal";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -11,7 +12,7 @@ export default async function DashboardPage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, role, organizations(referral_credit_balance, referral_code, name)")
+    .select("full_name, role, onboarded_at, organizations(referral_credit_balance, referral_code, name)")
     .eq("id", user!.id)
     .single();
 
@@ -53,9 +54,18 @@ export default async function DashboardPage() {
     .limit(5);
 
   const firstName = (profile?.full_name || "there").split(" ")[0];
+  const showWelcome = !profile?.onboarded_at;
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto">
+      {showWelcome && org && (
+        <WelcomeModal
+          firstName={firstName}
+          officeName={org.name}
+          referralCode={org.referral_code}
+          appUrl={process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}
+        />
+      )}
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-[var(--navy-900)] tracking-tight">
           Good {timeOfDay()}, {firstName} 👋

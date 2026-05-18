@@ -3,6 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import {
+  referralEarnedEmailTemplate,
+  sendTransactional,
+  welcomeEmailTemplate,
+} from "@/lib/transactional-email";
+import { buildReferralUrl } from "@/lib/referrals";
 
 function slugify(input: string): string {
   return input
@@ -123,14 +129,62 @@ export async function signUpAction(formData: FormData) {
       referral_code: referralCode,
       status: "signed_up",
     });
-    // Fire-and-forget credit award via RPC. Failure isn't fatal — we have
-    // an audit log via the referrals table to reconcile if needed.
-    await supabase.rpc("award_referral_credit", {
+    const { data: newBalance } = await supabase.rpc("award_referral_credit", {
       p_org_id: referrerOrgId,
       p_amount: 250,
       p_reason: "referral_earned",
       p_referral_id: null,
     });
+
+    // Notify the referrer
+    const { data: referrer } = await supabase
+      .from("profiles")
+      .select("email, full_name, organizations(name)")
+      .eq("organization_id", referrerOrgId)
+      .eq("role", "owner")
+      .maybeSingle();
+    if (referrer?.email) {
+      const { count: qualifiedCount } = await supabase
+        .from("referrals")
+        .select("*", { count: "exact", head: true })
+        .eq("referrer_org_id", referrerOrgId);
+      const template = referralEarnedEmailTemplate({
+        refereeName: officeName,
+        newBalance: typeof newBalance === "number" ? newBalance : 250,
+        referralCount: qualifiedCount ?? 1,
+        referralsToFreeYear: Math.max(10 - (qualifiedCount ?? 1), 0),
+        appUrl: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      });
+      await sendTransactional({
+        to: referrer.email,
+        subject: template.subject,
+        html: template.html,
+      });
+    }
+  }
+
+  // Welcome email for new orgs (not invite-flow joiners — they get the team feel)
+  if (!inviteToken) {
+    const { data: newOrg } = await supabase
+      .from("organizations")
+      .select("name, referral_code")
+      .eq("id", orgId)
+      .single();
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    if (newOrg) {
+      const template = welcomeEmailTemplate({
+        fullName,
+        officeName: newOrg.name,
+        referralCode: newOrg.referral_code,
+        referralUrl: buildReferralUrl(newOrg.referral_code, appUrl),
+        appUrl,
+      });
+      await sendTransactional({
+        to: email,
+        subject: template.subject,
+        html: template.html,
+      });
+    }
   }
 
   revalidatePath("/", "layout");

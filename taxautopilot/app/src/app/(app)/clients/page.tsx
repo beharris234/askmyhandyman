@@ -66,12 +66,20 @@ export default async function ClientsPage({
             {clients?.length ?? 0} {clients?.length === 1 ? "client" : "clients"} in this view.
           </p>
         </div>
-        <Link
-          href="/clients/new"
-          className="bg-[var(--navy-900)] text-white font-bold px-4 py-2.5 rounded-lg hover:bg-[var(--green-600)] transition text-sm"
-        >
-          + Add Client
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/clients/import"
+            className="bg-white border-2 border-[var(--navy-900)] text-[var(--navy-900)] font-bold px-3 py-2 rounded-lg hover:bg-[var(--navy-900)] hover:text-white transition text-sm"
+          >
+            ⬆ Import CSV
+          </Link>
+          <Link
+            href="/clients/new"
+            className="bg-[var(--navy-900)] text-white font-bold px-4 py-2.5 rounded-lg hover:bg-[var(--green-600)] transition text-sm"
+          >
+            + Add Client
+          </Link>
+        </div>
       </div>
 
       <ClientFilterTabs

@@ -46,19 +46,20 @@ export default async function InboxPage() {
               CLASSIFICATION_META[e.ai_classification || "other"] || CLASSIFICATION_META.other;
             const client = e.clients as { id: string; full_name: string } | null;
             return (
-              <div key={e.id} className="p-4 sm:p-5 hover:bg-slate-50 transition">
+              <Link
+                key={e.id}
+                href={`/inbox/${e.id}`}
+                className="block p-4 sm:p-5 hover:bg-slate-50 transition"
+              >
                 <div className="flex items-start gap-3">
                   <div className="text-2xl shrink-0">{meta.emoji}</div>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <ClassificationPill meta={meta} />
                       {client ? (
-                        <Link
-                          href={`/clients/${client.id}`}
-                          className="text-xs font-bold text-[var(--green-600)] hover:underline"
-                        >
+                        <span className="text-xs font-bold text-[var(--green-600)]">
                           {client.full_name}
-                        </Link>
+                        </span>
                       ) : (
                         <span className="text-xs font-medium text-[var(--text-light)]">
                           Unmatched sender
@@ -91,7 +92,7 @@ export default async function InboxPage() {
                     )}
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>

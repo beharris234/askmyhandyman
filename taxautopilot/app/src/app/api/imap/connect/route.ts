@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { encrypt } from "@/lib/encryption";
 import { testImapConnection } from "@/lib/imap";
+import { smtpDefaultsForImapHost } from "@/lib/email-sender";
 
 export const runtime = "nodejs";
 
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
   }
 
   const encryptedPassword = encrypt(password);
+  const smtpDefaults = smtpDefaultsForImapHost(host);
 
   const { error } = await supabase.from("email_connections").upsert(
     {
@@ -61,6 +63,9 @@ export async function POST(request: NextRequest) {
       imap_port: port,
       imap_secure: secure,
       imap_password_encrypted: encryptedPassword,
+      smtp_host: smtpDefaults?.host ?? null,
+      smtp_port: smtpDefaults?.port ?? null,
+      smtp_secure: smtpDefaults?.secure ?? null,
       status: "active",
     },
     { onConflict: "organization_id,provider,email_address" }

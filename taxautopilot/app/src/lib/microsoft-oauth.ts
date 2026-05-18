@@ -8,6 +8,7 @@ export const OUTLOOK_SCOPES = [
   "User.Read",
   "Mail.Read",
   "Mail.ReadWrite",
+  "Mail.Send",
 ];
 
 export function getMicrosoftAuthUrl(state: string): string {

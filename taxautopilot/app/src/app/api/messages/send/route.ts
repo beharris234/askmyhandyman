@@ -47,12 +47,48 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { data: twilioNum } = await supabase
-    .from("twilio_numbers")
-    .select("*")
-    .eq("organization_id", profile.organization_id)
-    .eq("status", "active")
-    .maybeSingle();
+  // Pick the right Twilio number:
+  //  1. If the conversation has an owning_preparer_id, use THAT preparer's
+  //     personal number (so replies come from the same line clients texted)
+  //  2. Otherwise, prefer the current user's personal number
+  //  3. Otherwise, fall back to the org's office-wide number
+  const { data: convFull } = await supabase
+    .from("conversations")
+    .select("owning_preparer_id")
+    .eq("id", conversationId)
+    .single();
+
+  let twilioNum = null;
+  if (convFull?.owning_preparer_id) {
+    const { data } = await supabase
+      .from("twilio_numbers")
+      .select("*")
+      .eq("organization_id", profile.organization_id)
+      .eq("preparer_id", convFull.owning_preparer_id)
+      .eq("status", "active")
+      .maybeSingle();
+    twilioNum = data;
+  }
+  if (!twilioNum) {
+    const { data } = await supabase
+      .from("twilio_numbers")
+      .select("*")
+      .eq("organization_id", profile.organization_id)
+      .eq("preparer_id", user.id)
+      .eq("status", "active")
+      .maybeSingle();
+    twilioNum = data;
+  }
+  if (!twilioNum) {
+    const { data } = await supabase
+      .from("twilio_numbers")
+      .select("*")
+      .eq("organization_id", profile.organization_id)
+      .is("preparer_id", null)
+      .eq("status", "active")
+      .maybeSingle();
+    twilioNum = data;
+  }
 
   if (!twilioNum) {
     return NextResponse.json(

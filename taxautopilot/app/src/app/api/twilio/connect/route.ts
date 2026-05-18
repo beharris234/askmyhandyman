@@ -34,6 +34,7 @@ export async function POST(request: NextRequest) {
   const authToken = String(form.get("auth_token") || "").trim();
   const phoneRaw = String(form.get("phone_number") || "").trim();
   const phoneNumber = normalizePhone(phoneRaw);
+  const scope = String(form.get("scope") || "office") === "personal" ? "personal" : "office";
 
   if (!accountSid || !authToken || !phoneNumber) {
     return NextResponse.json(
@@ -62,6 +63,8 @@ export async function POST(request: NextRequest) {
       phone_number: phoneNumber,
       friendly_name: test.friendlyName || null,
       webhook_secret: randomBytes(16).toString("base64url"),
+      preparer_id: scope === "personal" ? user.id : null,
+      visibility: scope,
       status: "active",
     },
     { onConflict: "organization_id,phone_number" }

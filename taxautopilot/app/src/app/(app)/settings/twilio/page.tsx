@@ -5,16 +5,20 @@ import { TwilioConnectForm } from "./TwilioConnectForm";
 export default async function TwilioSettingsPage() {
   const supabase = await createClient();
 
-  const { data: twilioNum } = await supabase
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: numbers } = await supabase
     .from("twilio_numbers")
-    .select("id, phone_number, friendly_name, status, created_at")
-    .maybeSingle();
+    .select("id, phone_number, friendly_name, status, preparer_id, visibility, created_at, profiles!twilio_numbers_preparer_id_fkey(full_name)")
+    .order("created_at", { ascending: false });
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const webhookUrl = `${appUrl}/api/twilio/sms-incoming`;
 
   return (
-    <div className="p-6 md:p-10 max-w-2xl mx-auto">
+    <div className="p-6 md:p-10 max-w-3xl mx-auto">
       <Link
         href="/settings"
         className="text-sm text-[var(--text-muted)] hover:text-[var(--navy-900)] mb-4 inline-block"
@@ -22,49 +26,80 @@ export default async function TwilioSettingsPage() {
         ← Back to settings
       </Link>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-8">
+      <div className="bg-white rounded-2xl border border-slate-200 p-8 mb-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="text-3xl">📱</div>
           <div>
             <h1 className="text-2xl font-extrabold text-[var(--navy-900)]">Twilio SMS</h1>
             <p className="text-sm text-[var(--text-muted)]">
-              Connect your Twilio number so AI can text clients on your behalf.
+              Connect Twilio numbers. Each preparer can have their own line or use the office-wide number.
             </p>
           </div>
         </div>
 
-        {twilioNum ? (
-          <div className="rounded-xl bg-[var(--green-100)] border border-[var(--green-500)]/30 p-5 mb-6">
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <div>
-                <div className="font-bold text-[var(--navy-900)]">
-                  ✓ Connected: {twilioNum.phone_number}
-                </div>
-                {twilioNum.friendly_name && (
-                  <div className="text-xs text-[var(--text-muted)]">{twilioNum.friendly_name}</div>
-                )}
-              </div>
-              <span className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded-full bg-[var(--green-500)] text-white">
-                {twilioNum.status}
-              </span>
+        {/* Existing numbers */}
+        {numbers && numbers.length > 0 && (
+          <div className="space-y-2 mb-6">
+            <div className="text-xs uppercase font-bold tracking-wider text-[var(--text-muted)] mb-2">
+              Connected numbers ({numbers.length})
             </div>
+            {numbers.map((n) => {
+              const preparerRaw = n.profiles as unknown;
+              const preparer = (Array.isArray(preparerRaw) ? preparerRaw[0] : preparerRaw) as
+                | { full_name: string }
+                | null;
+              return (
+                <div
+                  key={n.id}
+                  className="flex items-center justify-between bg-slate-50 rounded-lg p-3 border border-slate-200"
+                >
+                  <div>
+                    <div className="font-semibold text-[var(--navy-900)] font-mono">
+                      {n.phone_number}
+                    </div>
+                    <div className="text-xs text-[var(--text-muted)] mt-0.5">
+                      {n.visibility === "personal" ? (
+                        <>👤 Personal · {preparer?.full_name || (n.preparer_id === user?.id ? "You" : "—")}</>
+                      ) : (
+                        <>🏢 Office-wide · everyone uses this line</>
+                      )}
+                    </div>
+                  </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                      n.status === "active"
+                        ? "bg-[var(--green-100)] text-[var(--green-600)]"
+                        : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {n.status}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-        ) : (
-          <TwilioConnectForm />
         )}
+
+        {/* Connect form */}
+        <div>
+          <div className="text-xs uppercase font-bold tracking-wider text-[var(--text-muted)] mb-3">
+            {numbers && numbers.length > 0 ? "Connect another number" : "Connect your first number"}
+          </div>
+          <TwilioConnectForm />
+        </div>
 
         {/* Webhook URL section */}
         <div className="mt-6 pt-6 border-t border-slate-200">
           <h3 className="font-bold text-[var(--navy-900)] mb-2">Set up the incoming SMS webhook</h3>
           <p className="text-sm text-[var(--text-muted)] mb-3">
-            In your Twilio Console, set this URL as the &ldquo;A message comes in&rdquo; webhook for your phone number:
+            In your Twilio Console, set this URL as the &ldquo;A message comes in&rdquo; webhook for EVERY number you connect:
           </p>
           <div className="bg-slate-900 text-green-400 font-mono text-xs p-3 rounded-lg break-all">
             POST {webhookUrl}
           </div>
           <ol className="mt-4 space-y-1.5 text-xs text-[var(--text-muted)] list-decimal list-inside">
             <li>Console → Phone Numbers → Manage → Active numbers</li>
-            <li>Click your number → scroll to &ldquo;Messaging configuration&rdquo;</li>
+            <li>Click each number → scroll to &ldquo;Messaging configuration&rdquo;</li>
             <li>Webhook URL: paste the URL above (HTTP POST)</li>
             <li>Save. Test by texting your number — it should appear in /messages.</li>
           </ol>
@@ -72,7 +107,7 @@ export default async function TwilioSettingsPage() {
 
         <div className="mt-6 pt-6 border-t border-slate-200 text-xs text-[var(--text-muted)] space-y-1.5">
           <div>
-            🔐 Your Auth Token is encrypted (AES-256-GCM) before storage. It&apos;s only
+            🔐 Each Auth Token is encrypted (AES-256-GCM) before storage. Only
             decrypted in memory at send-time.
           </div>
           <div>

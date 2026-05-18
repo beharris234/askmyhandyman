@@ -7,6 +7,7 @@ export function TwilioConnectForm() {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [scope, setScope] = useState<"office" | "personal">("office");
 
   return (
     <form
@@ -15,6 +16,7 @@ export function TwilioConnectForm() {
         e.preventDefault();
         setError(null);
         const formData = new FormData(e.currentTarget);
+        formData.set("scope", scope);
         startTransition(async () => {
           try {
             const res = await fetch("/api/twilio/connect", { method: "POST", body: formData });
@@ -23,6 +25,7 @@ export function TwilioConnectForm() {
               setError(body.error || "Failed to connect");
               return;
             }
+            (e.target as HTMLFormElement).reset();
             router.refresh();
           } catch (err) {
             setError(err instanceof Error ? err.message : "Connection failed");
@@ -30,6 +33,43 @@ export function TwilioConnectForm() {
         });
       }}
     >
+      {/* Scope picker */}
+      <div className="rounded-xl bg-slate-50 p-3 border border-slate-200">
+        <div className="text-xs uppercase font-bold tracking-wider text-[var(--text-muted)] mb-2">
+          Who uses this number?
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setScope("office")}
+            className={`text-left p-2.5 rounded-lg border-2 transition ${
+              scope === "office"
+                ? "border-[var(--green-500)] bg-white"
+                : "border-slate-200 bg-white hover:border-slate-300"
+            }`}
+          >
+            <div className="font-bold text-sm text-[var(--navy-900)]">🏢 Office-wide</div>
+            <div className="text-[10px] text-[var(--text-muted)] leading-tight mt-0.5">
+              Whole team uses this number
+            </div>
+          </button>
+          <button
+            type="button"
+            onClick={() => setScope("personal")}
+            className={`text-left p-2.5 rounded-lg border-2 transition ${
+              scope === "personal"
+                ? "border-[var(--green-500)] bg-white"
+                : "border-slate-200 bg-white hover:border-slate-300"
+            }`}
+          >
+            <div className="font-bold text-sm text-[var(--navy-900)]">👤 Just for me</div>
+            <div className="text-[10px] text-[var(--text-muted)] leading-tight mt-0.5">
+              Your personal SMS line — only you reply
+            </div>
+          </button>
+        </div>
+      </div>
+
       <Field
         label="Account SID"
         name="account_sid"
@@ -46,7 +86,7 @@ export function TwilioConnectForm() {
         autoComplete="off"
       />
       <Field
-        label="Your Twilio phone number"
+        label="Twilio phone number"
         name="phone_number"
         type="tel"
         required

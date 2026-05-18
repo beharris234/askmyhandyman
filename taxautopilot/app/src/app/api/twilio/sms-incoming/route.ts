@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
   // Find the org by Twilio number
   const { data: twilioNum } = await supabase
     .from("twilio_numbers")
-    .select("id, organization_id, auth_token_encrypted")
+    .select("id, organization_id, auth_token_encrypted, preparer_id")
     .eq("phone_number", toPhone)
     .eq("status", "active")
     .maybeSingle();
@@ -90,6 +90,7 @@ export async function POST(request: NextRequest) {
         channel: "sms",
         external_address: fromPhone,
         display_name: client?.full_name ?? fromPhone,
+        owning_preparer_id: twilioNum.preparer_id,
       })
       .select()
       .single();

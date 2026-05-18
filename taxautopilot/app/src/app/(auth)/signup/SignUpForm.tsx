@@ -18,9 +18,15 @@ const SOFTWARES = [
 export function SignUpForm({
   action,
   initialReferralCode,
+  inviteToken,
+  inviteEmail,
+  isInvite,
 }: {
   action: (formData: FormData) => Promise<{ error?: string } | void>;
   initialReferralCode?: string | null;
+  inviteToken?: string | null;
+  inviteEmail?: string | null;
+  isInvite?: boolean;
 }) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -39,26 +45,47 @@ export function SignUpForm({
       {initialReferralCode && (
         <input type="hidden" name="referral_code" value={initialReferralCode} />
       )}
+      {inviteToken && <input type="hidden" name="invite_token" value={inviteToken} />}
+
       <Field label="Your name" name="full_name" type="text" required autoComplete="name" />
-      <Field label="Tax office name" name="office_name" type="text" required placeholder="e.g. Johnson Tax Office" />
 
-      <label className="block">
-        <span className="block text-sm font-semibold text-[var(--navy-900)] mb-1.5">
-          Tax software
-        </span>
-        <select
-          name="software"
-          className="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 focus:border-[var(--green-500)] outline-none text-[var(--navy-900)] bg-white transition"
-        >
-          {SOFTWARES.map((s) => (
-            <option key={s.value} value={s.value}>
-              {s.label}
-            </option>
-          ))}
-        </select>
-      </label>
+      {!isInvite && (
+        <>
+          <Field
+            label="Tax office name"
+            name="office_name"
+            type="text"
+            required
+            placeholder="e.g. Johnson Tax Office"
+          />
 
-      <Field label="Work email" name="email" type="email" required autoComplete="email" />
+          <label className="block">
+            <span className="block text-sm font-semibold text-[var(--navy-900)] mb-1.5">
+              Tax software
+            </span>
+            <select
+              name="software"
+              className="w-full px-4 py-2.5 rounded-lg border-2 border-slate-200 focus:border-[var(--green-500)] outline-none text-[var(--navy-900)] bg-white transition"
+            >
+              {SOFTWARES.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        </>
+      )}
+
+      <Field
+        label="Work email"
+        name="email"
+        type="email"
+        required
+        autoComplete="email"
+        defaultValue={inviteEmail || undefined}
+        readOnly={!!inviteEmail}
+      />
       <Field
         label="Password (8+ characters)"
         name="password"

@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
   const host = String(form.get("host") || "").trim();
   const port = parseInt(String(form.get("port") || "993"), 10);
   const secure = String(form.get("secure") || "true") === "true";
+  const scope = String(form.get("scope") || "office") === "personal" ? "personal" : "office";
 
   if (!email || !password || !host || !port) {
     return NextResponse.json({ ok: false, error: "All fields are required." }, { status: 400 });
@@ -66,6 +67,8 @@ export async function POST(request: NextRequest) {
       smtp_host: smtpDefaults?.host ?? null,
       smtp_port: smtpDefaults?.port ?? null,
       smtp_secure: smtpDefaults?.secure ?? null,
+      preparer_id: scope === "personal" ? user.id : null,
+      visibility: scope,
       status: "active",
     },
     { onConflict: "organization_id,provider,email_address" }

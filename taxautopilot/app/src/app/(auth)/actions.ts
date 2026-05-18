@@ -19,8 +19,14 @@ export async function signUpAction(formData: FormData) {
   const officeName = String(formData.get("office_name") || "").trim();
   const software = String(formData.get("software") || "").trim() || null;
   const referralCode = String(formData.get("referral_code") || "").trim().toUpperCase() || null;
+  const inviteToken = String(formData.get("invite_token") || "").trim() || null;
 
-  if (!email || !password || !fullName || !officeName) {
+  // Invite flow: office_name not required — they're joining an existing org
+  if (inviteToken) {
+    if (!email || !password || !fullName) {
+      return { error: "Name, email, and password are required." };
+    }
+  } else if (!email || !password || !fullName || !officeName) {
     return { error: "All fields are required." };
   }
   if (password.length < 8) {
@@ -54,36 +60,66 @@ export async function signUpAction(formData: FormData) {
   if (signUpError) return { error: signUpError.message };
   if (!signUpData.user) return { error: "Signup failed. Try again." };
 
-  // Create organization
-  const baseSlug = slugify(officeName);
-  const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
+  // Branch: invite flow vs new-org flow
+  let orgId: string;
+  let assignedRole: string = "owner";
 
-  const { data: org, error: orgError } = await supabase
-    .from("organizations")
-    .insert({
-      name: officeName,
-      slug,
-      software,
-      referred_by_org_id: referrerOrgId,
-    })
-    .select()
-    .single();
+  if (inviteToken) {
+    // Joining an existing org via invitation
+    const { data: invite } = await supabase
+      .from("invitations")
+      .select("*")
+      .eq("token", inviteToken)
+      .single();
+    if (!invite || invite.status !== "pending") {
+      return { error: "Invitation is no longer valid." };
+    }
+    if (new Date(invite.expires_at) < new Date()) {
+      return { error: "Invitation has expired." };
+    }
+    orgId = invite.organization_id;
+    assignedRole = invite.role;
 
-  if (orgError) return { error: `Couldn't create office: ${orgError.message}` };
+    await supabase
+      .from("invitations")
+      .update({
+        status: "accepted",
+        accepted_by: signUpData.user.id,
+        accepted_at: new Date().toISOString(),
+      })
+      .eq("id", invite.id);
+  } else {
+    // Creating a new organization
+    const baseSlug = slugify(officeName);
+    const slug = `${baseSlug}-${Math.random().toString(36).slice(2, 6)}`;
+    const { data: org, error: orgError } = await supabase
+      .from("organizations")
+      .insert({
+        name: officeName,
+        slug,
+        software,
+        referred_by_org_id: referrerOrgId,
+      })
+      .select()
+      .single();
+    if (orgError) return { error: `Couldn't create office: ${orgError.message}` };
+    orgId = org.id;
+  }
 
-  // Link profile to org as owner
+  // Link profile
   const { error: profileError } = await supabase
     .from("profiles")
-    .update({ organization_id: org.id, role: "owner", full_name: fullName })
+    .update({ organization_id: orgId, role: assignedRole, full_name: fullName })
     .eq("id", signUpData.user.id);
 
   if (profileError) return { error: `Couldn't link profile: ${profileError.message}` };
 
   // If referred: insert referral row + award credit to referrer
-  if (referrerOrgId && referralCode) {
+  // (skip if joining an existing org via invite — referrals are for NEW orgs)
+  if (referrerOrgId && referralCode && !inviteToken) {
     await supabase.from("referrals").insert({
       referrer_org_id: referrerOrgId,
-      referee_org_id: org.id,
+      referee_org_id: orgId,
       referral_code: referralCode,
       status: "signed_up",
     });

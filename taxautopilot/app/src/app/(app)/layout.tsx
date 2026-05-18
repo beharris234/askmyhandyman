@@ -44,6 +44,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <NavLink href="/messages" label="Messages" icon="💬" />
           <NavLink href="/clients" label="Clients" icon="👥" />
           <NavLink href="/campaigns" label="Campaigns" icon="📣" />
+          <NavLink href="/team" label="Team" icon="🧑‍💼" />
           <NavLink href="/referrals" label="Refer & Earn" icon="🎁" />
           <NavLink href="/settings" label="Settings" icon="⚙️" />
           <NavLink href="/demo" label="Doc Extractor" icon="📄" external />

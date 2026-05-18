@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { disconnectConnectionAction, syncNowAction } from "./actions";
 import { SyncButton, DisconnectButton } from "./Buttons";
+import { ConnectScopePicker } from "./ConnectScopePicker";
 
 type SearchParams = Promise<{ connected?: string; error?: string }>;
 
@@ -14,8 +15,12 @@ export default async function SettingsPage({
 
   const { data: connections } = await supabase
     .from("email_connections")
-    .select("id, provider, email_address, status, last_synced_at, created_at")
+    .select("id, provider, email_address, status, last_synced_at, created_at, visibility, preparer_id")
     .order("created_at", { ascending: false });
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
   const googleConfigured = Boolean(process.env.GOOGLE_CLIENT_ID);
   const microsoftConfigured = Boolean(process.env.MICROSOFT_CLIENT_ID);
@@ -57,12 +62,13 @@ export default async function SettingsPage({
                 className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{conn.provider === "gmail" ? "📧" : "✉️"}</span>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xl">{conn.provider === "gmail" ? "📧" : conn.provider === "outlook" ? "✉️" : "📬"}</span>
                     <div className="font-semibold text-[var(--navy-900)] truncate">
                       {conn.email_address}
                     </div>
                     <StatusPill status={conn.status} />
+                    <ScopePill scope={conn.visibility} isMine={conn.preparer_id === user?.id} />
                   </div>
                   <div className="text-xs text-[var(--text-muted)] mt-1 ml-7">
                     {conn.last_synced_at
@@ -103,39 +109,34 @@ export default async function SettingsPage({
       {/* Connect new inbox section */}
       <section className="bg-white rounded-2xl border border-slate-200 p-6">
         <h2 className="font-bold text-[var(--navy-900)] mb-1">Connect a new inbox</h2>
+        <ConnectScopePicker
+          googleConfigured={googleConfigured}
+          microsoftConfigured={microsoftConfigured}
+          encryptionConfigured={encryptionConfigured}
+        />
         <p className="text-sm text-[var(--text-muted)] mb-5">
           The AI reads incoming emails, files attached docs to the right client, and
           flags ones that need your attention.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <ProviderCard
-            emoji="📧"
-            title="Gmail"
-            sub="Google Workspace or personal"
-            href="/api/google/connect"
-            enabled={googleConfigured}
-            disabledReason="Set GOOGLE_CLIENT_ID in .env"
-          />
-          <ProviderCard
-            emoji="✉️"
-            title="Outlook / Microsoft 365"
-            sub="Personal or work account"
-            href="/api/microsoft/connect"
-            enabled={microsoftConfigured}
-            disabledReason="Set MICROSOFT_CLIENT_ID in .env"
-          />
-          <ProviderCard
-            emoji="📬"
-            title="Any Other Email"
-            sub="Yahoo · iCloud · GoDaddy · custom — IMAP"
-            href="/settings/imap"
-            enabled={encryptionConfigured}
-            disabledReason="Set ENCRYPTION_KEY (32+ chars) in .env"
-          />
-        </div>
+        {/* Cards now rendered inside ConnectScopePicker so they can append ?scope= */}
       </section>
     </div>
+  );
+}
+
+function ScopePill({ scope, isMine }: { scope: string | null; isMine: boolean }) {
+  if (scope === "personal") {
+    return (
+      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--gold-light)] text-amber-900">
+        {isMine ? "👤 Personal (yours)" : "👤 Personal"}
+      </span>
+    );
+  }
+  return (
+    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--navy-100)] text-[var(--navy-700)]">
+      🏢 Office-wide
+    </span>
   );
 }
 

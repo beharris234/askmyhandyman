@@ -1440,18 +1440,67 @@ section { padding: 100px 0; }
   font-weight: 600;
 }
 
-/* Two-card pricing grid */
+/* Tier pricing grid (3 columns now) */
 .pricing-grid {
   display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 24px;
+  grid-template-columns: 1fr 1.1fr 1fr;
+  gap: 18px;
   align-items: start;
-  max-width: 1080px;
+  max-width: 1180px;
   margin: 0 auto;
 }
 
-@media (max-width: 880px) {
+@media (max-width: 1024px) {
+  .pricing-grid { grid-template-columns: 1fr 1fr; gap: 18px; }
+  .pricing-card-growth { grid-column: span 2; max-width: 600px; margin: 0 auto !important; }
+}
+
+@media (max-width: 720px) {
   .pricing-grid { grid-template-columns: 1fr; }
+  .pricing-card-growth { grid-column: span 1; max-width: none !important; }
+}
+
+.pricing-tier-size {
+  display: inline-block;
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  padding: 4px 10px;
+  border-radius: 100px;
+  margin-bottom: 10px;
+}
+
+.enterprise-callout {
+  max-width: 1180px;
+  margin: 32px auto 0;
+  background: linear-gradient(135deg, var(--navy-900), var(--navy-700));
+  border-radius: 18px;
+  padding: 24px 32px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.enterprise-callout-text h4 {
+  color: white;
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+}
+
+.enterprise-callout-text p {
+  color: rgba(255,255,255,.7);
+  font-size: .9rem;
+  margin: 0;
+}
+
+.enterprise-callout .btn-gold {
+  white-space: nowrap;
 }
 
 .pricing-grid .pricing-card { max-width: none; margin: 0; }
@@ -2344,87 +2393,128 @@ footer {
 
     <!-- Math callout -->
     <div class="pricing-math">
-      <div class="pricing-math-label">⚡ Do the math first</div>
+      <div class="pricing-math-label">⚡ Founders pricing locks for life — every tier</div>
       <div class="math-row">
-        <span class="math-label">Pay monthly:</span>
-        <span class="math-value">$397/mo × 12 = <span class="math-bad">$4,764/yr</span></span>
+        <span class="math-label">Solo (1 preparer):</span>
+        <span class="math-value"><span class="math-good">$2,497/yr</span></span>
       </div>
       <div class="math-row">
-        <span class="math-label">Pay annual:</span>
-        <span class="math-value"><span class="math-good">$2,497/yr</span> · save $2,267 🔥</span>
+        <span class="math-label">Growth (5 preparers):</span>
+        <span class="math-value"><span class="math-good">$4,997/yr</span></span>
+      </div>
+      <div class="math-row">
+        <span class="math-label">Office (20 preparers):</span>
+        <span class="math-value"><span class="math-good">$9,997/yr</span></span>
       </div>
     </div>
 
     <div class="pricing-grid">
 
-      <!-- MONTHLY CARD -->
+      <!-- SOLO CARD -->
       <div class="pricing-card pricing-card-basic">
         <div class="pricing-body">
-          <div class="pricing-tier" style="color: var(--text-muted);">For "Just Testing"</div>
-          <div class="pricing-name">Monthly Flex</div>
-
-          <div class="pricing-price">
-            <span class="new">$397</span>
-            <span class="per">/month</span>
-          </div>
-          <div class="pricing-locked-warn">⚠ Price may rise at any renewal</div>
-
-          <ul class="pricing-features">
-            <li>Core AI: doc collection, refund alerts, FAQ auto-replies</li>
-            <li>Phone-photo → tax software pipeline</li>
-            <li>Up to 500 clients</li>
-            <li>Cancel anytime</li>
-            <li class="excluded">"Money Left on the Table" report</li>
-            <li class="excluded">Win-back campaigns for lapsed clients</li>
-            <li class="excluded">IRS notice handling</li>
-            <li class="excluded">Off-season revenue engine</li>
-            <li class="excluded">Year-end value report</li>
-            <li class="excluded">Locked-in lifetime pricing</li>
-            <li class="excluded">White-glove setup (DIY only)</li>
-            <li class="excluded">Priority phone support</li>
-          </ul>
-
-          <a href="#" class="btn">Start Monthly →</a>
-        </div>
-      </div>
-
-      <!-- ANNUAL CARD (FEATURED) -->
-      <div class="pricing-card pricing-card-featured">
-        <div class="pricing-banner">⭐ Most Tax Pros Pick This · Founders Pricing</div>
-        <div class="pricing-body">
-          <div class="pricing-tier">For Serious Offices</div>
-          <div class="pricing-name">Annual Founders</div>
+          <span class="pricing-tier-size">1 Preparer</span>
+          <div class="pricing-tier" style="color: var(--text-muted);">For Solo Offices</div>
+          <div class="pricing-name">Solo Founders</div>
 
           <div class="pricing-price">
             <span class="old">$3,997</span>
             <span class="new">$2,497</span>
             <span class="per">/year</span>
           </div>
+          <div class="pricing-locked-warn" style="color: var(--gold); font-weight: 700;">🔒 Locked for life</div>
+
+          <ul class="pricing-features">
+            <li>1 preparer login</li>
+            <li>Up to 500 clients</li>
+            <li>1 SMS line (Twilio)</li>
+            <li>All AI features unlocked</li>
+            <li>"Money Left on Table" report</li>
+            <li>Win-back campaigns</li>
+            <li>IRS notice drafting</li>
+            <li>Year-end Analytics Report</li>
+            <li>Priority phone support</li>
+            <li><strong>$250 per referral</strong></li>
+          </ul>
+
+          <a href="#" class="btn">Get Solo →</a>
+        </div>
+      </div>
+
+      <!-- GROWTH CARD (FEATURED) -->
+      <div class="pricing-card pricing-card-featured pricing-card-growth">
+        <div class="pricing-banner">⭐ Most Tax Pros Pick This · Founders Pricing</div>
+        <div class="pricing-body">
+          <span class="pricing-tier-size" style="background: var(--green-100); color: var(--green-600);">Up to 5 Preparers</span>
+          <div class="pricing-tier">For Growing Offices</div>
+          <div class="pricing-name">Growth Founders</div>
+
+          <div class="pricing-price">
+            <span class="old">$7,997</span>
+            <span class="new">$4,997</span>
+            <span class="per">/year</span>
+          </div>
           <div class="pricing-locked">🔒 Locked at this price FOR LIFE</div>
 
           <ul class="pricing-features">
-            <li><strong>Everything in Monthly Flex, plus:</strong></li>
-            <li>"Money Left on the Table" report (Week 1 · $5K–$15K)</li>
-            <li>Win-back campaigns for lapsed clients</li>
-            <li>IRS notice drafting ($200–$500/notice in fees)</li>
-            <li>Full off-season revenue engine (year-round)</li>
-            <li>Year-end Analytics Report (auto-emailed)</li>
-            <li>Live monthly value dashboard</li>
-            <li>Unlimited clients</li>
-            <li>White-glove 5-day setup (we do it for you)</li>
-            <li>Priority phone support (2-hr response)</li>
-            <li>Founders rate locked for life — never goes up</li>
-            <li><strong>Refer & Earn:</strong> $250 credit per referral, free year at 10</li>
+            <li><strong>Everything in Solo, plus:</strong></li>
+            <li>Up to 5 preparers (invite teammates)</li>
+            <li>Up to 1,500 clients</li>
+            <li>5 SMS lines — each preparer can have their own</li>
+            <li>Per-preparer email inbox (personal or shared)</li>
+            <li>Client assignment to preparers</li>
+            <li>Owner dashboard sees all preparers' activity</li>
+            <li>White-glove 5-day setup for whole team</li>
+            <li>Dedicated onboarding call</li>
+            <li><strong>$250 per referral</strong></li>
           </ul>
 
           <a href="#" class="btn btn-gold">Lock in Founders Pricing →</a>
 
           <div class="pricing-guarantee">
-            🛡 <strong>60-Day Money-Back Guarantee:</strong> If we don't find at least $3,000 of revenue opportunities in your database in the first 60 days — full refund.
+            🛡 <strong>60-Day Money-Back Guarantee:</strong> If we don't find at least $5,000 of revenue opportunities in your database in 60 days — full refund.
           </div>
         </div>
       </div>
 
+      <!-- OFFICE CARD -->
+      <div class="pricing-card pricing-card-basic">
+        <div class="pricing-body">
+          <span class="pricing-tier-size">Up to 20 Preparers</span>
+          <div class="pricing-tier" style="color: var(--text-muted);">For Big Tax Offices</div>
+          <div class="pricing-name">Office Founders</div>
+
+          <div class="pricing-price">
+            <span class="old">$14,997</span>
+            <span class="new">$9,997</span>
+            <span class="per">/year</span>
+          </div>
+          <div class="pricing-locked-warn" style="color: var(--gold); font-weight: 700;">🔒 Locked for life</div>
+
+          <ul class="pricing-features">
+            <li><strong>Everything in Growth, plus:</strong></li>
+            <li>Up to 20 preparers</li>
+            <li>Unlimited clients</li>
+            <li>20 SMS lines included</li>
+            <li>Per-preparer dashboards & analytics</li>
+            <li>Role-based permissions (owner / admin / preparer)</li>
+            <li>Priority support — 1-hr response</li>
+            <li>Dedicated success manager</li>
+            <li>Custom onboarding for your team</li>
+          </ul>
+
+          <a href="#" class="btn">Get Office →</a>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="enterprise-callout">
+      <div class="enterprise-callout-text">
+        <h4>🏢 50+ Preparers? Multi-location? Custom needs?</h4>
+        <p>Enterprise pricing with multi-office command center, SSO, custom integrations, and white-glove migration.</p>
+      </div>
+      <a href="#" class="btn btn-gold">Talk to us →</a>
     </div>
 
     <p class="pricing-footnote">

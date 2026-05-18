@@ -13,11 +13,13 @@ export async function GET(request: NextRequest) {
 
   const cookieStore = await cookies();
   const storedState = cookieStore.get("ms_oauth_state")?.value;
+  const scope = cookieStore.get("ms_oauth_scope")?.value === "personal" ? "personal" : "office";
 
   if (!code || !state || state !== storedState) {
     return redirect("/settings?error=invalid_state");
   }
   cookieStore.delete("ms_oauth_state");
+  cookieStore.delete("ms_oauth_scope");
 
   const supabase = await createClient();
   const {
@@ -50,6 +52,8 @@ export async function GET(request: NextRequest) {
         token_expires_at: tokenExpiresAt,
         scopes: tokens.scope.split(" "),
         status: "active",
+        preparer_id: scope === "personal" ? user.id : null,
+        visibility: scope,
       },
       { onConflict: "organization_id,provider,email_address" }
     );

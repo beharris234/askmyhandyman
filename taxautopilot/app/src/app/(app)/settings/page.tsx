@@ -18,6 +18,10 @@ export default async function SettingsPage({
     .order("created_at", { ascending: false });
 
   const googleConfigured = Boolean(process.env.GOOGLE_CLIENT_ID);
+  const microsoftConfigured = Boolean(process.env.MICROSOFT_CLIENT_ID);
+  const encryptionConfigured = Boolean(
+    process.env.ENCRYPTION_KEY && process.env.ENCRYPTION_KEY.length >= 32
+  );
 
   return (
     <div className="p-6 md:p-10 max-w-4xl mx-auto">
@@ -88,43 +92,79 @@ export default async function SettingsPage({
           flags ones that need your attention.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {googleConfigured ? (
-            <a
-              href="/api/google/connect"
-              className="flex items-center gap-3 rounded-xl border-2 border-slate-200 p-4 hover:border-[var(--green-500)] transition group"
-            >
-              <span className="text-2xl">📧</span>
-              <div className="flex-1">
-                <div className="font-bold text-[var(--navy-900)] group-hover:text-[var(--green-600)]">
-                  Connect Gmail
-                </div>
-                <div className="text-xs text-[var(--text-muted)]">Google Workspace or personal</div>
-              </div>
-              <span className="text-[var(--green-600)] font-bold">→</span>
-            </a>
-          ) : (
-            <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-slate-200 p-4 opacity-60">
-              <span className="text-2xl">📧</span>
-              <div className="flex-1">
-                <div className="font-bold text-[var(--navy-900)]">Connect Gmail</div>
-                <div className="text-xs text-[var(--text-muted)]">
-                  Set <code className="font-mono text-[10px]">GOOGLE_CLIENT_ID</code> in .env to enable
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-slate-200 p-4 opacity-60">
-            <span className="text-2xl">✉️</span>
-            <div className="flex-1">
-              <div className="font-bold text-[var(--navy-900)]">Connect Outlook</div>
-              <div className="text-xs text-[var(--text-muted)]">Coming next phase</div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <ProviderCard
+            emoji="📧"
+            title="Gmail"
+            sub="Google Workspace or personal"
+            href="/api/google/connect"
+            enabled={googleConfigured}
+            disabledReason="Set GOOGLE_CLIENT_ID in .env"
+          />
+          <ProviderCard
+            emoji="✉️"
+            title="Outlook / Microsoft 365"
+            sub="Personal or work account"
+            href="/api/microsoft/connect"
+            enabled={microsoftConfigured}
+            disabledReason="Set MICROSOFT_CLIENT_ID in .env"
+          />
+          <ProviderCard
+            emoji="📬"
+            title="Any Other Email"
+            sub="Yahoo · iCloud · GoDaddy · custom — IMAP"
+            href="/settings/imap"
+            enabled={encryptionConfigured}
+            disabledReason="Set ENCRYPTION_KEY (32+ chars) in .env"
+          />
         </div>
       </section>
     </div>
+  );
+}
+
+function ProviderCard({
+  emoji,
+  title,
+  sub,
+  href,
+  enabled,
+  disabledReason,
+}: {
+  emoji: string;
+  title: string;
+  sub: string;
+  href: string;
+  enabled: boolean;
+  disabledReason: string;
+}) {
+  if (!enabled) {
+    return (
+      <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-slate-200 p-4 opacity-60">
+        <span className="text-2xl">{emoji}</span>
+        <div className="flex-1 min-w-0">
+          <div className="font-bold text-[var(--navy-900)]">{title}</div>
+          <div className="text-[10px] text-[var(--text-muted)] mt-0.5">
+            {disabledReason}
+          </div>
+        </div>
+      </div>
+    );
+  }
+  return (
+    <a
+      href={href}
+      className="flex items-center gap-3 rounded-xl border-2 border-slate-200 p-4 hover:border-[var(--green-500)] transition group"
+    >
+      <span className="text-2xl">{emoji}</span>
+      <div className="flex-1 min-w-0">
+        <div className="font-bold text-[var(--navy-900)] group-hover:text-[var(--green-600)]">
+          {title}
+        </div>
+        <div className="text-xs text-[var(--text-muted)]">{sub}</div>
+      </div>
+      <span className="text-[var(--green-600)] font-bold">→</span>
+    </a>
   );
 }
 

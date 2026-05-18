@@ -41,7 +41,7 @@ export async function syncNowAction(formData: FormData) {
     .join("; ");
 
   try {
-    const res = await fetch(`${base}/api/sync/gmail?connection_id=${id}`, {
+    const res = await fetch(`${base}/api/sync?connection_id=${id}`, {
       method: "POST",
       headers: { cookie: cookieHeader },
     });

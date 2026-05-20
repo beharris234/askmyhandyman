@@ -41,6 +41,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
         <nav className="flex-1 p-3 space-y-1">
           <NavLink href="/dashboard" label="Dashboard" icon="📊" />
+          <NavLink href="/audit" label="Money Report" icon="💸" />
           <NavLink href="/inbox" label="Inbox" icon="📬" />
           <NavLink href="/messages" label="Messages" icon="💬" />
           <NavLink href="/clients" label="Clients" icon="👥" />

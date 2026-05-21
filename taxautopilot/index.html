@@ -1319,6 +1319,211 @@ section { padding: 100px 0; }
   border-radius: 100px;
 }
 
+/* === MONEY REPORT SECTION === */
+.audit-section {
+  background: linear-gradient(135deg, #0A1628 0%, #1B3A57 100%);
+  color: white;
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.audit-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(245,185,71,.18), transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(16,185,129,.15), transparent 50%);
+  pointer-events: none;
+}
+
+.audit-section .container { position: relative; z-index: 1; }
+
+.audit-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+@media (max-width: 880px) {
+  .audit-grid { grid-template-columns: 1fr; gap: 36px; }
+}
+
+.audit-pre {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(245,185,71,.15);
+  color: var(--gold);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: .8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.audit-section h2 {
+  color: white;
+  font-size: clamp(2rem, 4vw, 3rem);
+  margin-bottom: 18px;
+  line-height: 1.1;
+}
+
+.audit-section h2 .gold-highlight {
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: rgba(245,185,71,.4);
+  text-underline-offset: 6px;
+  text-decoration-thickness: 4px;
+}
+
+.audit-section p {
+  color: rgba(255,255,255,.8);
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+.audit-features {
+  list-style: none;
+  margin: 24px 0;
+  padding: 0;
+}
+
+.audit-features li {
+  padding: 8px 0;
+  color: white;
+  font-size: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.audit-features li::before {
+  content: "✓";
+  color: var(--green-500);
+  font-weight: 800;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.audit-cta-row {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.audit-cta-row .btn-gold {
+  font-size: 1.1rem;
+  padding: 18px 32px;
+}
+
+.audit-mockup {
+  background: white;
+  color: var(--text);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  position: relative;
+}
+
+.audit-mockup-header {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+
+.audit-mockup-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--green-600);
+  margin-bottom: 6px;
+}
+
+.audit-mockup-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--navy-900);
+  margin-bottom: 4px;
+}
+
+.audit-mockup-subtitle {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+.audit-mockup-total {
+  text-align: center;
+  padding: 20px 0 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.audit-mockup-total-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.audit-mockup-total-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 3rem;
+  color: var(--navy-900);
+  line-height: 1;
+}
+
+.audit-mockup-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  font-size: .9rem;
+  border-bottom: 1px dashed var(--border);
+}
+
+.audit-mockup-row:last-child { border-bottom: none; }
+
+.audit-mockup-row-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.audit-mockup-row-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  color: var(--navy-900);
+}
+
+.audit-mockup-row-value.locked {
+  color: var(--text-light);
+  font-size: .8rem;
+}
+
+.audit-mockup-locked-row {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 14px;
+  font-size: .8rem;
+  color: var(--text-muted);
+  text-align: center;
+  border: 1px dashed var(--border);
+}
+
 /* === PRICING === */
 .pricing-section { background: var(--white); }
 
@@ -1941,12 +2146,12 @@ footer {
         <h1>The AI Office Manager Built for <span class="accent">Tax Pros.</span></h1>
         <p class="hero-subhead">Auto-collects client docs. Answers client questions. Tracks refunds. Wins back lost clients. Drafts IRS notice responses. All while you sleep — year-round, not just January–April.</p>
         <div class="hero-ctas">
-          <a href="#pricing" class="btn btn-primary">Lock in Founders Pricing →</a>
-          <a href="#demo" class="btn btn-secondary">▶ Watch 2-Min Demo</a>
+          <a href="/signup?source=audit" class="btn btn-primary">🔍 Get Your Free Money Report →</a>
+          <a href="#pricing" class="btn btn-secondary">See Pricing</a>
         </div>
         <div class="hero-trust">
           <span class="stars">★★★★★</span>
-          <span>60-day money-back guarantee · Cancel anytime</span>
+          <span>Free audit · No card required · 60-day money-back on paid plans</span>
         </div>
       </div>
 
@@ -2382,6 +2587,74 @@ footer {
   </div>
 </section>
 
+<!-- MONEY REPORT — Free Audit Section -->
+<section class="audit-section">
+  <div class="container">
+    <div class="audit-grid">
+      <div>
+        <div class="audit-pre">🔍 Before you decide, see your data</div>
+        <h2>We'll tell you how much money you <span class="gold-highlight">already left on the table</span> — free.</h2>
+        <p>Upload your client list (CSV from your tax software). 5 minutes later, you get a personalized <strong>Money Report</strong> showing exactly what your office missed last year.</p>
+
+        <ul class="audit-features">
+          <li><strong>Lapsed clients</strong> you can win back ($5,000–$15,000 typical)</li>
+          <li><strong>Amendable returns</strong> still in the IRS 3-year window</li>
+          <li><strong>Quarterly tax fees</strong> you're not billing Schedule C clients</li>
+          <li><strong>IRS notices</strong> that should have earned you $200–$500 each</li>
+          <li><strong>Off-season clients</strong> you forgot to follow up with</li>
+          <li><strong>Email volume</strong> AI could have answered for you</li>
+        </ul>
+
+        <div class="audit-cta-row">
+          <a href="/signup?source=audit" class="btn btn-gold">Run My Free Money Report →</a>
+        </div>
+        <p style="font-size: .85rem; color: rgba(255,255,255,.6); margin-top: 14px;">
+          No credit card. No commitment. Downloadable PDF.
+        </p>
+      </div>
+
+      <!-- Mockup of what the report looks like -->
+      <div class="audit-mockup">
+        <div class="audit-mockup-header">
+          <div class="audit-mockup-label">Money Report</div>
+          <div class="audit-mockup-title">Johnson Tax Office</div>
+          <div class="audit-mockup-subtitle">Generated · 847 clients analyzed</div>
+        </div>
+
+        <div class="audit-mockup-total">
+          <div class="audit-mockup-total-label">Total opportunity missed</div>
+          <div class="audit-mockup-total-value">$32,847</div>
+        </div>
+
+        <div class="audit-mockup-row">
+          <span class="audit-mockup-row-label">🕰 Lapsed clients</span>
+          <span class="audit-mockup-row-value">$11,500</span>
+        </div>
+        <div class="audit-mockup-row">
+          <span class="audit-mockup-row-label">📅 Quarterly tax fees</span>
+          <span class="audit-mockup-row-value">$9,300</span>
+        </div>
+        <div class="audit-mockup-row">
+          <span class="audit-mockup-row-label">📑 Amendable returns</span>
+          <span class="audit-mockup-row-value">$3,200</span>
+        </div>
+        <div class="audit-mockup-row">
+          <span class="audit-mockup-row-label">⚠️ IRS notices</span>
+          <span class="audit-mockup-row-value">$1,500</span>
+        </div>
+        <div class="audit-mockup-row">
+          <span class="audit-mockup-row-label">📧 Email backlog</span>
+          <span class="audit-mockup-row-value">$2,058</span>
+        </div>
+
+        <div class="audit-mockup-locked-row">
+          🔒 <strong>247 client names + drafted messages</strong> locked. Subscribe to unlock.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- PRICING -->
 <section id="pricing" class="pricing-section">
   <div class="container">
@@ -2593,11 +2866,11 @@ footer {
 <!-- FINAL CTA -->
 <section class="final-cta">
   <div class="container">
-    <h2>Stop drowning in tax season. Start growing year-round.</h2>
-    <p>Join the tax offices using AI to handle the chaos, find hidden revenue, and finally take their evenings back.</p>
+    <h2>See your data before you decide.</h2>
+    <p>Run a free Money Report in 5 minutes. See your specific missed-revenue dollars. Subscribe only if it makes sense.</p>
     <div class="hero-ctas">
-      <a href="#pricing" class="btn btn-gold">Lock in Founders Pricing →</a>
-      <a href="#demo" class="btn btn-secondary" style="background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: white;">Book a 15-Min Demo</a>
+      <a href="/signup?source=audit" class="btn btn-gold">🔍 Get Your Free Money Report →</a>
+      <a href="#pricing" class="btn btn-secondary" style="background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: white;">See Pricing</a>
     </div>
   </div>
 </section>

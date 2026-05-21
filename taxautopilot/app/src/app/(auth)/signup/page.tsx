@@ -3,7 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { signUpAction } from "../actions";
 import { SignUpForm } from "./SignUpForm";
 
-type SearchParams = Promise<{ ref?: string; invite?: string; email?: string }>;
+type SearchParams = Promise<{ ref?: string; invite?: string; email?: string; source?: string }>;
 
 export default async function SignUpPage({
   searchParams,
@@ -14,6 +14,7 @@ export default async function SignUpPage({
   const ref = params.ref?.toUpperCase() || null;
   const inviteToken = params.invite || null;
   const prefilledEmail = params.email || null;
+  const isAuditSource = params.source === "audit";
 
   // Look up invite info if present
   let inviteOrgName: string | null = null;
@@ -51,14 +52,20 @@ export default async function SignUpPage({
     <div className="bg-white rounded-2xl shadow-lg border border-slate-200 p-8">
       <div className="inline-flex items-center gap-2 bg-[var(--green-100)] text-[var(--green-600)] px-3 py-1 rounded-full text-xs font-semibold mb-3">
         <span className="w-1.5 h-1.5 bg-[var(--green-500)] rounded-full animate-pulse" />
-        {inviteOrgName ? "Team Invitation" : "Founders Pricing"}
+        {inviteOrgName ? "Team Invitation" : isAuditSource ? "Free Money Report" : "Founders Pricing"}
       </div>
       <h1 className="text-2xl font-extrabold text-[var(--navy-900)] mb-1">
-        {inviteOrgName ? `Join ${inviteOrgName}` : "Set up your office"}
+        {inviteOrgName
+          ? `Join ${inviteOrgName}`
+          : isAuditSource
+          ? "Get your free Money Report"
+          : "Set up your office"}
       </h1>
       <p className="text-sm text-[var(--text-muted)] mb-6">
         {inviteOrgName
           ? `You're joining as a ${inviteRole}. Create your login below.`
+          : isAuditSource
+          ? "Free account, no card needed. We'll scan your office data and show you what's missing."
           : "Takes 30 seconds. Lifetime price locked."}
       </p>
 

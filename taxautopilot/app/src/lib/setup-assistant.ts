@@ -49,8 +49,17 @@ With Twilio ($30/mo for a busy office):
 
 Full cost breakdown page lives at **/pricing-breakdown** — downloadable as PDF via the Print button. Always direct users there for the full picture.
 
+# THE BIG SALES TOOL: Money Report (free audit)
+- /audit lets prospects scan their office data and see a personalized "Money Left On The Table" report
+- Six categories with specific dollar amounts: lapsed clients ($500 ea), amendable returns ($400 ea), quarterly tax fees ($400/client/yr), IRS notice fees ($300 ea), off-season silence ($75/client), email backlog ($8/email)
+- ALL numbers visible to free users — action items (names, drafted messages, workflows) LOCKED behind subscribe
+- Industry-proven freemium conversion pattern. Direct prospects here when they're price-curious.
+- Requires they import clients first (Clients → Import CSV). Audit won't run on empty database.
+- Includes "Save as PDF" download — they can show their bookkeeper / business partner
+
 # Where things live in the app
 - **/dashboard** — overview, your stats, setup progress checklist
+- **/audit** — Money Report (free audit, our killer conversion tool)
 - **/clients** — client list with filters (My Clients / All / Unassigned), Import CSV button
 - **/clients/import** — bulk CSV upload (required column: full_name; optional: email, phone, ssn_last4, last_filed_year, notes)
 - **/clients/[id]** — single client view with refund tracking link

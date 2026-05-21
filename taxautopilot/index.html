@@ -1319,6 +1319,137 @@ section { padding: 100px 0; }
   border-radius: 100px;
 }
 
+/* === SCARCITY BAR === */
+.scarcity-bar {
+  background: linear-gradient(90deg, var(--navy-900), var(--navy-700));
+  color: white;
+  padding: 10px 24px;
+  text-align: center;
+  font-size: .85rem;
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
+.scarcity-bar strong { color: var(--gold); font-weight: 800; }
+
+.scarcity-bar a {
+  color: var(--green-500);
+  font-weight: 700;
+  text-decoration: underline;
+  margin-left: 6px;
+}
+
+/* === DONE-FOR-YOU (high-ticket tier) === */
+.dfy-section {
+  background: linear-gradient(135deg, var(--navy-900) 0%, var(--navy-800) 100%);
+  color: white;
+  padding: 80px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.dfy-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(245,185,71,.15), transparent 50%);
+  pointer-events: none;
+}
+
+.dfy-card {
+  background: white;
+  color: var(--text);
+  border-radius: 24px;
+  padding: 40px;
+  max-width: 880px;
+  margin: 40px auto 0;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 30px 80px rgba(0,0,0,.4);
+  border: 3px solid var(--gold);
+}
+
+.dfy-pre {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--gold), #E5A82F);
+  color: var(--navy-900);
+  padding: 6px 14px;
+  border-radius: 100px;
+  font-size: .72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 16px;
+}
+
+.dfy-card h3 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2rem;
+  color: var(--navy-900);
+  margin-bottom: 6px;
+  letter-spacing: -0.02em;
+}
+
+.dfy-card .subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 24px;
+}
+
+.dfy-card .price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 18px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.dfy-card .price-row .price {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2.8rem;
+  color: var(--navy-900);
+  line-height: 1;
+}
+
+.dfy-card .price-row .price-sub {
+  font-size: .9rem;
+  color: var(--text-muted);
+}
+
+.dfy-card .grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 28px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 700px) {
+  .dfy-card { padding: 28px; }
+  .dfy-card .grid { grid-template-columns: 1fr; }
+}
+
+.dfy-card .grid li {
+  list-style: none;
+  font-size: .9rem;
+  color: var(--text);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+.dfy-card .grid li::before {
+  content: "✓";
+  color: var(--green-500);
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
 /* === CASE STUDIES === */
 .casestudies-section {
   background: var(--surface);
@@ -2351,6 +2482,11 @@ footer {
 </head>
 <body>
 
+<!-- SCARCITY BAR — real cap, not fake -->
+<div class="scarcity-bar">
+  🔥 <strong>47 of 100 Founders spots claimed</strong> — after that, annual price goes to $3,997/yr. <a href="#pricing">Lock yours →</a>
+</div>
+
 <!-- NAV -->
 <nav>
   <div class="nav-inner">
@@ -3175,6 +3311,52 @@ footer {
       📱 <strong>One thing to add:</strong> SMS via Twilio (~$15-30/mo paid directly to Twilio) — stops your clients texting your <em>personal</em> cell at 11pm.
       <a href="/pricing-breakdown" style="color: var(--green-600); font-weight: 700; text-decoration: underline;">Why every tax pro needs this →</a>
     </p>
+  </div>
+</section>
+
+<!-- DONE-FOR-YOU TIER (high-ticket back end) -->
+<section class="dfy-section">
+  <div class="container">
+    <div class="section-header" style="position: relative; z-index: 1;">
+      <div class="section-eyebrow" style="color: var(--gold);">For offices that just want it done</div>
+      <h2 style="color: white;">Don't want to set this up yourself? <span style="color: var(--gold);">We'll do it all.</span></h2>
+      <p style="color: rgba(255,255,255,.8);">For larger offices and busy preparers — one-time done-for-you setup with white-glove migration, custom training, and your first $30K Audit done by our team.</p>
+    </div>
+
+    <div class="dfy-card">
+      <div class="dfy-pre">⭐ The Concierge Package</div>
+      <h3>Done-For-You Setup + First-Year Concierge</h3>
+      <div class="subtitle">Our team configures everything, migrates your data, trains your office, and personally walks you through your first Money Report.</div>
+
+      <div class="price-row">
+        <div>
+          <div class="price">$14,997</div>
+          <div class="price-sub">one-time · includes Office tier subscription for year 1 ($9,997 value)</div>
+        </div>
+      </div>
+
+      <ul class="grid">
+        <li><strong>White-Glove Migration</strong> — we import every client from your tax software, clean duplicates, fix missing data</li>
+        <li><strong>Custom Office Training</strong> — 4 × 1-hr live sessions with you and your team, recorded</li>
+        <li><strong>Done-For-You First Audit</strong> — our senior advisor runs your Money Report and walks you through the dollar-by-dollar action plan</li>
+        <li><strong>Custom Email + SMS Templates</strong> — branded to YOUR office voice, signed off by us</li>
+        <li><strong>OAuth + Twilio Configuration</strong> — we connect Gmail/Outlook, set up your phone numbers, configure webhooks</li>
+        <li><strong>Personal Slack/WhatsApp Line</strong> — direct access to a senior engineer for 12 months</li>
+        <li><strong>Quarterly Strategy Reviews</strong> — 4 × 1-hr calls reviewing your numbers + adjusting your AI strategy</li>
+        <li><strong>Priority Feature Requests</strong> — your asks jump to the top of our roadmap</li>
+      </ul>
+
+      <div class="savings-callout" style="margin-bottom: 0;">
+        💎 Total value: $36,000+ · You pay $14,997 once · Year-2 subscription locks at $9,997
+      </div>
+
+      <div style="margin-top: 24px; text-align: center;">
+        <a href="mailto:concierge@taxautopilot.ai?subject=Done-For-You%20Setup%20Inquiry" class="btn btn-gold" style="font-size: 1rem;">Apply for Concierge →</a>
+        <div style="font-size: .8rem; color: var(--text-muted); margin-top: 10px;">
+          Limited to 10 offices/quarter. We reply within 24 hours.
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 

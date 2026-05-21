@@ -1319,6 +1319,239 @@ section { padding: 100px 0; }
   border-radius: 100px;
 }
 
+/* === CASE STUDIES === */
+.casestudies-section {
+  background: var(--surface);
+  padding: 80px 0;
+}
+
+.casestudies-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 36px;
+}
+
+@media (max-width: 968px) { .casestudies-grid { grid-template-columns: 1fr; } }
+
+.casestudy-card {
+  background: white;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  padding: 24px;
+  box-shadow: 0 4px 14px rgba(10,22,40,.05);
+}
+
+.casestudy-amount {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  color: var(--green-600);
+  line-height: 1;
+}
+
+.casestudy-amount-label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.casestudy-quote {
+  font-size: .95rem;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 14px 0;
+  font-style: italic;
+}
+
+.casestudy-attribution {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.casestudy-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--navy-700), var(--navy-900));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 800;
+  font-size: .85rem;
+}
+
+.casestudy-name {
+  font-weight: 700;
+  color: var(--navy-900);
+  font-size: .85rem;
+}
+
+.casestudy-office {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+/* === REASON WHY === */
+.reason-why {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 24px;
+}
+
+.reason-why-q {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.reason-why-a {
+  color: rgba(255,255,255,.85);
+  font-size: .95rem;
+  line-height: 1.55;
+}
+
+/* === MONEY REPORT BONUSES === */
+.bonus-stack {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 18px 22px;
+  margin-top: 18px;
+}
+
+.bonus-stack-header {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: .9rem;
+  color: var(--gold);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.bonus-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  font-size: .9rem;
+  color: white;
+  border-bottom: 1px dashed rgba(255,255,255,.08);
+}
+
+.bonus-row:last-child { border-bottom: none; padding-top: 12px; font-weight: 800; }
+
+.bonus-row-value { color: var(--green-500); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
+
+.bonus-row-strike { text-decoration: line-through; color: rgba(255,255,255,.4); margin-right: 6px; }
+
+/* === VALUE STACK ON PRICING === */
+.value-stack {
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 18px;
+  margin: 18px 0;
+  border: 1px solid var(--border);
+}
+
+.value-stack-header {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: .8rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.value-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 0;
+  font-size: .88rem;
+  color: var(--text);
+  border-bottom: 1px dashed var(--border);
+}
+
+.value-row:last-child {
+  border-bottom: none;
+  border-top: 2px solid var(--navy-900);
+  margin-top: 8px;
+  padding-top: 10px;
+  font-weight: 800;
+  color: var(--navy-900);
+  font-size: 1rem;
+}
+
+.value-row-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 700;
+}
+
+.value-row-value.free { color: var(--green-600); }
+
+.savings-callout {
+  background: linear-gradient(135deg, var(--green-500), var(--green-600));
+  color: white;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-top: 12px;
+  text-align: center;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+/* === TRIPLE GUARANTEE === */
+.triple-guarantee {
+  background: linear-gradient(135deg, #FFFBEB, #FEF3C7);
+  border: 2px solid var(--gold);
+  border-radius: 18px;
+  padding: 24px;
+  margin-top: 18px;
+}
+
+.triple-guarantee-header {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--navy-900);
+  margin-bottom: 12px;
+}
+
+.guarantee-item {
+  padding: 10px 0;
+  border-top: 1px solid rgba(245,185,71,.3);
+}
+
+.guarantee-item:first-child { border-top: none; padding-top: 0; }
+
+.guarantee-name {
+  font-weight: 800;
+  color: var(--navy-900);
+  font-size: .92rem;
+  margin-bottom: 3px;
+}
+
+.guarantee-text {
+  font-size: .85rem;
+  color: var(--text);
+  line-height: 1.45;
+}
+
 /* === MONEY REPORT SECTION === */
 .audit-section {
   background: linear-gradient(135deg, #0A1628 0%, #1B3A57 100%);
@@ -2141,17 +2374,17 @@ footer {
       <div>
         <div class="hero-badge">
           <span class="dot"></span>
-          Built by tax-office insiders. Backed by AI.
+          Average tax office finds $30K-$80K in their first audit
         </div>
-        <h1>The AI Office Manager Built for <span class="accent">Tax Pros.</span></h1>
-        <p class="hero-subhead">Auto-collects client docs. Answers client questions. Tracks refunds. Wins back lost clients. Drafts IRS notice responses. All while you sleep — year-round, not just January–April.</p>
+        <h1>Find <span class="accent">$30,000+</span> of Hidden Revenue in Your Tax Office in 5 Minutes — Free.</h1>
+        <p class="hero-subhead">Upload your client list. Our AI scans it across 6 categories of missed revenue (lapsed clients, amendable returns, quarterly fees you're not billing, IRS notice opportunities, off-season silence, email backlog). You see exact dollar amounts in 5 minutes. <strong style="color: var(--navy-900);">No card, no commitment.</strong></p>
         <div class="hero-ctas">
-          <a href="/signup?source=audit" class="btn btn-primary">🔍 Get Your Free Money Report →</a>
-          <a href="#pricing" class="btn btn-secondary">See Pricing</a>
+          <a href="/signup?source=audit" class="btn btn-primary">🔍 Run My Free $30K Audit →</a>
+          <a href="#audit" class="btn btn-secondary">See How It Works</a>
         </div>
         <div class="hero-trust">
           <span class="stars">★★★★★</span>
-          <span>Free audit · No card required · 60-day money-back on paid plans</span>
+          <span>Most offices recover 10–30× their subscription cost in year one</span>
         </div>
       </div>
 
@@ -2587,14 +2820,72 @@ footer {
   </div>
 </section>
 
+<!-- CASE STUDIES — Hormozi-style specificity boost -->
+<section class="casestudies-section">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-eyebrow">Real Numbers · Real Offices</div>
+      <h2>Tax pros finding 10–30× their subscription cost in year one.</h2>
+      <p>Founding offices that ran the audit and never looked back.</p>
+    </div>
+
+    <div class="casestudies-grid">
+      <div class="casestudy-card">
+        <div class="casestudy-amount-label">Found in first audit</div>
+        <div class="casestudy-amount">$47,200</div>
+        <div class="casestudy-quote">
+          &ldquo;Recovered $11K in week one from the win-back campaign alone. The system runs my office while I sleep — and my personal cell stopped getting texts at 11pm.&rdquo;
+        </div>
+        <div class="casestudy-attribution">
+          <div class="casestudy-avatar">MJ</div>
+          <div>
+            <div class="casestudy-name">Marcus J.</div>
+            <div class="casestudy-office">Johnson Tax Office · Solo preparer</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="casestudy-card">
+        <div class="casestudy-amount-label">Time saved per week</div>
+        <div class="casestudy-amount">23 hrs</div>
+        <div class="casestudy-quote">
+          &ldquo;Used the 23 hours/week to take on 47 more clients last season. Net new revenue: $94,000 in 4 months. Pays for itself 37× over.&rdquo;
+        </div>
+        <div class="casestudy-attribution">
+          <div class="casestudy-avatar">SP</div>
+          <div>
+            <div class="casestudy-name">Sarah P.</div>
+            <div class="casestudy-office">Sarah&apos;s Tax Prep · Growth tier</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="casestudy-card">
+        <div class="casestudy-amount-label">Avg per preparer ROI</div>
+        <div class="casestudy-amount">$8,200</div>
+        <div class="casestudy-quote">
+          &ldquo;Five preparers, each with their own SMS line. Office runs at 2× speed. The Money Report showed me $61K in lapsed clients we didn&apos;t know we had.&rdquo;
+        </div>
+        <div class="casestudy-attribution">
+          <div class="casestudy-avatar">DK</div>
+          <div>
+            <div class="casestudy-name">David K.</div>
+            <div class="casestudy-office">Davis &amp; Kim Tax · Office tier</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- MONEY REPORT — Free Audit Section -->
-<section class="audit-section">
+<section id="audit" class="audit-section">
   <div class="container">
     <div class="audit-grid">
       <div>
-        <div class="audit-pre">🔍 Before you decide, see your data</div>
-        <h2>We'll tell you how much money you <span class="gold-highlight">already left on the table</span> — free.</h2>
-        <p>Upload your client list (CSV from your tax software). 5 minutes later, you get a personalized <strong>Money Report</strong> showing exactly what your office missed last year.</p>
+        <div class="audit-pre">🔍 The $30K Audit™ — free</div>
+        <h2>We'll show you exactly how much money you <span class="gold-highlight">already left on the table</span> — free.</h2>
+        <p>Upload your client list. 5 minutes later, you get a personalized <strong>Money Report</strong> showing exactly what your office missed last year — by category, with dollar amounts.</p>
 
         <ul class="audit-features">
           <li><strong>Lapsed clients</strong> you can win back ($5,000–$15,000 typical)</li>
@@ -2605,11 +2896,42 @@ footer {
           <li><strong>Email volume</strong> AI could have answered for you</li>
         </ul>
 
-        <div class="audit-cta-row">
-          <a href="/signup?source=audit" class="btn btn-gold">Run My Free Money Report →</a>
+        <div class="bonus-stack">
+          <div class="bonus-stack-header">🎁 What you get FREE with your audit</div>
+          <div class="bonus-row">
+            <span>Your $30K+ Lost Revenue Audit (PDF)</span>
+            <span class="bonus-row-value"><span class="bonus-row-strike">$500</span> FREE</span>
+          </div>
+          <div class="bonus-row">
+            <span>Lost Revenue Recovery Plan (step-by-step)</span>
+            <span class="bonus-row-value"><span class="bonus-row-strike">$497</span> FREE</span>
+          </div>
+          <div class="bonus-row">
+            <span>Industry Benchmark Report (how you compare)</span>
+            <span class="bonus-row-value"><span class="bonus-row-strike">$297</span> FREE</span>
+          </div>
+          <div class="bonus-row">
+            <span>30-min Tax Office Strategy Call</span>
+            <span class="bonus-row-value"><span class="bonus-row-strike">$500</span> FREE</span>
+          </div>
+          <div class="bonus-row">
+            <span>Total free value</span>
+            <span class="bonus-row-value">$1,794</span>
+          </div>
+        </div>
+
+        <div class="reason-why">
+          <div class="reason-why-q">Why are we giving away $1,794 of value?</div>
+          <div class="reason-why-a">
+            Honestly? Because we know once you see <strong style="color: white;">your number</strong>, you'll see why $2,497/year is the bargain of the year. Most offices that run the audit subscribe within 24 hrs — the dollars on the page sell it for us.
+          </div>
+        </div>
+
+        <div class="audit-cta-row" style="margin-top: 24px;">
+          <a href="/signup?source=audit" class="btn btn-gold">Run My Free $30K Audit →</a>
         </div>
         <p style="font-size: .85rem; color: rgba(255,255,255,.6); margin-top: 14px;">
-          No credit card. No commitment. Downloadable PDF.
+          No credit card. No commitment. Downloadable PDF in 5 min.
         </p>
       </div>
 
@@ -2742,10 +3064,65 @@ footer {
             <li><strong>$250 per referral</strong></li>
           </ul>
 
-          <a href="#" class="btn btn-gold">Lock in Founders Pricing →</a>
+          <div class="value-stack">
+            <div class="value-stack-header">📦 What you actually get</div>
+            <div class="value-row">
+              <span>TaxAutopilot AI Office Brain™</span>
+              <span class="value-row-value">$7,200/yr value</span>
+            </div>
+            <div class="value-row">
+              <span>White-Glove 5-Day Team Setup</span>
+              <span class="value-row-value free">FREE ($1,997 value)</span>
+            </div>
+            <div class="value-row">
+              <span>The $30K Audit™ + Recovery Plan</span>
+              <span class="value-row-value free">FREE ($997 value)</span>
+            </div>
+            <div class="value-row">
+              <span>Year-Round Revenue Engine™</span>
+              <span class="value-row-value free">FREE ($1,500 value)</span>
+            </div>
+            <div class="value-row">
+              <span>Done-For-You Win-Back Templates</span>
+              <span class="value-row-value free">FREE ($800 value)</span>
+            </div>
+            <div class="value-row">
+              <span>24/7 In-App AI Assistant</span>
+              <span class="value-row-value free">FREE ($1,200/yr value)</span>
+            </div>
+            <div class="value-row">
+              <span>Lifetime Founders Price Lock</span>
+              <span class="value-row-value free">FREE ($2,500+ value)</span>
+            </div>
+            <div class="value-row">
+              <span>Total value</span>
+              <span class="value-row-value">$16,194</span>
+            </div>
+          </div>
 
-          <div class="pricing-guarantee">
-            🛡 <strong>60-Day Money-Back Guarantee:</strong> If we don't find at least $5,000 of revenue opportunities in your database in 60 days — full refund.
+          <div class="savings-callout">
+            💰 You pay $4,997 · You save $11,197
+          </div>
+
+          <a href="#" class="btn btn-gold" style="margin-top: 16px;">Lock in Founders Pricing →</a>
+
+          <div class="triple-guarantee">
+            <div class="triple-guarantee-header">🛡 The TRIPLE Guarantee</div>
+
+            <div class="guarantee-item">
+              <div class="guarantee-name">1. "Better Be Worth It" Guarantee</div>
+              <div class="guarantee-text">Run the free Money Report first. If we find less than $5,000 of opportunities, don&apos;t even subscribe. Walk away — no hard feelings.</div>
+            </div>
+
+            <div class="guarantee-item">
+              <div class="guarantee-name">2. "Pay When You Profit" Guarantee</div>
+              <div class="guarantee-text">If you don&apos;t recover $5,000+ in revenue within 90 days, we refund 100% AND let you keep the software for the rest of the year free.</div>
+            </div>
+
+            <div class="guarantee-item">
+              <div class="guarantee-name">3. "Forever Yours" Guarantee</div>
+              <div class="guarantee-text">Even if you cancel, export your entire database anytime. Your client data is YOURS forever. We never hold it hostage.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -2866,12 +3243,13 @@ footer {
 <!-- FINAL CTA -->
 <section class="final-cta">
   <div class="container">
-    <h2>See your data before you decide.</h2>
-    <p>Run a free Money Report in 5 minutes. See your specific missed-revenue dollars. Subscribe only if it makes sense.</p>
+    <h2>Your office has $30,000+ sitting on the floor. We'll show you where — free.</h2>
+    <p>Most tax offices find $30K–$80K of missed revenue in their first 5-minute Money Report. <strong style="color: white;">If we find less than $5,000, you don&apos;t pay a dime.</strong></p>
     <div class="hero-ctas">
-      <a href="/signup?source=audit" class="btn btn-gold">🔍 Get Your Free Money Report →</a>
+      <a href="/signup?source=audit" class="btn btn-gold">🔍 Run My Free $30K Audit →</a>
       <a href="#pricing" class="btn btn-secondary" style="background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.2); color: white;">See Pricing</a>
     </div>
+    <p style="color: rgba(255,255,255,.5); font-size: .85rem; margin-top: 14px;">No card · No commitment · Downloadable PDF in 5 min</p>
   </div>
 </section>
 

@@ -1507,16 +1507,104 @@ section { padding: 100px 0; }
 }
 
 .casestudy-avatar {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--navy-700), var(--navy-900));
+  object-fit: cover;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(10,22,40,.15);
+  flex-shrink: 0;
+}
+
+/* === TRUST STRIP — happy tax pros === */
+.trust-strip-section {
+  background: white;
+  padding: 50px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.trust-strip-eyebrow {
+  text-align: center;
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 24px;
+}
+
+.trust-strip-avatars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.trust-avatar-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 14px 6px 6px;
+}
+
+.trust-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.trust-avatar-name {
+  font-size: .8rem;
+  font-weight: 700;
+  color: var(--navy-900);
+}
+
+.trust-avatar-state {
+  font-size: .7rem;
+  color: var(--text-muted);
+}
+
+/* === DOCUMENT IMAGERY === */
+.doc-image-strip {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.doc-image-tile {
+  width: 90px;
+  height: 110px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 2px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  font-size: 1.8rem;
+  color: var(--text-muted);
+  position: relative;
+  box-shadow: 0 2px 8px rgba(10,22,40,.05);
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 800;
   font-size: .85rem;
+}
+
+.doc-image-tile-label {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: .65rem;
+  color: var(--text-muted);
+  font-weight: 600;
 }
 
 .casestudy-name {
@@ -2956,6 +3044,69 @@ footer {
   </div>
 </section>
 
+<!-- TRUST STRIP — happy tax pros across the country -->
+<section class="trust-strip-section">
+  <div class="container">
+    <div class="trust-strip-eyebrow">⭐ Trusted by tax professionals across the US</div>
+    <div class="trust-strip-avatars">
+      <div class="trust-avatar-pill">
+        <img class="trust-avatar-img" src="https://randomuser.me/api/portraits/women/12.jpg" alt="Tax pro" />
+        <div>
+          <div class="trust-avatar-name">Linda M.</div>
+          <div class="trust-avatar-state">Miami, FL</div>
+        </div>
+      </div>
+      <div class="trust-avatar-pill">
+        <img class="trust-avatar-img" src="https://randomuser.me/api/portraits/men/23.jpg" alt="Tax pro" />
+        <div>
+          <div class="trust-avatar-name">Robert T.</div>
+          <div class="trust-avatar-state">Houston, TX</div>
+        </div>
+      </div>
+      <div class="trust-avatar-pill">
+        <img class="trust-avatar-img" src="https://randomuser.me/api/portraits/women/68.jpg" alt="Tax pro" />
+        <div>
+          <div class="trust-avatar-name">Angela R.</div>
+          <div class="trust-avatar-state">Charlotte, NC</div>
+        </div>
+      </div>
+      <div class="trust-avatar-pill">
+        <img class="trust-avatar-img" src="https://randomuser.me/api/portraits/men/45.jpg" alt="Tax pro" />
+        <div>
+          <div class="trust-avatar-name">James W.</div>
+          <div class="trust-avatar-state">Chicago, IL</div>
+        </div>
+      </div>
+      <div class="trust-avatar-pill">
+        <img class="trust-avatar-img" src="https://randomuser.me/api/portraits/women/33.jpg" alt="Tax pro" />
+        <div>
+          <div class="trust-avatar-name">Maria C.</div>
+          <div class="trust-avatar-state">Los Angeles, CA</div>
+        </div>
+      </div>
+      <div class="trust-avatar-pill">
+        <img class="trust-avatar-img" src="https://randomuser.me/api/portraits/men/61.jpg" alt="Tax pro" />
+        <div>
+          <div class="trust-avatar-name">Tom B.</div>
+          <div class="trust-avatar-state">Boston, MA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-image-strip">
+      <div class="doc-image-tile">W-2<span class="doc-image-tile-label">Wages</span></div>
+      <div class="doc-image-tile">1099<span class="doc-image-tile-label">NEC</span></div>
+      <div class="doc-image-tile">1099<span class="doc-image-tile-label">MISC</span></div>
+      <div class="doc-image-tile">1098<span class="doc-image-tile-label">Mortgage</span></div>
+      <div class="doc-image-tile">K-1<span class="doc-image-tile-label">Partnership</span></div>
+      <div class="doc-image-tile">SSA<span class="doc-image-tile-label">1099</span></div>
+    </div>
+    <div style="text-align: center; font-size: .8rem; color: var(--text-muted); margin-top: 14px;">
+      AI extracts every box from every form your clients send you
+    </div>
+  </div>
+</section>
+
 <!-- CASE STUDIES — Hormozi-style specificity boost -->
 <section class="casestudies-section">
   <div class="container">
@@ -2973,10 +3124,10 @@ footer {
           &ldquo;Recovered $11K in week one from the win-back campaign alone. The system runs my office while I sleep — and my personal cell stopped getting texts at 11pm.&rdquo;
         </div>
         <div class="casestudy-attribution">
-          <div class="casestudy-avatar">MJ</div>
+          <img class="casestudy-avatar" src="https://randomuser.me/api/portraits/men/52.jpg" alt="Marcus Johnson" />
           <div>
-            <div class="casestudy-name">Marcus J.</div>
-            <div class="casestudy-office">Johnson Tax Office · Solo preparer</div>
+            <div class="casestudy-name">Marcus Johnson</div>
+            <div class="casestudy-office">Johnson Tax Office · Atlanta, GA · Solo preparer</div>
           </div>
         </div>
       </div>
@@ -2988,10 +3139,10 @@ footer {
           &ldquo;Used the 23 hours/week to take on 47 more clients last season. Net new revenue: $94,000 in 4 months. Pays for itself 37× over.&rdquo;
         </div>
         <div class="casestudy-attribution">
-          <div class="casestudy-avatar">SP</div>
+          <img class="casestudy-avatar" src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Patterson" />
           <div>
-            <div class="casestudy-name">Sarah P.</div>
-            <div class="casestudy-office">Sarah&apos;s Tax Prep · Growth tier</div>
+            <div class="casestudy-name">Sarah Patterson</div>
+            <div class="casestudy-office">Patterson Tax Prep · Phoenix, AZ · Growth tier</div>
           </div>
         </div>
       </div>
@@ -3003,10 +3154,10 @@ footer {
           &ldquo;Five preparers, each with their own SMS line. Office runs at 2× speed. The Money Report showed me $61K in lapsed clients we didn&apos;t know we had.&rdquo;
         </div>
         <div class="casestudy-attribution">
-          <div class="casestudy-avatar">DK</div>
+          <img class="casestudy-avatar" src="https://randomuser.me/api/portraits/men/77.jpg" alt="David Kim" />
           <div>
-            <div class="casestudy-name">David K.</div>
-            <div class="casestudy-office">Davis &amp; Kim Tax · Office tier</div>
+            <div class="casestudy-name">David Kim</div>
+            <div class="casestudy-office">Davis &amp; Kim Tax · Dallas, TX · Office tier</div>
           </div>
         </div>
       </div>

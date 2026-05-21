@@ -41,8 +41,8 @@ clear ask, low-friction ("just see your number").
 >
 > taxautopilot.ai/signup?source=audit
 >
-> Either way — great catching up. Hit me back if you want to grab
-> coffee next time you're in town.
+> Either way — great catching up. The whole thing is self-serve so
+> just play with it whenever you have 5 min.
 >
 > — [Your name]
 
@@ -107,7 +107,8 @@ single-link CTA, asks for permission ("worth a look"). Under 160 chars.
 >
 > Take a look: taxautopilot.ai
 >
-> Happy to walk anyone through it on a call — DM me.
+> Whole thing is self-serve — try the free audit and let me know what
+> you think. The in-app AI assistant walks you through every step.
 
 **Why this works:** Educational hook, specific numbers, lays out the
 exact problem, soft sell, offers help. Position as "I built this,"

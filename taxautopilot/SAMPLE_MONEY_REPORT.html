@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sample Money Report · TaxAutopilot</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f8fafc;
+    color: #0a1628;
+    padding: 32px 16px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+  .brand {
+    text-align: center; margin-bottom: 20px;
+  }
+  .brand-name { font-weight: 800; font-size: 1.3rem; color: #0a1628; }
+  .brand-sub { font-size: .8rem; color: #64748b; margin-top: 2px; }
+
+  .sample-banner {
+    background: #f5b947;
+    color: #0a1628;
+    text-align: center;
+    padding: 10px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: .85rem;
+    margin-bottom: 24px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, #0a1628, #1b3a57);
+    color: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 20px;
+  }
+  .hero-label {
+    font-size: .75rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #f5b947; margin-bottom: 4px;
+  }
+  .hero-office { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+  .hero-date { font-size: .85rem; color: rgba(255,255,255,.6); margin-bottom: 18px; }
+  .hero-total-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(255,255,255,.6); margin-bottom: 4px; }
+  .hero-total { font-size: 3.5rem; font-weight: 800; line-height: 1; margin-bottom: 12px; }
+  .hero-summary { color: rgba(255,255,255,.85); line-height: 1.6; font-size: .95rem; }
+
+  .finding {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 12px;
+  }
+  .finding-head {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
+    margin-bottom: 12px;
+  }
+  .finding-label { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 4px; }
+  .finding-value { font-size: 1.8rem; font-weight: 800; color: #0a1628; }
+  .finding-sub { font-size: .75rem; color: #64748b; margin-top: 2px; }
+  .finding-emoji { font-size: 2rem; opacity: .5; }
+  .finding-emoji.hot { opacity: 1; }
+  .finding-summary { font-size: .9rem; color: #0a1628; line-height: 1.55; margin-bottom: 12px; }
+  .finding-locked {
+    background: #f8fafc; border: 1px dashed #cbd5e1;
+    border-radius: 8px; padding: 10px 12px; font-size: .8rem;
+    color: #64748b; display: flex; gap: 8px;
+  }
+  .finding-locked strong { color: #0a1628; }
+
+  .cta {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    margin-top: 20px;
+  }
+  .cta-icon { font-size: 2rem; margin-bottom: 6px; }
+  .cta h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
+  .cta p { color: rgba(255,255,255,.9); margin-bottom: 18px; max-width: 380px; margin-left: auto; margin-right: auto; }
+  .cta a {
+    display: inline-block; background: #0a1628; color: white;
+    padding: 14px 26px; border-radius: 12px; font-weight: 800;
+    text-decoration: none; font-size: .95rem;
+  }
+  .cta-sub { font-size: .75rem; color: rgba(255,255,255,.75); margin-top: 12px; }
+
+  .disclaimer {
+    font-size: .7rem; color: #94a3b8; text-align: center;
+    margin-top: 18px; line-height: 1.5;
+  }
+  .disclaimer a { color: #10b981; }
+
+  @media print {
+    body { background: white; }
+    .cta { background: #f1f5f9; color: #0a1628; }
+    .cta a { background: #0a1628; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-name">TaxAutopilot</div>
+    <div class="brand-sub">Money Report · Sample for demonstration</div>
+  </div>
+
+  <div class="sample-banner">📄 SAMPLE — Real report uses YOUR data</div>
+
+  <div class="hero">
+    <div class="hero-label">Money Report</div>
+    <div class="hero-office">Johnson Tax Office</div>
+    <div class="hero-date">Generated · 847 clients analyzed · Atlanta, GA</div>
+    <div class="hero-total-label">Total opportunity missed last year</div>
+    <div class="hero-total">$47,287</div>
+    <div class="hero-summary">
+      Looking at Johnson Tax Office, we found approximately $47,287 in revenue opportunities that were missed last year. The biggest gaps are in lapsed-client recovery and untapped quarterly tax fees from Schedule C clients — both are fully addressable with the right system. Most of your highest-value opportunities are still inside the IRS 3-year amendment window.
+    </div>
+  </div>
+
+  <!-- Findings -->
+  <div class="finding">
+    <div class="finding-head">
+      <div>
+        <div class="finding-label">🕰 Lapsed Clients</div>
+        <div class="finding-value">$15,500</div>
+        <div class="finding-sub">31 clients · avg return fee $500</div>
+      </div>
+      <div class="finding-emoji hot">🔥</div>
+    </div>
+    <div class="finding-summary">
+      31 clients who haven't filed with you in 1+ years. Average tax pro recovers ~40% of these with the right outreach — that's $6,200 in immediate revenue if you re-engage them this season.
+    </div>
+    <div class="finding-locked">
+      🔒 <div><strong>Locked:</strong> Full list of names + contact info + AI-drafted win-back text/email for each one</div>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="finding-head">
+      <div>
+        <div class="finding-label">📅 Quarterly Tax Fees</div>
+        <div class="finding-value">$12,000</div>
+        <div class="finding-sub">30 Schedule C clients · $100/quarter × 4</div>
+      </div>
+      <div class="finding-emoji hot">🔥</div>
+    </div>
+    <div class="finding-summary">
+      ~30 of your clients are Schedule C / S-corp and should be paying you $75-150 per quarterly estimated tax filing. 4 quarters = $12K of recurring revenue you're currently leaving on the table.
+    </div>
+    <div class="finding-locked">
+      🔒 <div><strong>Locked:</strong> Auto-text reminders that fire before every quarterly deadline + the billing workflow</div>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="finding-head">
+      <div>
+        <div class="finding-label">📑 Amendable Returns</div>
+        <div class="finding-value">$8,400</div>
+        <div class="finding-sub">21 returns · avg $400 amendment fee</div>
+      </div>
+      <div class="finding-emoji">💵</div>
+    </div>
+    <div class="finding-summary">
+      21 returns from the last 3 years with low refunds where missed credits may apply (EITC, education, child & dependent care). Still inside the IRS amendment window — your clients get refunds, you get the fees.
+    </div>
+    <div class="finding-locked">
+      🔒 <div><strong>Locked:</strong> Per-client analysis showing which credits to claim + the amendment workflow</div>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="finding-head">
+      <div>
+        <div class="finding-label">⚠️ IRS Notice Opportunities</div>
+        <div class="finding-value">$3,600</div>
+        <div class="finding-sub">12 notices seen · $300 avg fee</div>
+      </div>
+      <div class="finding-emoji">💵</div>
+    </div>
+    <div class="finding-summary">
+      12 IRS notice emails detected in your inbox (CP2000s and follow-ups). Most tax offices charge $200-500 to respond — these were easy fees you may not have captured.
+    </div>
+    <div class="finding-locked">
+      🔒 <div><strong>Locked:</strong> AI-drafted CP2000/audit-response templates + auto-followup workflow</div>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="finding-head">
+      <div>
+        <div class="finding-label">😶 Off-Season Silence</div>
+        <div class="finding-value">$5,475</div>
+        <div class="finding-sub">73 clients · $75 ea estimated added rev</div>
+      </div>
+      <div class="finding-emoji">💵</div>
+    </div>
+    <div class="finding-summary">
+      73 clients haven't heard from you May–December. Tax pros who stay in touch year-round see 20-30% more renewal revenue and 3x more referrals from those clients.
+    </div>
+    <div class="finding-locked">
+      🔒 <div><strong>Locked:</strong> Off-season touchpoint schedule (life-event check-ins, mid-year planning) automated for every client</div>
+    </div>
+  </div>
+
+  <div class="finding">
+    <div class="finding-head">
+      <div>
+        <div class="finding-label">📧 Email Backlog</div>
+        <div class="finding-value">$2,312</div>
+        <div class="finding-sub">289 client emails · ~$8/email of preparer time</div>
+      </div>
+      <div class="finding-emoji">💵</div>
+    </div>
+    <div class="finding-summary">
+      289 client emails that AI could have answered for you. At 5 min each, that's 24 hours of your life back over the year.
+    </div>
+    <div class="finding-locked">
+      🔒 <div><strong>Locked:</strong> AI auto-replies — drafts every response, you click approve, sent in seconds</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-icon">🔓</div>
+    <h2>Unlock $47,287 in opportunities</h2>
+    <p>Every action item above is locked in this sample. Subscribe to TaxAutopilot and instantly get every client name, AI-drafted message, and the workflow to recover this revenue from YOUR office.</p>
+    <a href="https://raw.githack.com/beharris234/askmyhandyman/claude/tax-software-ai-product-3REu5/taxautopilot/index.html#pricing">See Plans &amp; Pricing →</a>
+    <div class="cta-sub">Solo plan: $2,497/yr · 19× return on subscription · 60-day money-back guarantee</div>
+  </div>
+
+  <div class="disclaimer">
+    Sample data shown for demonstration. Your actual Money Report uses YOUR client list.<br>
+    Generated by TaxAutopilot · <a href="https://raw.githack.com/beharris234/askmyhandyman/claude/tax-software-ai-product-3REu5/taxautopilot/index.html">taxautopilot.ai</a>
+  </div>
+</div>
+</body>
+</html>

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logoutAction } from "../(auth)/actions";
 import { AssistantWidget } from "./AssistantWidget";
+import { isSuperAdmin } from "@/lib/admin";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -50,6 +51,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <NavLink href="/referrals" label="Refer & Earn" icon="🎁" />
           <NavLink href="/settings" label="Settings" icon="⚙️" />
           <NavLink href="/demo" label="Doc Extractor" icon="📄" external />
+          {isSuperAdmin(user.email) && (
+            <NavLink href="/admin" label="🔒 Platform Admin" icon="📈" />
+          )}
         </nav>
 
         <div className="p-3 border-t border-white/10">

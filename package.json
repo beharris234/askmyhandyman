@@ -1,0 +1,9 @@
+{
+  "name": "bonedropper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BoneDropper — fall off the bone, every time. Serverless deps for the Big Drop AI coach.",
+  "dependencies": {
+    "@anthropic-ai/sdk": "latest"
+  }
+}

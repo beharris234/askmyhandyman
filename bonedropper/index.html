@@ -178,6 +178,24 @@ nav button{flex:1;background:none;border:none;color:var(--dim);font-family:inher
 nav button .ni{font-size:21px;line-height:1}
 nav button.on{color:var(--gold)}
 nav button .badge{position:absolute;transform:translate(14px,-4px);background:var(--ember2);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 5px}
+
+/* Coach (Big Drop) */
+.coach-head{display:flex;align-items:center;gap:11px;padding:4px 2px 14px}
+.coach-head .ava{width:48px;height:48px;border-radius:14px;background:linear-gradient(150deg,var(--ember),var(--ember2));display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 24px rgba(255,90,20,.4)}
+.coach-head h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--gold);line-height:1}
+.coach-head p{font-size:12px;color:var(--muted);margin-top:2px}
+.chat{display:flex;flex-direction:column;gap:10px;padding-bottom:104px}
+.bubble{max-width:84%;padding:11px 14px;border-radius:16px;font-size:14px;line-height:1.5;animation:rise .25s ease}
+.bubble div{white-space:pre-wrap}
+.bubble.user{align-self:flex-end;background:linear-gradient(150deg,var(--ember),var(--ember2));color:#1a0a05;border-bottom-right-radius:5px}
+.bubble.drop{align-self:flex-start;background:var(--card);border:1px solid var(--line);border-bottom-left-radius:5px}
+.bubble.typing{color:var(--dim);font-style:italic}
+.bubble img{max-width:190px;border-radius:10px;margin-bottom:7px;display:block}
+.chat-input{position:fixed;left:0;right:0;bottom:calc(62px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto;display:flex;gap:8px;align-items:center;padding:9px 12px;background:rgba(20,8,3,.96);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.chat-input input{flex:1;background:var(--card);border:1.5px solid var(--line);border-radius:22px;color:var(--cream);font-family:inherit;font-size:14px;padding:11px 15px;outline:none}
+.chat-input button{flex:0 0 auto;width:44px;height:44px;border-radius:50%;font-size:18px;cursor:pointer;background:var(--card);border:1.5px solid var(--line);color:var(--gold)}
+.chat-input button:active{transform:scale(.92)}
+.chat-input #coachSend{background:linear-gradient(150deg,var(--ember),var(--ember2));color:#1a0a05;border:none}
 footer{text-align:center;font-size:11px;color:var(--dim);margin-top:26px;letter-spacing:1px}
 footer b{color:var(--muted)}
 </style>
@@ -223,6 +241,21 @@ footer b{color:var(--muted)}
     <div id="logBody"></div>
   </div>
 
+  <!-- ===== COACH VIEW ===== -->
+  <div class="view" id="view-coach">
+    <div class="coach-head">
+      <div class="ava">😎</div>
+      <div><h2>Big Drop</h2><p>Your AI pitmaster · ask anything</p></div>
+    </div>
+    <div class="chat" id="chatBox"></div>
+    <div class="chat-input">
+      <button id="coachPhoto" title="Judge my meat">📷</button>
+      <input id="coachText" placeholder="Ask Big Drop anything…" autocomplete="off">
+      <button id="coachSend" title="Send">➤</button>
+    </div>
+    <input type="file" id="coachPhotoInput" accept="image/*" capture="environment" hidden>
+  </div>
+
   <footer>Made with smoke &amp; love by <b>Big Drop</b></footer>
 </div>
 
@@ -264,6 +297,7 @@ footer b{color:var(--muted)}
 
 <nav>
   <button class="on" data-view="cook"><span class="ni">🔥</span>Cook</button>
+  <button data-view="coach"><span class="ni">😎</span>Big Drop</button>
   <button data-view="timer" id="navTimer"><span class="ni">⏱️</span>Timer</button>
   <button data-view="log"><span class="ni">📖</span>My Cooks</button>
 </nav>
@@ -421,8 +455,44 @@ function switchView(v){
   $('#view-'+v).classList.add('active');
   if(v==='timer')renderTimer();
   if(v==='log')renderLog();
+  if(v==='coach')renderCoach();
   window.scrollTo({top:0,behavior:'smooth'});
 }
+
+/* ============ COACH (Big Drop) ============ */
+let coachHistory=[],coachReady=false,pendingCoachImage=null;
+function scrollChatBottom(){requestAnimationFrame(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}))}
+function appendBubble(who,text,imgUrl){
+  const b=document.createElement('div');b.className='bubble '+(who==='user'?'user':'drop');
+  if(imgUrl){const im=document.createElement('img');im.src=imgUrl;b.appendChild(im)}
+  if(text){const d=document.createElement('div');d.textContent=text;b.appendChild(d)}
+  $('#chatBox').appendChild(b);return b;
+}
+function renderCoach(){
+  if(!coachReady){appendBubble('drop',"Hey, I'm Big Drop 🍖 your pitmaster. Tell me what you're cookin' — or tap the 📷 and snap your meat, and I'll tell you how it's lookin' and what to do next.");coachReady=true}
+  scrollChatBottom();
+}
+async function sendCoach(){
+  const inp=$('#coachText'),text=inp.value.trim(),img=pendingCoachImage;
+  if(!text&&!img)return;
+  const imgUrl=img?('data:'+img.media_type+';base64,'+img.data):null;
+  appendBubble('user',text||'How does this look?',imgUrl);
+  coachHistory.push({role:'user',content:text||'How does my meat look? What should I do next?'});
+  inp.value='';pendingCoachImage=null;$('#coachPhoto').textContent='📷';
+  const typing=appendBubble('drop','Big Drop is firing up the pit…');typing.classList.add('typing');
+  scrollChatBottom();
+  try{
+    const res=await fetch('/api/coach',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:coachHistory.slice(-12),image:img})});
+    const data=await res.json();typing.remove();
+    if(data.reply){appendBubble('drop',data.reply);coachHistory.push({role:'assistant',content:data.reply})}
+    else appendBubble('drop','⚠️ '+(data.error||'Something went sideways. Try again in a sec.'));
+  }catch(e){typing.remove();appendBubble('drop','⚠️ Can\'t reach the pit right now — check your connection.')}
+  scrollChatBottom();
+}
+$('#coachSend').onclick=sendCoach;
+$('#coachText').addEventListener('keydown',e=>{if(e.key==='Enter')sendCoach()});
+$('#coachPhoto').onclick=()=>$('#coachPhotoInput').click();
+$('#coachPhotoInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await downscale(f,1024);pendingCoachImage={media_type:'image/jpeg',data:url.split(',')[1]};e.target.value='';sendCoach()};
 
 /* ============ TIMER ============ */
 let tick=null;

@@ -142,6 +142,15 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .cook .c-name{font-size:14px;font-weight:700}
 .cook .c-meta{font-size:11px;color:var(--muted);margin-top:2px}
 .cook .c-stars{font-size:12px;margin-top:5px;letter-spacing:1px;color:var(--gold)}
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:2px 0 14px}
+.stats-strip .ss{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:13px 8px;text-align:center}
+.stats-strip .ss-v{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1}
+.stats-strip .ss-l{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:5px}
+.badge-row{display:flex;gap:9px;overflow-x:auto;padding:2px 0 14px;-webkit-overflow-scrolling:touch}
+.badge{flex:0 0 auto;width:74px;background:var(--bg2);border:1.5px solid var(--line);border-radius:14px;padding:11px 6px;text-align:center;opacity:.4;filter:grayscale(1);transition:.2s}
+.badge.on{opacity:1;filter:none;border-color:var(--ember);background:var(--card2);box-shadow:0 0 0 2px rgba(255,122,24,.15)}
+.badge .b-ico{font-size:26px;display:block}
+.badge .b-name{font-size:9px;color:var(--muted);margin-top:5px;line-height:1.2;display:block}
 
 /* Modal */
 .modal{position:fixed;inset:0;z-index:50;background:rgba(8,3,1,.75);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
@@ -638,7 +647,7 @@ async function renderLog(){
   const cooks=loadCooks(),body=$('#logBody');
   $('#cookCount').textContent=cooks.length?`${cooks.length} cook${cooks.length>1?'s':''}`:'';
   if(!cooks.length){body.innerHTML=`<div class="empty"><div class="e-ico">📖</div><h2 style="font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:1px">No Cooks Yet</h2><p>Every legendary pitmaster keeps a log.<br>Finish a cook and save it here with a photo.</p></div>`;return}
-  body.innerHTML=`<div class="cook-grid">${cooks.map(c=>`
+  body.innerHTML=statsHtml(cooks)+`<div class="cook-grid">${cooks.map(c=>`
     <div class="cook" data-id="${c.id}">
       <div class="photo" id="ph-${c.id}"><span class="ph-fallback">${c.ico}</span>${c.mediaType==='video'?'<div class="vid-badge">🎥</div>':''}</div>
       <div class="c-body"><div class="c-name">${c.weight} lb ${c.meatName}</div><div class="c-meta">${c.methodName.split(' / ')[0]} · ${new Date(c.date).toLocaleDateString()}</div><div class="c-stars">${c.rating?'⭐'.repeat(c.rating):'—'}</div></div>
@@ -651,6 +660,43 @@ async function renderLog(){
     if(bg){el.style.backgroundImage=`url(${bg})`;el.querySelector('.ph-fallback')?.remove()}
   });
   body.querySelectorAll('.cook').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
+  const cb=document.getElementById('cookOffBtn');if(cb)cb.onclick=()=>shareChallenge(cooks);
+}
+
+/* ----- Feature 2: streaks, badges, cook-offs ----- */
+const BADGES=[
+  {ico:'🔥',name:'First Cook',test:c=>c.length>=1},
+  {ico:'🍖',name:'Fall-Off Club',test:c=>c.length>=5},
+  {ico:'👑',name:'Pitmaster',test:c=>c.length>=10},
+  {ico:'🥩',name:'Brisket Whisperer',test:c=>c.filter(x=>x.meatId==='brisket').length>=3},
+  {ico:'🪵',name:'Smoke Boss',test:c=>c.filter(x=>x.methodId==='pit').length>=3},
+  {ico:'🌈',name:'Well-Rounded',test:c=>new Set(c.map(x=>x.meatId)).size>=5},
+  {ico:'📸',name:'Show-Off',test:c=>c.filter(x=>x.mediaId||x.photoId).length>=3},
+  {ico:'⭐',name:'Five-Star Pit',test:c=>c.some(x=>x.rating===5)},
+];
+function dayStreak(cooks){
+  const days=new Set(cooks.map(c=>new Date(c.date).toDateString()));
+  const d=new Date();
+  if(!days.has(d.toDateString())){d.setDate(d.getDate()-1);if(!days.has(d.toDateString()))return 0}
+  let s=0;while(days.has(d.toDateString())){s++;d.setDate(d.getDate()-1)}return s;
+}
+function statsHtml(cooks){
+  const total=cooks.length,streak=dayStreak(cooks);
+  const earned=BADGES.filter(b=>b.test(cooks));
+  const badges=BADGES.map(b=>{const on=b.test(cooks);return `<div class="badge${on?' on':''}" title="${b.name}"><span class="b-ico">${b.ico}</span><span class="b-name">${b.name}</span></div>`}).join('');
+  return `<div class="stats-strip">
+      <div class="ss"><div class="ss-v">${total}</div><div class="ss-l">Cooks</div></div>
+      <div class="ss"><div class="ss-v">${streak}🔥</div><div class="ss-l">Day Streak</div></div>
+      <div class="ss"><div class="ss-v">${earned.length}/${BADGES.length}</div><div class="ss-l">Badges</div></div>
+    </div>
+    <div class="badge-row">${badges}</div>
+    <button class="cta ghost" id="cookOffBtn" style="margin:4px 0 18px;font-size:20px">🆚 Challenge a Friend</button>`;
+}
+async function shareChallenge(cooks){
+  const total=cooks.length,streak=dayStreak(cooks);
+  const text=`🍖 I've logged ${total} cook${total!==1?'s':''}${streak>1?` on a ${streak}-day streak`:''} on BoneDropper. Think your BBQ can out-tender mine? 🆚🔥\nGet the app 👉 ${SHARE_URL}\n#BoneDropper #CookOff #FallOffTheBone`;
+  if(navigator.share){try{await navigator.share({text,title:'BoneDropper Cook-Off',url:SHARE_URL});return}catch(e){if(e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(text);alert('Challenge copied — paste it to a friend and tag us!')}catch(e){alert(text)}
 }
 function videoPoster(blob){return new Promise(res=>{const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='metadata';const u=URL.createObjectURL(blob);let done=false;const fin=r=>{if(done)return;done=true;URL.revokeObjectURL(u);res(r)};v.src=u;v.onloadeddata=()=>{try{v.currentTime=Math.min(.1,(v.duration||1))}catch(e){fin(null)}};v.onseeked=()=>{try{const c=document.createElement('canvas');c.width=v.videoWidth||320;c.height=v.videoHeight||320;c.getContext('2d').drawImage(v,0,0,c.width,c.height);fin(c.toDataURL('image/jpeg',.7))}catch(e){fin(null)}};v.onerror=()=>fin(null);setTimeout(()=>fin(null),3500)})}
 async function openDetail(id){

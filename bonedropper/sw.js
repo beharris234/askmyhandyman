@@ -1,9 +1,9 @@
-// Tenderism Service Worker — offline-first, self-contained cooking guide
-const CACHE_NAME = 'tenderism-v2'
+// BoneDropper Service Worker — offline-first, self-contained cooking guide
+const CACHE_NAME = 'bonedropper-v1'
 const PRECACHE = [
-  '/tenderism/',
-  '/tenderism/index.html',
-  '/tenderism/manifest.json',
+  '/bonedropper/',
+  '/bonedropper/index.html',
+  '/bonedropper/manifest.json',
   'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap'
 ]
 
@@ -26,7 +26,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return
   const url = new URL(event.request.url)
-  if (!url.pathname.startsWith('/tenderism') && !url.hostname.includes('fonts.g')) return
+  if (!url.pathname.startsWith('/bonedropper') && !url.hostname.includes('fonts.g')) return
 
   event.respondWith(
     caches.match(event.request).then(cached => {
@@ -38,7 +38,7 @@ self.addEventListener('fetch', event => {
         }
         return resp
       }).catch(() => {
-        if (event.request.mode === 'navigate') return caches.match('/tenderism/index.html')
+        if (event.request.mode === 'navigate') return caches.match('/bonedropper/index.html')
         return new Response('Offline', { status: 503 })
       })
     })

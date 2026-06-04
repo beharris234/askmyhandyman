@@ -1,13 +1,13 @@
 {
-  "name": "Tenderism — Fall Off The Bone",
-  "short_name": "Tenderism",
-  "description": "Tell us your meat and the pounds — Mr. Tenderism shows you how to make it fall off the bone, every time.",
-  "start_url": "/tenderism/",
+  "name": "BoneDropper — Fall Off The Bone",
+  "short_name": "BoneDropper",
+  "description": "Tell us your meat and the pounds — Big Drop shows you how to make it fall off the bone, every time.",
+  "start_url": "/bonedropper/",
   "display": "standalone",
   "background_color": "#120703",
   "theme_color": "#1a0a05",
   "orientation": "portrait",
-  "scope": "/tenderism/",
+  "scope": "/bonedropper/",
   "lang": "en",
   "categories": ["food", "lifestyle", "utilities"],
   "icons": [

@@ -1,7 +1,7 @@
-# Tenderism — Native App (iOS + Android)
+# BoneDropper — Native App (iOS + Android)
 
-The Tenderism app lives as a self-contained web app in the parent
-`/tenderism` folder. It already installs to a phone home screen as a PWA and
+The BoneDropper app lives as a self-contained web app in the parent
+`/bonedropper` folder. It already installs to a phone home screen as a PWA and
 works offline. This folder wraps that same app with
 [Capacitor](https://capacitorjs.com) so it can be submitted to the **Apple App
 Store** and **Google Play**, with true background **local notifications** for
@@ -21,12 +21,12 @@ the cook-timer milestones.
 
 ## Build it
 ```bash
-cd tenderism/native
+cd bonedropper/native
 
 # 1. install tooling
 npm install
 
-# 2. copy the web app into ./www (rewrites /tenderism/ paths to relative)
+# 2. copy the web app into ./www (rewrites /bonedropper/ paths to relative)
 npm run copy:web
 
 # 3. add the native platforms (creates ios/ and android/ folders)
@@ -68,7 +68,7 @@ That's the only native-specific code needed — everything else is the shared
 web app.
 
 ## App identity
-- **App ID:** `com.tenderism.app` (change in `capacitor.config.json` before publishing)
-- **Display name:** Tenderism
+- **App ID:** `com.bonedropper.app` (change in `capacitor.config.json` before publishing)
+- **Display name:** BoneDropper
 - Replace the placeholder icon/splash via `@capacitor/assets` or directly in
   Xcode / Android Studio before submitting.

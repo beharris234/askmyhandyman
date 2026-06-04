@@ -1,8 +1,8 @@
 {
-  "name": "tenderism-app",
+  "name": "bonedropper-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Tenderism — fall-off-the-bone meat cooking guide. Native wrapper (Capacitor).",
+  "description": "BoneDropper — fall-off-the-bone meat cooking guide. Native wrapper (Capacitor).",
   "scripts": {
     "copy:web": "node ./scripts/sync-web.js",
     "sync": "npm run copy:web && npx cap sync",

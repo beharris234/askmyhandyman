@@ -1,6 +1,6 @@
 {
-  "appId": "com.tenderism.app",
-  "appName": "Tenderism",
+  "appId": "com.bonedropper.app",
+  "appName": "BoneDropper",
   "webDir": "www",
   "backgroundColor": "#120703",
   "plugins": {

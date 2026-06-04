@@ -1,5 +1,5 @@
 // Tenderism Service Worker — offline-first, self-contained cooking guide
-const CACHE_NAME = 'tenderism-v1'
+const CACHE_NAME = 'tenderism-v2'
 const PRECACHE = [
   '/tenderism/',
   '/tenderism/index.html',

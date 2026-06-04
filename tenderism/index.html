@@ -7,149 +7,170 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tenderism">
-<meta name="description" content="Tell us your meat and the pounds — Mr. Tenderism shows you how to make it fall off the bone, every time.">
+<meta name="description" content="Tell us your meat and the pounds — Mr. Tenderism shows you how to make it fall off the bone, every time. Cook timer, photo log and all.">
 <title>Tenderism — Fall Off The Bone</title>
 <link rel="manifest" href="/tenderism/manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#120703;
-  --bg2:#1f0d05;
-  --card:#2a130a;
-  --card2:#341a0d;
-  --line:rgba(255,160,90,.14);
-  --ember:#ff7a18;
-  --ember2:#ff3d1f;
-  --gold:#ffb547;
-  --cream:#fff3e6;
-  --muted:#c79a7e;
-  --dim:#8a6553;
-  --ok:#5fd07a;
+  --bg:#120703;--bg2:#1f0d05;--card:#2a130a;--card2:#341a0d;
+  --line:rgba(255,160,90,.14);--ember:#ff7a18;--ember2:#ff3d1f;
+  --gold:#ffb547;--cream:#fff3e6;--muted:#c79a7e;--dim:#8a6553;--ok:#5fd07a;
 }
 html,body{min-height:100%;background:var(--bg)}
 body{
-  font-family:'DM Sans',system-ui,sans-serif;
-  color:var(--cream);
+  font-family:'DM Sans',system-ui,sans-serif;color:var(--cream);
   background:
     radial-gradient(1200px 500px at 50% -10%, rgba(255,90,20,.18), transparent 60%),
     radial-gradient(800px 600px at 90% 110%, rgba(255,61,31,.12), transparent 60%),
     var(--bg);
-  padding:max(18px,env(safe-area-inset-top)) 16px calc(40px + env(safe-area-inset-bottom));
-  max-width:560px;margin:0 auto;
-  overflow-x:hidden;
+  padding:max(18px,env(safe-area-inset-top)) 16px calc(96px + env(safe-area-inset-bottom));
+  max-width:560px;margin:0 auto;overflow-x:hidden;
 }
 .smoke{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(600px 300px at 20% 0%,rgba(255,122,24,.06),transparent 70%)}
 .wrap{position:relative;z-index:1}
-
-/* Header */
-header{text-align:center;padding:8px 0 18px}
-.logo{
-  width:74px;height:74px;margin:0 auto 12px;border-radius:22px;
-  background:linear-gradient(150deg,var(--ember),var(--ember2));
-  display:flex;align-items:center;justify-content:center;font-size:38px;
-  box-shadow:0 0 50px rgba(255,90,20,.45),inset 0 2px 8px rgba(255,255,255,.25);
-  animation:flicker 4s ease-in-out infinite;
-}
+header{text-align:center;padding:8px 0 12px}
+.logo{width:64px;height:64px;margin:0 auto 10px;border-radius:20px;background:linear-gradient(150deg,var(--ember),var(--ember2));display:flex;align-items:center;justify-content:center;font-size:34px;box-shadow:0 0 50px rgba(255,90,20,.45),inset 0 2px 8px rgba(255,255,255,.25);animation:flicker 4s ease-in-out infinite}
 @keyframes flicker{0%,100%{box-shadow:0 0 50px rgba(255,90,20,.45),inset 0 2px 8px rgba(255,255,255,.25)}50%{box-shadow:0 0 75px rgba(255,90,20,.65),inset 0 2px 10px rgba(255,255,255,.35)}}
-h1{
-  font-family:'Bebas Neue',sans-serif;font-size:54px;line-height:.9;letter-spacing:3px;
-  background:linear-gradient(180deg,var(--gold),var(--ember));
-  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-}
-.tag{font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+h1{font-family:'Bebas Neue',sans-serif;font-size:46px;line-height:.9;letter-spacing:3px;background:linear-gradient(180deg,var(--gold),var(--ember));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.tag{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-top:3px}
 
-/* Steps */
-.step{margin-top:22px;opacity:0;transform:translateY(10px);animation:rise .5s ease forwards}
-@keyframes rise{to{opacity:1;transform:none}}
+.view{display:none}.view.active{display:block;animation:rise .4s ease}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.step{margin-top:20px}
 .step.locked{display:none}
 .step-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.num{
-  width:26px;height:26px;flex:0 0 26px;border-radius:50%;
-  background:linear-gradient(150deg,var(--ember),var(--ember2));
-  display:flex;align-items:center;justify-content:center;
-  font-weight:700;font-size:14px;color:#1a0a05;
-}
+.num{width:26px;height:26px;flex:0 0 26px;border-radius:50%;background:linear-gradient(150deg,var(--ember),var(--ember2));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#1a0a05}
 .step-head h2{font-size:17px;font-weight:700;letter-spacing:.3px}
 .step-head .sub{font-size:12px;color:var(--dim);margin-left:auto}
-
-/* Meat grid */
 .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.opt{
-  background:var(--card);border:1.5px solid var(--line);border-radius:16px;
-  padding:14px 8px 12px;text-align:center;cursor:pointer;transition:.18s;
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-}
+.opt{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px 8px 12px;text-align:center;cursor:pointer;transition:.18s;display:flex;flex-direction:column;align-items:center;gap:6px}
 .opt:active{transform:scale(.95)}
 .opt .ico{font-size:30px;line-height:1}
-.opt .lbl{font-size:12px;font-weight:500;color:var(--cream)}
-.opt .meta{font-size:10px;color:var(--dim)}
+.opt .lbl{font-size:12px;font-weight:500}
 .opt.sel{border-color:var(--ember);background:var(--card2);box-shadow:0 0 0 3px rgba(255,122,24,.18),0 8px 24px rgba(0,0,0,.4)}
-
-/* Weight */
 .weight-box{background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px}
 .weight-readout{text-align:center;margin-bottom:14px}
-.weight-readout .val{font-family:'Bebas Neue',sans-serif;font-size:60px;line-height:1;color:var(--gold)}
+.weight-readout .val{font-family:'Bebas Neue',sans-serif;font-size:58px;line-height:1;color:var(--gold)}
 .weight-readout .unit{font-size:14px;color:var(--muted);letter-spacing:1px}
 input[type=range]{-webkit-appearance:none;width:100%;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--ember),var(--ember2));outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--cream);border:4px solid var(--ember);box-shadow:0 4px 12px rgba(0,0,0,.5);cursor:pointer}
-input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--cream);border:4px solid var(--ember);cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:var(--cream);border:4px solid var(--ember);box-shadow:0 4px 12px rgba(0,0,0,.5)}
+input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;background:var(--cream);border:4px solid var(--ember)}
 .range-ends{display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:8px}
 .quick{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;justify-content:center}
-.chip{background:var(--bg2);border:1px solid var(--line);color:var(--muted);font-size:12px;padding:7px 12px;border-radius:20px;cursor:pointer;transition:.15s;font-family:inherit}
+.chip{background:var(--bg2);border:1px solid var(--line);color:var(--muted);font-size:12px;padding:7px 12px;border-radius:20px;cursor:pointer;font-family:inherit}
 .chip:active{transform:scale(.94)}
 .chip.on{background:var(--ember);color:#1a0a05;border-color:var(--ember);font-weight:700}
-
-/* Method list */
 .methods{display:flex;flex-direction:column;gap:10px}
-.method{
-  background:var(--card);border:1.5px solid var(--line);border-radius:16px;
-  padding:14px;cursor:pointer;transition:.18s;display:flex;align-items:center;gap:14px;
-}
+.method{background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:14px;cursor:pointer;transition:.18s;display:flex;align-items:center;gap:14px}
 .method:active{transform:scale(.98)}
 .method.sel{border-color:var(--ember);background:var(--card2);box-shadow:0 0 0 3px rgba(255,122,24,.18)}
 .method .mico{font-size:28px}
 .method .mtxt h3{font-size:15px;font-weight:700}
 .method .mtxt p{font-size:12px;color:var(--muted);margin-top:2px}
-
-/* CTA */
-.cta{
-  width:100%;margin-top:24px;padding:18px;border:none;border-radius:18px;
-  background:linear-gradient(150deg,var(--ember),var(--ember2));
-  color:#1a0a05;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
-  cursor:pointer;transition:.18s;box-shadow:0 10px 30px rgba(255,61,31,.4);
-}
+.cta{width:100%;margin-top:22px;padding:18px;border:none;border-radius:18px;background:linear-gradient(150deg,var(--ember),var(--ember2));color:#1a0a05;font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;cursor:pointer;transition:.18s;box-shadow:0 10px 30px rgba(255,61,31,.4)}
 .cta:active{transform:scale(.97)}
-.cta:disabled{opacity:.4;box-shadow:none;cursor:not-allowed}
+.cta:disabled{opacity:.4;box-shadow:none}
+.cta.ghost{background:transparent;border:1.5px solid var(--ember);color:var(--gold);box-shadow:none;font-size:22px}
 
-/* Result */
-.result{margin-top:26px;display:none}
+.result{margin-top:24px;display:none}
 .result.show{display:block;animation:rise .5s ease}
 .recipe-card{background:linear-gradient(180deg,var(--card2),var(--card));border:1.5px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.5)}
 .recipe-head{padding:20px;text-align:center;background:linear-gradient(150deg,rgba(255,122,24,.18),rgba(255,61,31,.08));border-bottom:1px solid var(--line)}
-.recipe-head .big-ico{font-size:46px}
-.recipe-head h2{font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:1px;margin-top:4px;color:var(--gold)}
+.recipe-head .big-ico{font-size:44px}
+.recipe-head h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;margin-top:4px;color:var(--gold)}
 .recipe-head .recipe-sub{font-size:13px;color:var(--muted);margin-top:2px}
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line)}
 .stat{background:var(--card);padding:16px 8px;text-align:center}
-.stat .s-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:var(--cream);line-height:1}
+.stat .s-val{font-family:'Bebas Neue',sans-serif;font-size:25px;color:var(--cream);line-height:1}
 .stat .s-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:5px}
 .stat .s-val small{font-size:13px;color:var(--muted)}
 .sec{padding:18px 20px;border-bottom:1px solid var(--line)}
 .sec:last-child{border-bottom:none}
 .sec h4{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ember);margin-bottom:12px;display:flex;align-items:center;gap:7px}
 .steps-list{counter-reset:s;display:flex;flex-direction:column;gap:12px}
-.steps-list li{list-style:none;position:relative;padding-left:38px;font-size:14px;line-height:1.5;color:var(--cream)}
+.steps-list li{list-style:none;position:relative;padding-left:38px;font-size:14px;line-height:1.5}
 .steps-list li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:-1px;width:26px;height:26px;border-radius:50%;background:var(--bg2);border:1.5px solid var(--ember);color:var(--gold);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.rub-line{font-size:14px;line-height:1.6;color:var(--cream)}
+.rub-line{font-size:14px;line-height:1.6}
 .tip{background:linear-gradient(150deg,rgba(255,181,71,.14),rgba(255,122,24,.06));border:1px solid rgba(255,181,71,.25);border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start}
-.tip .face{font-size:30px;flex:0 0 auto}
+.tip .face{font-size:30px}
 .tip .t-body strong{color:var(--gold);display:block;font-size:13px;margin-bottom:3px}
-.tip .t-body p{font-size:13.5px;line-height:1.55;color:var(--cream)}
+.tip .t-body p{font-size:13.5px;line-height:1.55}
 .safe{font-size:11.5px;color:var(--dim);text-align:center;padding:14px 20px;line-height:1.5}
-.again{width:100%;margin-top:14px;padding:15px;border:1.5px solid var(--line);border-radius:16px;background:transparent;color:var(--muted);font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
-.again:active{background:var(--card)}
-footer{text-align:center;font-size:11px;color:var(--dim);margin-top:30px;letter-spacing:1px}
+.result-actions{display:flex;gap:10px;margin-top:14px}
+.result-actions button{flex:1;padding:15px;border-radius:16px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid var(--line)}
+.btn-primary{background:linear-gradient(150deg,var(--ember),var(--ember2));color:#1a0a05;border:none}
+.btn-soft{background:transparent;color:var(--muted)}
+
+/* Timer view */
+.empty{text-align:center;padding:60px 20px;color:var(--dim)}
+.empty .e-ico{font-size:54px;margin-bottom:14px}
+.empty p{font-size:14px;line-height:1.6;margin-top:6px}
+.timer-card{background:linear-gradient(180deg,var(--card2),var(--card));border:1.5px solid var(--line);border-radius:24px;padding:24px 20px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+.timer-card h2{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);letter-spacing:1px}
+.timer-card .t-sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+.ring-wrap{position:relative;width:230px;height:230px;margin:0 auto}
+.ring-wrap svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--bg2);stroke-width:14}
+.ring-fg{fill:none;stroke:url(#emberGrad);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset .9s linear}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-center .remain{font-family:'Bebas Neue',sans-serif;font-size:50px;line-height:1;color:var(--cream)}
+.ring-center .remain-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-top:4px}
+.next-mile{margin-top:20px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px}
+.next-mile .nm-when{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ember)}
+.next-mile .nm-label{font-size:18px;font-weight:700;margin-top:2px}
+.next-mile .nm-msg{font-size:13px;color:var(--muted);margin-top:5px;line-height:1.5}
+.mile-track{display:flex;gap:6px;margin-top:16px}
+.mile-dot{flex:1;height:5px;border-radius:4px;background:var(--bg2)}
+.mile-dot.done{background:var(--ok)}
+.mile-dot.active{background:var(--ember)}
+.timer-btns{display:flex;gap:10px;margin-top:20px}
+.timer-btns button{flex:1;padding:15px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;border:none}
+.notif-note{font-size:11px;color:var(--dim);margin-top:14px;line-height:1.5}
+
+/* My Cooks log */
+.log-head{display:flex;align-items:center;justify-content:space-between;margin:8px 0 16px}
+.log-head h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:1px;color:var(--gold)}
+.log-head .count{font-size:12px;color:var(--dim)}
+.cook-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cook{background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:.15s}
+.cook:active{transform:scale(.97)}
+.cook .photo{aspect-ratio:1;background:var(--bg2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:46px}
+.cook .c-body{padding:11px 12px 13px}
+.cook .c-name{font-size:14px;font-weight:700}
+.cook .c-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.cook .c-stars{font-size:12px;margin-top:5px;letter-spacing:1px;color:var(--gold)}
+
+/* Modal */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(8,3,1,.75);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.modal.show{display:flex;animation:fade .25s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.sheet{width:100%;max-width:560px;background:var(--bg2);border:1.5px solid var(--line);border-bottom:none;border-radius:24px 24px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom));max-height:90vh;overflow-y:auto;animation:slideup .3s ease}
+@keyframes slideup{from{transform:translateY(100%)}to{transform:none}}
+.sheet h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1px;color:var(--gold);text-align:center}
+.sheet .sh-sub{text-align:center;font-size:13px;color:var(--muted);margin-bottom:18px}
+.field{margin-top:16px}
+.field label{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--ember);display:block;margin-bottom:8px}
+.photo-pick{aspect-ratio:16/10;border:1.5px dashed var(--line);border-radius:16px;background:var(--card) center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--dim);cursor:pointer}
+.photo-pick .pp-ico{font-size:38px}
+.photo-pick .pp-txt{font-size:13px}
+.stars{display:flex;gap:8px;justify-content:center;font-size:34px}
+.stars span{cursor:pointer;filter:grayscale(1) opacity(.4);transition:.12s}
+.stars span.lit{filter:none}
+textarea{width:100%;background:var(--card);border:1.5px solid var(--line);border-radius:14px;color:var(--cream);font-family:inherit;font-size:14px;padding:12px;resize:vertical;min-height:70px}
+.sheet-btns{display:flex;gap:10px;margin-top:20px}
+.sheet-btns button{flex:1;padding:15px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;border:none}
+.btn-danger{background:transparent;border:1.5px solid rgba(255,80,80,.4);color:#ff8a8a}
+
+/* Bottom nav */
+nav{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(20,8,3,.92);backdrop-filter:blur(14px);border-top:1px solid var(--line);display:flex;padding:8px 0 calc(8px + env(safe-area-inset-bottom));max-width:560px;margin:0 auto}
+nav button{flex:1;background:none;border:none;color:var(--dim);font-family:inherit;font-size:10px;letter-spacing:.5px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 0}
+nav button .ni{font-size:21px;line-height:1}
+nav button.on{color:var(--gold)}
+nav button .badge{position:absolute;transform:translate(14px,-4px);background:var(--ember2);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:1px 5px}
+footer{text-align:center;font-size:11px;color:var(--dim);margin-top:26px;letter-spacing:1px}
 footer b{color:var(--muted)}
 </style>
 </head>
@@ -162,278 +183,361 @@ footer b{color:var(--muted)}
     <div class="tag">Fall Off The Bone &middot; Every Time</div>
   </header>
 
-  <!-- STEP 1: MEAT -->
-  <section class="step" id="step1">
-    <div class="step-head">
-      <span class="num">1</span><h2>What you cookin'?</h2>
-      <span class="sub" id="meatPick"></span>
-    </div>
-    <div class="grid" id="meatGrid"></div>
-  </section>
-
-  <!-- STEP 2: WEIGHT -->
-  <section class="step locked" id="step2">
-    <div class="step-head">
-      <span class="num">2</span><h2>How heavy?</h2>
-      <span class="sub">Drag it</span>
-    </div>
-    <div class="weight-box">
-      <div class="weight-readout">
-        <span class="val" id="wVal">4</span><span class="val" style="font-size:30px">.0</span>
-        <div class="unit">POUNDS</div>
+  <!-- ===== COOK VIEW ===== -->
+  <div class="view active" id="view-cook">
+    <section class="step" id="step1">
+      <div class="step-head"><span class="num">1</span><h2>What you cookin'?</h2><span class="sub" id="meatPick"></span></div>
+      <div class="grid" id="meatGrid"></div>
+    </section>
+    <section class="step locked" id="step2">
+      <div class="step-head"><span class="num">2</span><h2>How heavy?</h2><span class="sub">Drag it</span></div>
+      <div class="weight-box">
+        <div class="weight-readout"><span class="val" id="wInt">4</span><span class="val" id="wDec" style="font-size:30px">.0</span><div class="unit">POUNDS</div></div>
+        <input type="range" id="wRange" min="0.5" max="20" step="0.5" value="4">
+        <div class="range-ends"><span>½ lb</span><span>20 lb</span></div>
+        <div class="quick" id="quickWeights"></div>
       </div>
-      <input type="range" id="wRange" min="0.5" max="20" step="0.5" value="4">
-      <div class="range-ends"><span>½ lb</span><span>20 lb</span></div>
-      <div class="quick" id="quickWeights"></div>
-    </div>
-  </section>
+    </section>
+    <section class="step locked" id="step3">
+      <div class="step-head"><span class="num">3</span><h2>How you cookin' it?</h2></div>
+      <div class="methods" id="methodList"></div>
+      <button class="cta" id="goBtn" disabled>Make It Tender 🔥</button>
+    </section>
+    <section class="result" id="result"></section>
+  </div>
 
-  <!-- STEP 3: METHOD -->
-  <section class="step locked" id="step3">
-    <div class="step-head">
-      <span class="num">3</span><h2>How you cookin' it?</h2>
-    </div>
-    <div class="methods" id="methodList"></div>
-    <button class="cta" id="goBtn" disabled>Make It Tender 🔥</button>
-  </section>
+  <!-- ===== TIMER VIEW ===== -->
+  <div class="view" id="view-timer"></div>
 
-  <!-- RESULT -->
-  <section class="result" id="result"></section>
+  <!-- ===== LOG VIEW ===== -->
+  <div class="view" id="view-log">
+    <div class="log-head"><h2>My Cooks</h2><span class="count" id="cookCount"></span></div>
+    <div id="logBody"></div>
+  </div>
 
   <footer>Made with smoke &amp; love by <b>Mr. Tenderism</b></footer>
 </div>
 
+<!-- Save modal -->
+<div class="modal" id="saveModal">
+  <div class="sheet">
+    <h3 id="saveTitle">Log This Cook</h3>
+    <div class="sh-sub" id="saveSub"></div>
+    <div class="field">
+      <label>📸 Show off the goods</label>
+      <div class="photo-pick" id="photoPick"><span class="pp-ico">📷</span><span class="pp-txt">Tap to add a photo</span></div>
+      <input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
+    </div>
+    <div class="field">
+      <label>⭐ How'd it turn out?</label>
+      <div class="stars" id="stars"><span data-v="1">⭐</span><span data-v="2">⭐</span><span data-v="3">⭐</span><span data-v="4">⭐</span><span data-v="5">⭐</span></div>
+    </div>
+    <div class="field">
+      <label>📝 Notes for next time</label>
+      <textarea id="cookNotes" placeholder="Pulled it at 203°, rested 20 min, family went crazy..."></textarea>
+    </div>
+    <div class="sheet-btns">
+      <button class="btn-soft" id="saveCancel" style="border:1.5px solid var(--line)">Cancel</button>
+      <button class="btn-primary" id="saveConfirm">Save Cook</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div class="modal" id="detailModal">
+  <div class="sheet" id="detailSheet"></div>
+</div>
+
+<nav>
+  <button class="on" data-view="cook"><span class="ni">🔥</span>Cook</button>
+  <button data-view="timer" id="navTimer"><span class="ni">⏱️</span>Timer</button>
+  <button data-view="log"><span class="ni">📖</span>My Cooks</button>
+</nav>
+
 <script>
-/* ---------- DATA ---------- */
-// Each meat: internal = magic "fall-off-the-bone" internal temp (°F),
-// baseHr + perLb give the LOW-AND-SLOW reference time at ~275°F (oven).
+/* ============ DATA ============ */
 const MEATS = [
-  {id:'ribs',   name:'Pork Ribs',    ico:'🍖', internal:203, baseHr:2.5, perLb:0.6, safe:145, def:3,
+  {id:'ribs',name:'Pork Ribs',ico:'🍖',internal:203,baseHr:2.5,perLb:0.6,safe:145,def:3,
     rub:'¼ cup brown sugar, 2 tbsp paprika, 1 tbsp each garlic powder, onion powder, salt &amp; cracked pepper.',
     prep:'Peel the silver membrane off the back of the rack so the seasoning gets in and the bones let go.',
-    tipFace:'😎', tip:'Don\'t rush ribs, baby. When the meat pulls back and shows a half-inch of bone, you in the promised land.'},
-  {id:'brisket',name:'Brisket',      ico:'🥩', internal:203, baseHr:1, perLb:1.25, safe:145, def:12,
-    rub:'Equal parts coarse salt and 16-mesh black pepper — that\'s the Texas way. Light dusting of garlic if you nasty.',
+    tipFace:'😎',tip:'Don\'t rush ribs, baby. When the meat pulls back and shows a half-inch of bone, you in the promised land.'},
+  {id:'brisket',name:'Brisket',ico:'🥩',internal:203,baseHr:1,perLb:1.25,safe:145,def:12,
+    rub:'Equal parts coarse salt and 16-mesh black pepper — the Texas way. Light dusting of garlic if you nasty.',
     prep:'Trim the hard fat, leave a ¼-inch fat cap. Let it sit out 45 min before it hits the heat.',
-    tipFace:'🤠', tip:'Push through the stall — wrap it in butcher paper around 165°F and keep ridin\'. Tender don\'t come to the impatient.'},
-  {id:'pulled', name:'Pork Shoulder',ico:'🐖', internal:204, baseHr:1.5, perLb:1.1, safe:145, def:8,
+    tipFace:'🤠',tip:'Push through the stall — wrap it in butcher paper around 165°F and keep ridin\'. Tender don\'t come to the impatient.'},
+  {id:'pulled',name:'Pork Shoulder',ico:'🐖',internal:204,baseHr:1.5,perLb:1.1,safe:145,def:8,
     rub:'Yellow mustard binder, then ⅓ cup brown sugar, 2 tbsp paprika, salt, pepper, cumin and chili powder.',
     prep:'Score the fat cap in a crosshatch so the rub and smoke sink deep.',
-    tipFace:'😋', tip:'When the bone slides clean out with two fingers, it\'s done. Pull it, don\'t cut it.'},
-  {id:'shortrib',name:'Beef Short Rib',ico:'🍖', internal:205, baseHr:1.5, perLb:1, safe:145, def:5,
+    tipFace:'😋',tip:'When the bone slides clean out with two fingers, it\'s done. Pull it, don\'t cut it.'},
+  {id:'shortrib',name:'Beef Short Rib',ico:'🍖',internal:205,baseHr:1.5,perLb:1,safe:145,def:5,
     rub:'Salt, pepper, smoked paprika. Beef this rich don\'t need much.',
     prep:'Keep \'em bone-side down. These are the brisket of the rib world — fatty and forgiving.',
-    tipFace:'🔥', tip:'Big jiggle, dark bark, probe slides like butter — that\'s your three signs.'},
-  {id:'chicken',name:'Whole Chicken',ico:'🍗', internal:185, baseHr:0.75, perLb:0.5, safe:165, def:4,
+    tipFace:'🔥',tip:'Big jiggle, dark bark, probe slides like butter — that\'s your three signs.'},
+  {id:'chicken',name:'Whole Chicken',ico:'🍗',internal:185,baseHr:0.75,perLb:0.5,safe:165,def:4,
     rub:'Olive oil, salt, pepper, paprika, thyme. Get some under the skin too.',
     prep:'Pat it bone-dry and let it air-dry in the fridge an hour for crispy skin.',
-    tipFace:'😄', tip:'For fall-apart thighs I take the dark meat past 175°F — safe is 165, but tender lives a little higher.'},
-  {id:'wings',  name:'Chicken Wings',ico:'🍗', internal:185, baseHr:0.5, perLb:0.4, safe:165, def:2,
+    tipFace:'😄',tip:'For fall-apart thighs I take the dark meat past 175°F — safe is 165, but tender lives a little higher.'},
+  {id:'wings',name:'Chicken Wings',ico:'🍗',internal:185,baseHr:0.5,perLb:0.4,safe:165,def:2,
     rub:'Baking powder + salt for crunch, then your favorite dry rub after.',
     prep:'Dry them wings off completely — moisture is the enemy of crispy.',
-    tipFace:'😏', tip:'Low first, then crank the heat at the end to snap the skin. Sauce after, never before.'},
-  {id:'lamb',   name:'Lamb Shank',    ico:'🍖', internal:205, baseHr:1, perLb:0.9, safe:145, def:3,
+    tipFace:'😏',tip:'Low first, then crank the heat at the end to snap the skin. Sauce after, never before.'},
+  {id:'lamb',name:'Lamb Shank',ico:'🍖',internal:205,baseHr:1,perLb:0.9,safe:145,def:3,
     rub:'Garlic, rosemary, salt, pepper. A splash of red wine in the braise.',
     prep:'Sear it hard on all sides first, then braise low in stock until it surrenders.',
-    tipFace:'🍷', tip:'Lamb wants liquid. Braise it covered and that meat\'ll fall off like it\'s tired of holdin\' on.'},
-  {id:'turkey', name:'Turkey',        ico:'🦃', internal:180, baseHr:1, perLb:0.4, safe:165, def:14,
+    tipFace:'🍷',tip:'Lamb wants liquid. Braise it covered and that meat\'ll fall off like it\'s tired of holdin\' on.'},
+  {id:'turkey',name:'Turkey',ico:'🦃',internal:180,baseHr:1,perLb:0.4,safe:165,def:14,
     rub:'Butter under the skin, salt, pepper, sage and thyme.',
     prep:'Brine it overnight if you can — that\'s the secret to a juicy bird.',
-    tipFace:'🍂', tip:'Tent the breast with foil so the legs catch up. Rest it a full 30 minutes — patience pays.'},
-  {id:'oxtail', name:'Oxtail',        ico:'🥩', internal:205, baseHr:1.5, perLb:1.2, safe:145, def:3,
+    tipFace:'🍂',tip:'Tent the breast with foil so the legs catch up. Rest it a full 30 minutes — patience pays.'},
+  {id:'oxtail',name:'Oxtail',ico:'🥩',internal:205,baseHr:1.5,perLb:1.2,safe:145,def:3,
     rub:'Brown it in seasoned flour, then braise with onion, garlic, allspice and a scotch bonnet.',
     prep:'Sear deep and dark first — that\'s where all the soul flavor comes from.',
-    tipFace:'🌶️', tip:'Oxtail ain\'t ready till the meat ringers fall off the bone into the gravy. Low and long, every time.'},
-  {id:'roast',  name:'Chuck Roast',   ico:'🥩', internal:205, baseHr:1.5, perLb:1, safe:145, def:4,
+    tipFace:'🌶️',tip:'Oxtail ain\'t ready till the meat rings fall off the bone into the gravy. Low and long, every time.'},
+  {id:'roast',name:'Chuck Roast',ico:'🥩',internal:205,baseHr:1.5,perLb:1,safe:145,def:4,
     rub:'Salt, pepper, garlic. Sear, then braise with onions, carrots and beef stock.',
     prep:'Brown all six sides before the braise — color is flavor.',
-    tipFace:'😌', tip:'A chuck roast turns to pot-roast magic past 200°F. Shred it with two forks and thank me later.'},
-  {id:'ham',    name:'Bone-In Ham',   ico:'🍖', internal:140, baseHr:1, perLb:0.3, safe:145, def:8,
+    tipFace:'😌',tip:'A chuck roast turns to pot-roast magic past 200°F. Shred it with two forks and thank me later.'},
+  {id:'ham',name:'Bone-In Ham',ico:'🍖',internal:140,baseHr:1,perLb:0.3,safe:145,def:8,
     rub:'Glaze of brown sugar, honey, dijon and a pinch of clove in the last 30 min.',
     prep:'Score the surface in diamonds and stud with cloves for the holiday look.',
-    tipFace:'🍯', tip:'It\'s already cooked — you\'re just warming it gentle and building that sticky glaze. Don\'t dry it out.'},
-  {id:'goat',   name:'Goat',          ico:'🐐', internal:205, baseHr:1.5, perLb:1.1, safe:145, def:4,
+    tipFace:'🍯',tip:'It\'s already cooked — you\'re just warming it gentle and building that sticky glaze. Don\'t dry it out.'},
+  {id:'goat',name:'Goat',ico:'🐐',internal:205,baseHr:1.5,perLb:1.1,safe:145,def:4,
     rub:'Curry, garlic, ginger, scotch bonnet and thyme — marinate overnight.',
     prep:'Marinate at least 8 hours. Goat loves time and bold spice.',
-    tipFace:'🌶️', tip:'Lean meat, so keep it moist and low. When it pulls apart easy, the goat has given itself to you.'},
+    tipFace:'🌶️',tip:'Lean meat, so keep it moist and low. When it pulls apart easy, the goat has given itself to you.'},
 ];
 
-// methods scale the reference time + set the cooking temperature.
 const METHODS = [
-  {id:'pit',   name:'Barbecue Pit / Smoker', ico:'🪵', desc:'Low, slow & smoky — the king of tender', temp:225, factor:1.2,
-    steps:['Get your pit steady at {TEMP}°F with a clean smoke (thin and blue, never thick white).',
-           'Lay the {MEAT} on indirect heat, fat-side up, and close the lid.',
-           'Spritz with apple juice or stock every hour to keep the bark from drying.',
-           'Once the bark sets and you hit a stall, wrap in butcher paper and keep going.',
-           'Pull it at {INT}°F internal — probe should slide in like warm butter.']},
-  {id:'oven',  name:'In The Oven', ico:'🏠', desc:'No yard? No problem. Low & slow indoors', temp:275, factor:1.0,
-    steps:['Preheat the oven to {TEMP}°F and set a rack over a foil-lined tray.',
-           'Season the {MEAT}, set it on the rack and slide it in.',
-           'For extra-tender, add ½ cup liquid to the tray and tent loosely with foil.',
-           'Uncover for the last 30–45 min to firm up a little bark.',
-           'Take it out at {INT}°F internal and let it rest.']},
-  {id:'grill', name:'Charcoal Grill', ico:'🔥', desc:'Two-zone indirect for backyard pitmasters', temp:300, factor:0.85,
-    steps:['Bank the coals to ONE side to make a hot zone and a cool zone (two-zone fire).',
-           'Toss a chunk of wood on the coals, then put the {MEAT} on the COOL side.',
-           'Hold the lid vents so the dome sits around {TEMP}°F; add coals as needed.',
-           'Flip and rotate every 45 min so it cooks even.',
-           'Pull at {INT}°F — quick sear over the hot side at the end if you want char.']},
-  {id:'slow',  name:'Slow Cooker / Crock-Pot', ico:'🍲', desc:'Set it, forget it, come back to magic', temp:0, factor:1.4,
-    steps:['Sear the {MEAT} hard in a hot pan first — don\'t skip this, it\'s the flavor.',
-           'Lay it in the crock with onions, garlic and about 1 cup of stock.',
-           'Cook on LOW (the tender setting) with the lid on — no peeking.',
-           'It\'s done when the meat pulls apart with a fork, around {INT}°F internal.',
-           'Skim the fat and reduce the juices into a sauce on the stove.']},
-  {id:'pressure',name:'Pressure Cooker / Instant Pot', ico:'⚡', desc:'Fall-off-the-bone in a fraction of the time', temp:0, factor:0.22,
-    steps:['Hit Sauté and sear the {MEAT} on all sides right in the pot.',
-           'Add 1–1½ cups of liquid (stock, the meat barely needs to swim).',
-           'Lock the lid, set to high pressure for the time below.',
-           'Let it natural-release 15 minutes before you crack it — that keeps it juicy.',
-           'Check it pulls apart easy; if not, give it another 10–15 min under pressure.']},
+  {id:'pit',name:'Barbecue Pit / Smoker',ico:'🪵',desc:'Low, slow & smoky — the king of tender',temp:225,factor:1.2,
+    steps:['Get your pit steady at {TEMP}°F with a clean smoke (thin and blue, never thick white).','Lay the {MEAT} on indirect heat, fat-side up, and close the lid.','Spritz with apple juice or stock every hour to keep the bark from drying.','Once the bark sets and you hit a stall, wrap in butcher paper and keep going.','Pull it at {INT}°F internal — probe should slide in like warm butter.'],
+    miles:[{f:.35,l:'Spritz it',m:'Open up and spritz with apple juice or stock, then close it back quick.'},{f:.65,l:'Wrap it',m:'You\'re hitting the stall. Wrap in butcher paper to push through.'},{f:1,l:'Pull it! 🔥',m:'Check for {INT}°F. Probe should glide in. Rest before slicing.'}]},
+  {id:'oven',name:'In The Oven',ico:'🏠',desc:'No yard? No problem. Low & slow indoors',temp:275,factor:1.0,
+    steps:['Preheat the oven to {TEMP}°F and set a rack over a foil-lined tray.','Season the {MEAT}, set it on the rack and slide it in.','For extra-tender, add ½ cup liquid to the tray and tent loosely with foil.','Uncover for the last 30–45 min to firm up a little bark.','Take it out at {INT}°F internal and let it rest.'],
+    miles:[{f:.75,l:'Uncover it',m:'Pull the foil tent off so the outside can firm up and color.'},{f:1,l:'Pull it! 🔥',m:'Check for {INT}°F internal, then rest it before cutting.'}]},
+  {id:'grill',name:'Charcoal Grill',ico:'🔥',desc:'Two-zone indirect for backyard pitmasters',temp:300,factor:0.85,
+    steps:['Bank the coals to ONE side to make a hot zone and a cool zone (two-zone fire).','Toss a chunk of wood on the coals, then put the {MEAT} on the COOL side.','Hold the lid vents so the dome sits around {TEMP}°F; add coals as needed.','Flip and rotate every 45 min so it cooks even.','Pull at {INT}°F — quick sear over the hot side at the end if you want char.'],
+    miles:[{f:.33,l:'Flip & rotate',m:'Turn it and rotate for even cooking. Add coals if the heat\'s dropping.'},{f:.66,l:'Flip again',m:'One more flip. Check your fuel and dome temp.'},{f:1,l:'Pull it! 🔥',m:'Hit {INT}°F. Quick sear over the hot side if you want char, then rest.'}]},
+  {id:'slow',name:'Slow Cooker / Crock-Pot',ico:'🍲',desc:'Set it, forget it, come back to magic',temp:0,factor:1.4,
+    steps:['Sear the {MEAT} hard in a hot pan first — don\'t skip this, it\'s the flavor.','Lay it in the crock with onions, garlic and about 1 cup of stock.','Cook on LOW (the tender setting) with the lid on — no peeking.','It\'s done when the meat pulls apart with a fork, around {INT}°F internal.','Skim the fat and reduce the juices into a sauce on the stove.'],
+    miles:[{f:1,l:'It\'s ready! 🍲',m:'Should pull apart with a fork. Skim the fat and reduce the juices into sauce.'}]},
+  {id:'pressure',name:'Pressure Cooker / Instant Pot',ico:'⚡',desc:'Fall-off-the-bone in a fraction of the time',temp:0,factor:0.22,
+    steps:['Hit Sauté and sear the {MEAT} on all sides right in the pot.','Add 1–1½ cups of liquid (stock — it barely needs to swim).','Lock the lid, set to high pressure for the time below.','Let it natural-release 15 minutes before you crack it — that keeps it juicy.','Check it pulls apart easy; if not, give it another 10–15 min under pressure.'],
+    miles:[{f:1,l:'Release pressure ⚡',m:'Let it natural-release 15 min, then crack the lid. Should pull apart easy.'}]},
 ];
 
-/* ---------- STATE ---------- */
-let state = { meat:null, weight:4, method:null };
+const meatById = id=>MEATS.find(m=>m.id===id);
+const methodById = id=>METHODS.find(m=>m.id===id);
 
-/* ---------- RENDER PICKERS ---------- */
-const meatGrid = document.getElementById('meatGrid');
-MEATS.forEach(m=>{
-  const el=document.createElement('div');
-  el.className='opt';el.dataset.id=m.id;
-  el.innerHTML=`<span class="ico">${m.ico}</span><span class="lbl">${m.name}</span>`;
-  el.onclick=()=>pickMeat(m,el);
-  meatGrid.appendChild(el);
-});
+/* ============ STATE ============ */
+let state={meat:null,weight:4,method:null,lastRecipe:null};
+const LS={cooks:'tenderism_cooks',active:'tenderism_active',last:'tenderism_last'};
 
-const methodList=document.getElementById('methodList');
-METHODS.forEach(mt=>{
-  const el=document.createElement('div');
-  el.className='method';el.dataset.id=mt.id;
-  el.innerHTML=`<span class="mico">${mt.ico}</span><div class="mtxt"><h3>${mt.name}</h3><p>${mt.desc}</p></div>`;
-  el.onclick=()=>pickMethod(mt,el);
-  methodList.appendChild(el);
-});
+/* ============ HELPERS ============ */
+const $=s=>document.querySelector(s);
+const fmtTime=hrs=>{if(hrs<1)return Math.round(hrs*60)+' min';const h=Math.floor(hrs),m=Math.round((hrs-h)*60);return m?`${h}h ${m}m`:`${h}h`};
+const fmtClock=ms=>{ms=Math.max(0,ms);const t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=t%60;return h?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${m}:${String(s).padStart(2,'0')}`};
+function loadCooks(){try{return JSON.parse(localStorage.getItem(LS.cooks)||'[]')}catch(e){return[]}}
+function saveCooks(c){try{localStorage.setItem(LS.cooks,JSON.stringify(c))}catch(e){}}
 
-const quickWeights=document.getElementById('quickWeights');
-[1,2,4,8,12,16].forEach(w=>{
-  const c=document.createElement('button');
-  c.className='chip';c.textContent=w+' lb';c.dataset.w=w;
-  c.onclick=()=>setWeight(w);
-  quickWeights.appendChild(c);
-});
+/* IndexedDB for photos */
+function idb(){return new Promise((res,rej)=>{const r=indexedDB.open('tenderism',1);r.onupgradeneeded=()=>r.result.createObjectStore('photos');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function idbSet(k,v){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('photos','readwrite');t.objectStore('photos').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
+async function idbGet(k){const db=await idb();return new Promise((res,rej)=>{const t=db.transaction('photos','readonly');const q=t.objectStore('photos').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function idbDel(k){const db=await idb();return new Promise(res=>{const t=db.transaction('photos','readwrite');t.objectStore('photos').delete(k);t.oncomplete=()=>res()})}
+function downscale(file,max){return new Promise(res=>{const img=new Image();img.onload=()=>{let{width:w,height:h}=img;if(w>h&&w>max){h=h*max/w;w=max}else if(h>max){w=w*max/h;h=max}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',.82))};img.src=URL.createObjectURL(file)})}
 
-/* ---------- INTERACTIONS ---------- */
-function pickMeat(m,el){
-  state.meat=m;
-  [...meatGrid.children].forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');
-  document.getElementById('meatPick').textContent=m.name;
-  setWeight(m.def);
-  unlock('step2');unlock('step3');
-  checkReady();
-  document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'center'});
-}
+/* ============ COOK BUILDER ============ */
+const meatGrid=$('#meatGrid');
+MEATS.forEach(m=>{const el=document.createElement('div');el.className='opt';el.innerHTML=`<span class="ico">${m.ico}</span><span class="lbl">${m.name}</span>`;el.onclick=()=>pickMeat(m,el);meatGrid.appendChild(el)});
+const methodList=$('#methodList');
+METHODS.forEach(mt=>{const el=document.createElement('div');el.className='method';el.innerHTML=`<span class="mico">${mt.ico}</span><div class="mtxt"><h3>${mt.name}</h3><p>${mt.desc}</p></div>`;el.onclick=()=>pickMethod(mt,el);methodList.appendChild(el)});
+const quickWeights=$('#quickWeights');
+[1,2,4,8,12,16].forEach(w=>{const c=document.createElement('button');c.className='chip';c.textContent=w+' lb';c.dataset.w=w;c.onclick=()=>setWeight(w);quickWeights.appendChild(c)});
 
-const wRange=document.getElementById('wRange'),wVal=document.getElementById('wVal');
-const wDecimal=document.querySelector('.weight-readout .val:nth-child(2)');
-function setWeight(w){
-  w=Math.min(20,Math.max(0.5,w));
-  state.weight=w;wRange.value=w;
-  wVal.textContent=Math.floor(w);
-  wDecimal.textContent='.'+Math.round((w%1)*10);
-  [...quickWeights.children].forEach(c=>c.classList.toggle('on',+c.dataset.w===w));
-}
+function pickMeat(m,el){state.meat=m;[...meatGrid.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');$('#meatPick').textContent=m.name;setWeight(m.def);$('#step2').classList.remove('locked');$('#step3').classList.remove('locked');checkReady();$('#step2').scrollIntoView({behavior:'smooth',block:'center'})}
+const wRange=$('#wRange');
+function setWeight(w){w=Math.min(20,Math.max(.5,w));state.weight=w;wRange.value=w;$('#wInt').textContent=Math.floor(w);$('#wDec').textContent='.'+Math.round((w%1)*10);[...quickWeights.children].forEach(c=>c.classList.toggle('on',+c.dataset.w===w))}
 wRange.oninput=()=>setWeight(parseFloat(wRange.value));
+function pickMethod(mt,el){state.method=mt;[...methodList.children].forEach(c=>c.classList.remove('sel'));el.classList.add('sel');checkReady()}
+function checkReady(){$('#goBtn').disabled=!(state.meat&&state.method)}
 
-function pickMethod(mt,el){
-  state.method=mt;
-  [...methodList.children].forEach(c=>c.classList.remove('sel'));
-  el.classList.add('sel');
-  checkReady();
-}
-
-function unlock(id){document.getElementById(id).classList.remove('locked')}
-function checkReady(){
-  document.getElementById('goBtn').disabled=!(state.meat&&state.method);
-}
-
-/* ---------- COOK MATH ---------- */
-function fmtTime(hrs){
-  if(hrs<1) return Math.round(hrs*60)+' min';
-  const h=Math.floor(hrs),m=Math.round((hrs-h)*60);
-  return m? `${h}h ${m}m` : `${h}h`;
-}
-function buildRecipe(){
-  const {meat,weight,method}=state;
-  // reference low-and-slow hours, then scaled by method
+function buildRecipe(meat,weight,method){
   let hrs=(meat.baseHr+meat.perLb*weight)*method.factor;
-  // pressure cooker is sized differently — clamp to sane minutes
-  if(method.id==='pressure') hrs=Math.max(0.4,Math.min(2,hrs));
-  const timeStr=fmtTime(hrs);
-  const tempStr=method.temp? method.temp+'°F' : (method.id==='slow'?'LOW':'HIGH');
-  const steps=method.steps.map(s=>s
-    .replace('{TEMP}',method.temp)
-    .replace('{MEAT}',meat.name.toLowerCase())
-    .replace('{INT}',meat.internal));
-  return {timeStr,tempStr,steps};
+  if(method.id==='pressure')hrs=Math.max(.4,Math.min(2,hrs));
+  const tempStr=method.temp?method.temp+'°F':(method.id==='slow'?'LOW':'HIGH');
+  const fill=s=>s.replace('{TEMP}',method.temp).replace('{MEAT}',meat.name.toLowerCase()).replace('{INT}',meat.internal);
+  return{hrs,timeStr:fmtTime(hrs),tempStr,steps:method.steps.map(fill),miles:method.miles.map(x=>({...x,l:fill(x.l),m:fill(x.m)}))};
 }
 
-document.getElementById('goBtn').onclick=()=>{
+$('#goBtn').onclick=()=>{
   const {meat,weight,method}=state;
-  const r=buildRecipe();
-  const res=document.getElementById('result');
+  const r=buildRecipe(meat,weight,method);
+  state.lastRecipe={meat,weight,method,r};
+  const res=$('#result');
   res.innerHTML=`
     <div class="recipe-card">
-      <div class="recipe-head">
-        <div class="big-ico">${meat.ico}</div>
-        <h2>${weight} lb ${meat.name}</h2>
-        <div class="recipe-sub">${method.ico} ${method.name}</div>
-      </div>
+      <div class="recipe-head"><div class="big-ico">${meat.ico}</div><h2>${weight} lb ${meat.name}</h2><div class="recipe-sub">${method.ico} ${method.name}</div></div>
       <div class="stats">
         <div class="stat"><div class="s-val">${r.tempStr}</div><div class="s-lbl">Cook Temp</div></div>
         <div class="stat"><div class="s-val">~${r.timeStr}</div><div class="s-lbl">Cook Time</div></div>
         <div class="stat"><div class="s-val">${meat.internal}<small>°F</small></div><div class="s-lbl">Pull Temp</div></div>
       </div>
-      <div class="sec">
-        <h4>🔧 Prep First</h4>
-        <p class="rub-line">${meat.prep}</p>
-      </div>
-      <div class="sec">
-        <h4>🧂 The Rub</h4>
-        <p class="rub-line">${meat.rub}</p>
-      </div>
-      <div class="sec">
-        <h4>♨️ The Method</h4>
-        <ol class="steps-list">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>
-      </div>
-      <div class="sec">
-        <h4>😴 Then Rest It</h4>
-        <p class="rub-line">Pull it off the heat and let it rest, loosely tented, before you cut.
-        That\'s when the juices settle back in. Rush this and you spill all the good stuff on the cutting board.</p>
-      </div>
-      <div class="sec">
-        <div class="tip">
-          <span class="face">${meat.tipFace}</span>
-          <div class="t-body"><strong>Mr. Tenderism says:</strong><p>${meat.tip}</p></div>
-        </div>
-      </div>
-      <div class="safe">⚠️ Always cook to a safe minimum internal temp (this meat: ${meat.safe}°F) measured with a probe thermometer.
-      The higher "pull temp" above is what melts the collagen for that fall-off-the-bone texture.</div>
+      <div class="sec"><h4>🔧 Prep First</h4><p class="rub-line">${meat.prep}</p></div>
+      <div class="sec"><h4>🧂 The Rub</h4><p class="rub-line">${meat.rub}</p></div>
+      <div class="sec"><h4>♨️ The Method</h4><ol class="steps-list">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>
+      <div class="sec"><h4>😴 Then Rest It</h4><p class="rub-line">Pull it off the heat and let it rest, loosely tented, before you cut. That's when the juices settle back in. Rush this and you spill all the good stuff on the cutting board.</p></div>
+      <div class="sec"><div class="tip"><span class="face">${meat.tipFace}</span><div class="t-body"><strong>Mr. Tenderism says:</strong><p>${meat.tip}</p></div></div></div>
+      <div class="safe">⚠️ Always cook to a safe minimum internal temp (this meat: ${meat.safe}°F) measured with a probe thermometer. The higher "pull temp" is what melts the collagen for fall-off-the-bone texture.</div>
     </div>
-    <button class="again" id="againBtn">↺ Cook Something Else</button>`;
-  res.classList.add('show');
-  res.scrollIntoView({behavior:'smooth',block:'start'});
-  document.getElementById('againBtn').onclick=()=>{
-    res.classList.remove('show');res.innerHTML='';
-    window.scrollTo({top:0,behavior:'smooth'});
-  };
-  try{localStorage.setItem('tenderism_last',JSON.stringify({meat:meat.id,weight,method:method.id}))}catch(e){}
+    <div class="result-actions">
+      <button class="btn-primary" id="startCookBtn">⏱️ Start Cook Timer</button>
+      <button class="btn-soft" id="saveRecipeBtn" style="border:1.5px solid var(--line)">📖 Log It</button>
+    </div>`;
+  res.classList.add('show');res.scrollIntoView({behavior:'smooth',block:'start'});
+  $('#startCookBtn').onclick=()=>startCook(meat,weight,method,r);
+  $('#saveRecipeBtn').onclick=()=>openSave({meat,weight,method},'recipe');
+  try{localStorage.setItem(LS.last,JSON.stringify({meat:meat.id,weight,method:method.id}))}catch(e){}
 };
 
-/* ---------- PWA ---------- */
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('/tenderism/sw.js').catch(()=>{}));
+/* ============ NAVIGATION ============ */
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>switchView(b.dataset.view));
+function switchView(v){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x.dataset.view===v));
+  $('#view-'+v).classList.add('active');
+  if(v==='timer')renderTimer();
+  if(v==='log')renderLog();
+  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+/* ============ TIMER ============ */
+let tick=null;
+function startCook(meat,weight,method,r){
+  const active={meatId:meat.id,weight,methodId:method.id,
+    start:Date.now(),duration:Math.round(r.hrs*3600*1000),
+    miles:r.miles.map(x=>({...x,fired:false}))};
+  localStorage.setItem(LS.active,JSON.stringify(active));
+  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  switchView('timer');
+}
+function getActive(){try{return JSON.parse(localStorage.getItem(LS.active)||'null')}catch(e){return null}}
+function setActive(a){a?localStorage.setItem(LS.active,JSON.stringify(a)):localStorage.removeItem(LS.active);updateTimerBadge()}
+function updateTimerBadge(){const a=getActive();const btn=$('#navTimer');btn.querySelector('.badge')?.remove();if(a){const b=document.createElement('span');b.className='badge';b.textContent='ON';btn.appendChild(b)}}
+
+function renderTimer(){
+  const a=getActive(),box=$('#view-timer');
+  if(!a){box.innerHTML=`<div class="empty"><div class="e-ico">⏱️</div><h2 style="font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:1px">No Cook Running</h2><p>Build a recipe over in the Cook tab and hit<br><b>Start Cook Timer</b> to fire one up.</p></div>`;
+    if(tick){clearInterval(tick);tick=null}return}
+  const meat=meatById(a.meatId),method=methodById(a.methodId);
+  box.innerHTML=`
+    <div class="timer-card">
+      <h2>${meat.ico} ${a.weight} lb ${meat.name}</h2>
+      <div class="t-sub">${method.ico} ${method.name}</div>
+      <div class="ring-wrap">
+        <svg width="230" height="230" viewBox="0 0 230 230">
+          <defs><linearGradient id="emberGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb547"/><stop offset="1" stop-color="#ff3d1f"/></linearGradient></defs>
+          <circle class="ring-bg" cx="115" cy="115" r="100"/>
+          <circle class="ring-fg" id="ringFg" cx="115" cy="115" r="100" stroke-dasharray="628" stroke-dashoffset="628"/>
+        </svg>
+        <div class="ring-center"><div class="remain" id="remain">--</div><div class="remain-lbl" id="remainLbl">remaining</div></div>
+      </div>
+      <div class="mile-track" id="mileTrack"></div>
+      <div class="next-mile" id="nextMile"></div>
+      <div class="timer-btns">
+        <button class="btn-soft" id="cancelCook" style="border:1.5px solid var(--line)">Cancel</button>
+        <button class="btn-primary" id="doneCook">It's Done ✓</button>
+      </div>
+      <div class="notif-note">🔔 Keep this open (or pinned) and you'll get an alert + buzz at each milestone. Add to your home screen for the best ride.</div>
+    </div>`;
+  $('#cancelCook').onclick=()=>{if(confirm('Cancel this cook?')){setActive(null);renderTimer()}};
+  $('#doneCook').onclick=()=>{const m=meatById(a.meatId),mt=methodById(a.methodId);openSave({meat:m,weight:a.weight,method:mt},'finish')};
+  if(tick)clearInterval(tick);
+  tick=setInterval(()=>updateTimerUI(),1000);
+  updateTimerUI();
+}
+function updateTimerUI(){
+  const a=getActive();if(!a){if(tick){clearInterval(tick);tick=null}return}
+  const now=Date.now(),elapsed=now-a.start,remain=a.duration-elapsed,prog=Math.min(1,elapsed/a.duration);
+  const rg=$('#ringFg');if(rg)rg.setAttribute('stroke-dashoffset',628*(1-prog));
+  const rem=$('#remain');if(rem){if(remain<=0){rem.textContent='DONE';$('#remainLbl').textContent='pull it!'}else{rem.textContent=fmtClock(remain);$('#remainLbl').textContent='remaining'}}
+  // milestones
+  const track=$('#mileTrack'),next=$('#nextMile');
+  if(track){track.innerHTML='';a.miles.forEach(x=>{const d=document.createElement('div');d.className='mile-dot'+(elapsed>=a.duration*x.f?' done':'');track.appendChild(d)})}
+  let upcoming=a.miles.find(x=>elapsed<a.duration*x.f);
+  if(next){if(upcoming){const inMs=a.duration*upcoming.f-elapsed;next.innerHTML=`<div class="nm-when">Next in ${fmtClock(inMs)}</div><div class="nm-label">${upcoming.l}</div><div class="nm-msg">${upcoming.m}</div>`}else{next.innerHTML=`<div class="nm-when" style="color:var(--ok)">All milestones hit</div><div class="nm-label">Pull it & rest 🔥</div><div class="nm-msg">Tap "It's Done" to log this cook with a photo.</div>`}}
+  // fire notifications
+  let changed=false;
+  a.miles.forEach(x=>{if(!x.fired&&elapsed>=a.duration*x.f){x.fired=true;changed=true;fireAlert(x.l,x.m)}});
+  if(changed)setActive(a);
+}
+function fireAlert(title,msg){
+  if(navigator.vibrate)navigator.vibrate([200,100,200,100,300]);
+  try{if('Notification'in window&&Notification.permission==='granted'){new Notification('🍖 '+title,{body:msg,tag:'tenderism',renotify:true})}}catch(e){}
+}
+
+/* ============ SAVE / LOG ============ */
+let pendingSave=null,pendingRating=0,pendingPhoto=null;
+function openSave(ctx,mode){
+  pendingSave={...ctx,mode};pendingRating=0;pendingPhoto=null;
+  $('#saveTitle').textContent=mode==='finish'?'Nice Cook! 🔥':'Log This Cook';
+  $('#saveSub').textContent=`${ctx.weight} lb ${ctx.meat.name} · ${ctx.method.name}`;
+  $('#photoPick').style.backgroundImage='';$('#photoPick').innerHTML='<span class="pp-ico">📷</span><span class="pp-txt">Tap to add a photo</span>';
+  $('#cookNotes').value='';
+  [...$('#stars').children].forEach(s=>s.classList.remove('lit'));
+  $('#saveModal').classList.add('show');
+}
+$('#photoPick').onclick=()=>$('#photoInput').click();
+$('#photoInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await downscale(f,900);pendingPhoto=url;const pp=$('#photoPick');pp.style.backgroundImage=`url(${url})`;pp.innerHTML=''};
+$('#stars').onclick=e=>{const v=+e.target.dataset.v;if(!v)return;pendingRating=v;[...$('#stars').children].forEach(s=>s.classList.toggle('lit',+s.dataset.v<=v))};
+$('#saveCancel').onclick=()=>$('#saveModal').classList.remove('show');
+$('#saveConfirm').onclick=async()=>{
+  const ctx=pendingSave;if(!ctx)return;
+  let photoId=null;
+  if(pendingPhoto){photoId='p'+Date.now();try{await idbSet(photoId,pendingPhoto)}catch(e){photoId=null}}
+  const cooks=loadCooks();
+  cooks.unshift({id:'c'+Date.now(),meatId:ctx.meat.id,meatName:ctx.meat.name,ico:ctx.meat.ico,weight:ctx.weight,methodId:ctx.method.id,methodName:ctx.method.name,date:Date.now(),rating:pendingRating,notes:$('#cookNotes').value.trim(),photoId});
+  saveCooks(cooks);
+  $('#saveModal').classList.remove('show');
+  if(ctx.mode==='finish')setActive(null);
+  switchView('log');
+};
+
+async function renderLog(){
+  const cooks=loadCooks(),body=$('#logBody');
+  $('#cookCount').textContent=cooks.length?`${cooks.length} cook${cooks.length>1?'s':''}`:'';
+  if(!cooks.length){body.innerHTML=`<div class="empty"><div class="e-ico">📖</div><h2 style="font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:1px">No Cooks Yet</h2><p>Every legendary pitmaster keeps a log.<br>Finish a cook and save it here with a photo.</p></div>`;return}
+  body.innerHTML=`<div class="cook-grid">${cooks.map(c=>`
+    <div class="cook" data-id="${c.id}">
+      <div class="photo" id="ph-${c.id}">${c.photoId?'':c.ico}</div>
+      <div class="c-body"><div class="c-name">${c.weight} lb ${c.meatName}</div><div class="c-meta">${c.methodName.split(' / ')[0]} · ${new Date(c.date).toLocaleDateString()}</div><div class="c-stars">${c.rating?'⭐'.repeat(c.rating):'—'}</div></div>
+    </div>`).join('')}</div>`;
+  cooks.forEach(async c=>{if(c.photoId){const url=await idbGet(c.photoId);const el=document.getElementById('ph-'+c.id);if(url&&el){el.style.backgroundImage=`url(${url})`;el.textContent=''}}});
+  body.querySelectorAll('.cook').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
+}
+async function openDetail(id){
+  const c=loadCooks().find(x=>x.id===id);if(!c)return;
+  let photoHtml='';if(c.photoId){const url=await idbGet(c.photoId);if(url)photoHtml=`<img src="${url}" style="width:100%;border-radius:16px;margin-bottom:14px">`}
+  $('#detailSheet').innerHTML=`
+    ${photoHtml||`<div style="font-size:60px;text-align:center;margin-bottom:10px">${c.ico}</div>`}
+    <h3>${c.weight} lb ${c.meatName}</h3>
+    <div class="sh-sub">${c.methodName} · ${new Date(c.date).toLocaleString()}</div>
+    <div style="text-align:center;font-size:22px;color:var(--gold);margin:6px 0 4px">${c.rating?'⭐'.repeat(c.rating):'Not rated'}</div>
+    ${c.notes?`<div class="field"><label>📝 Notes</label><p class="rub-line">${c.notes.replace(/</g,'&lt;')}</p></div>`:''}
+    <div class="sheet-btns">
+      <button class="btn-danger" id="delCook">Delete</button>
+      <button class="btn-primary" id="cookAgain">Cook This Again</button>
+    </div>`;
+  $('#detailModal').classList.add('show');
+  $('#delCook').onclick=async()=>{if(!confirm('Delete this cook?'))return;if(c.photoId)await idbDel(c.photoId);saveCooks(loadCooks().filter(x=>x.id!==id));$('#detailModal').classList.remove('show');renderLog()};
+  $('#cookAgain').onclick=()=>{$('#detailModal').classList.remove('show');switchView('cook');const meat=meatById(c.meatId),el=[...meatGrid.children][MEATS.indexOf(meat)];pickMeat(meat,el);setWeight(c.weight);const mt=methodById(c.methodId),mEl=[...methodList.children][METHODS.indexOf(mt)];pickMethod(mt,mEl);setTimeout(()=>$('#goBtn').click(),300)};
+}
+/* close modals on backdrop tap */
+document.querySelectorAll('.modal').forEach(m=>m.onclick=e=>{if(e.target===m)m.classList.remove('show')});
+
+/* ============ INIT ============ */
+updateTimerBadge();
+if(getActive()){/* leave a hint via badge */}
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/tenderism/sw.js').catch(()=>{}))}
 </script>
 </body>
 </html>

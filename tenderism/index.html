@@ -137,7 +137,7 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .cook-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cook{background:var(--card);border:1.5px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:.15s}
 .cook:active{transform:scale(.97)}
-.cook .photo{aspect-ratio:1;background:var(--bg2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:46px}
+.cook .photo{aspect-ratio:1;background:var(--bg2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:46px;position:relative}
 .cook .c-body{padding:11px 12px 13px}
 .cook .c-name{font-size:14px;font-weight:700}
 .cook .c-meta{font-size:11px;color:var(--muted);margin-top:2px}
@@ -156,6 +156,14 @@ input[type=range]::-moz-range-thumb{width:30px;height:30px;border-radius:50%;bac
 .photo-pick{aspect-ratio:16/10;border:1.5px dashed var(--line);border-radius:16px;background:var(--card) center/cover no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--dim);cursor:pointer}
 .photo-pick .pp-ico{font-size:38px}
 .photo-pick .pp-txt{font-size:13px}
+.media-btns{display:flex;gap:10px;margin-top:10px}
+.media-btns button{flex:1;padding:11px;border-radius:13px;border:1.5px solid var(--line);background:var(--card);color:var(--cream);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.media-btns button:active{transform:scale(.97)}
+.brand-note{font-size:11.5px;color:var(--dim);margin-top:10px;line-height:1.5}
+.photo-pick video,.photo-pick img{width:100%;height:100%;object-fit:cover;border-radius:14px}
+.share-btn{background:linear-gradient(150deg,#2bd17a,#13a85f)!important;color:#04130a!important}
+.cook .vid-badge{position:absolute;top:8px;right:8px;background:rgba(8,3,1,.7);border-radius:8px;font-size:12px;padding:2px 7px}
+.cook{position:relative}
 .stars{display:flex;gap:8px;justify-content:center;font-size:34px}
 .stars span{cursor:pointer;filter:grayscale(1) opacity(.4);transition:.12s}
 .stars span.lit{filter:none}
@@ -225,8 +233,14 @@ footer b{color:var(--muted)}
     <div class="sh-sub" id="saveSub"></div>
     <div class="field">
       <label>📸 Show off the goods</label>
-      <div class="photo-pick" id="photoPick"><span class="pp-ico">📷</span><span class="pp-txt">Tap to add a photo</span></div>
+      <div class="photo-pick" id="photoPick"><span class="pp-ico">📷</span><span class="pp-txt">Add a photo or short video</span></div>
+      <div class="media-btns">
+        <button type="button" id="pickPhoto">📷 Photo</button>
+        <button type="button" id="pickVideo">🎥 Video</button>
+      </div>
       <input type="file" id="photoInput" accept="image/*" capture="environment" hidden>
+      <input type="file" id="videoInput" accept="video/*" capture="environment" hidden>
+      <div class="brand-note">🔥 Photos get the Tenderism stamp baked in — so every post you share shows off the app.</div>
     </div>
     <div class="field">
       <label>⭐ How'd it turn out?</label>
@@ -476,31 +490,79 @@ function fireAlert(title,msg){
 }
 
 /* ============ SAVE / LOG ============ */
-let pendingSave=null,pendingRating=0,pendingPhoto=null;
+/* Public URL used in share captions — auto-derives from where it's hosted.
+   Hard-set this to your custom domain once you have one (e.g. https://tenderism.app). */
+const SHARE_URL=(location.protocol==='https:'?location.origin+'/tenderism/':'https://tenderism.app');
+const SHARE_HOST=SHARE_URL.replace(/^https?:\/\//,'').replace(/\/$/,'');
+
+let pendingSave=null,pendingRating=0,pendingMedia=null; // pendingMedia={type:'image'|'video',data}
+function resetMediaPick(){const pp=$('#photoPick');pp.style.backgroundImage='';pp.innerHTML='<span class="pp-ico">📷</span><span class="pp-txt">Add a photo or short video</span>'}
 function openSave(ctx,mode){
-  pendingSave={...ctx,mode};pendingRating=0;pendingPhoto=null;
+  pendingSave={...ctx,mode};pendingRating=0;pendingMedia=null;
   $('#saveTitle').textContent=mode==='finish'?'Nice Cook! 🔥':'Log This Cook';
   $('#saveSub').textContent=`${ctx.weight} lb ${ctx.meat.name} · ${ctx.method.name}`;
-  $('#photoPick').style.backgroundImage='';$('#photoPick').innerHTML='<span class="pp-ico">📷</span><span class="pp-txt">Tap to add a photo</span>';
+  resetMediaPick();
   $('#cookNotes').value='';
   [...$('#stars').children].forEach(s=>s.classList.remove('lit'));
   $('#saveModal').classList.add('show');
 }
 $('#photoPick').onclick=()=>$('#photoInput').click();
-$('#photoInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await downscale(f,900);pendingPhoto=url;const pp=$('#photoPick');pp.style.backgroundImage=`url(${url})`;pp.innerHTML=''};
+$('#pickPhoto').onclick=()=>$('#photoInput').click();
+$('#pickVideo').onclick=()=>$('#videoInput').click();
+$('#photoInput').onchange=async e=>{const f=e.target.files[0];if(!f)return;const url=await downscale(f,1080);pendingMedia={type:'image',data:url};const pp=$('#photoPick');pp.style.backgroundImage='';pp.innerHTML=`<img src="${url}" alt="">`};
+$('#videoInput').onchange=e=>{const f=e.target.files[0];if(!f)return;pendingMedia={type:'video',data:f};const pp=$('#photoPick');pp.style.backgroundImage='';pp.innerHTML=`<video src="${URL.createObjectURL(f)}" muted playsinline autoplay loop></video>`};
 $('#stars').onclick=e=>{const v=+e.target.dataset.v;if(!v)return;pendingRating=v;[...$('#stars').children].forEach(s=>s.classList.toggle('lit',+s.dataset.v<=v))};
 $('#saveCancel').onclick=()=>$('#saveModal').classList.remove('show');
 $('#saveConfirm').onclick=async()=>{
   const ctx=pendingSave;if(!ctx)return;
-  let photoId=null;
-  if(pendingPhoto){photoId='p'+Date.now();try{await idbSet(photoId,pendingPhoto)}catch(e){photoId=null}}
+  let mediaId=null,mediaType=null;
+  if(pendingMedia){mediaId='m'+Date.now();mediaType=pendingMedia.type;try{await idbSet(mediaId,pendingMedia.data)}catch(e){mediaId=null;mediaType=null}}
   const cooks=loadCooks();
-  cooks.unshift({id:'c'+Date.now(),meatId:ctx.meat.id,meatName:ctx.meat.name,ico:ctx.meat.ico,weight:ctx.weight,methodId:ctx.method.id,methodName:ctx.method.name,date:Date.now(),rating:pendingRating,notes:$('#cookNotes').value.trim(),photoId});
+  cooks.unshift({id:'c'+Date.now(),meatId:ctx.meat.id,meatName:ctx.meat.name,ico:ctx.meat.ico,weight:ctx.weight,methodId:ctx.method.id,methodName:ctx.method.name,date:Date.now(),rating:pendingRating,notes:$('#cookNotes').value.trim(),mediaId,mediaType});
   saveCooks(cooks);
   $('#saveModal').classList.remove('show');
   if(ctx.mode==='finish')setActive(null);
   switchView('log');
 };
+
+/* ----- branded sharing (free advertising) ----- */
+function loadImg(src){return new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=src})}
+async function brandImage(dataUrl,cook){
+  if(document.fonts&&document.fonts.ready){try{await document.fonts.ready}catch(e){}}
+  const img=await loadImg(dataUrl),w=img.width,h=img.height;
+  const c=document.createElement('canvas');c.width=w;c.height=h;
+  const x=c.getContext('2d');x.drawImage(img,0,0,w,h);
+  const bh=Math.max(h*0.22,110);
+  const g=x.createLinearGradient(0,h-bh,0,h);
+  g.addColorStop(0,'rgba(18,7,3,0)');g.addColorStop(.55,'rgba(18,7,3,.80)');g.addColorStop(1,'rgba(18,7,3,.96)');
+  x.fillStyle=g;x.fillRect(0,h-bh,w,bh);
+  const p=w*0.05;
+  x.font=`700 ${Math.round(h*0.060)}px 'Bebas Neue', Impact, sans-serif`;x.fillStyle='#ffb547';
+  x.fillText('🍖 TENDERISM',p,h-bh*0.42);
+  const sm=Math.round(h*0.032);
+  x.font=`600 ${sm}px 'DM Sans', sans-serif`;x.fillStyle='#fff3e6';
+  x.fillText(`${cook.weight} lb ${cook.meatName} · fall off the bone`,p,h-bh*0.42+sm*1.3);
+  x.font=`500 ${Math.round(h*0.025)}px 'DM Sans', sans-serif`;x.fillStyle='#c79a7e';
+  x.fillText(SHARE_HOST,p,h-p*0.55);
+  return await new Promise(r=>c.toBlob(r,'image/jpeg',0.9));
+}
+async function shareCook(c){
+  const stars=c.rating?(' '+'⭐'.repeat(c.rating)):'';
+  const text=`🍖 Fall-off-the-bone ${c.weight}lb ${c.meatName}${stars}\nMade with the Tenderism app — ${c.methodName.split(' / ')[0]} style.\nGet it 👉 ${SHARE_URL}\n#Tenderism #MrTenderism #FallOffTheBone #BBQ`;
+  const mediaId=c.mediaId||c.photoId,mediaType=c.mediaType||(c.photoId?'image':null);
+  let file=null;
+  try{
+    if(mediaId){const data=await idbGet(mediaId);
+      if(mediaType==='video'&&data){file=new File([data],`tenderism-${c.meatId}.mp4`,{type:data.type||'video/mp4'})}
+      else if(data){const blob=await brandImage(data,c);file=new File([blob],`tenderism-${c.meatId}.jpg`,{type:'image/jpeg'})}}
+  }catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    try{await navigator.share({files:[file],text,title:'Tenderism'});return}catch(e){if(e.name==='AbortError')return}}
+  if(navigator.share){try{await navigator.share({text,title:'Tenderism',url:SHARE_URL});return}catch(e){if(e.name==='AbortError')return}}
+  try{await navigator.clipboard.writeText(text)}catch(e){}
+  if(file){const u=URL.createObjectURL(file);const a=document.createElement('a');a.href=u;a.download=file.name;a.click();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+  alert('Caption copied'+(file?' and your branded media downloaded':'')+'. Paste it into your post and tag us!');
+}
 
 async function renderLog(){
   const cooks=loadCooks(),body=$('#logBody');
@@ -508,27 +570,40 @@ async function renderLog(){
   if(!cooks.length){body.innerHTML=`<div class="empty"><div class="e-ico">📖</div><h2 style="font-family:'Bebas Neue';font-size:26px;color:var(--gold);letter-spacing:1px">No Cooks Yet</h2><p>Every legendary pitmaster keeps a log.<br>Finish a cook and save it here with a photo.</p></div>`;return}
   body.innerHTML=`<div class="cook-grid">${cooks.map(c=>`
     <div class="cook" data-id="${c.id}">
-      <div class="photo" id="ph-${c.id}">${c.photoId?'':c.ico}</div>
+      <div class="photo" id="ph-${c.id}"><span class="ph-fallback">${c.ico}</span>${c.mediaType==='video'?'<div class="vid-badge">🎥</div>':''}</div>
       <div class="c-body"><div class="c-name">${c.weight} lb ${c.meatName}</div><div class="c-meta">${c.methodName.split(' / ')[0]} · ${new Date(c.date).toLocaleDateString()}</div><div class="c-stars">${c.rating?'⭐'.repeat(c.rating):'—'}</div></div>
     </div>`).join('')}</div>`;
-  cooks.forEach(async c=>{if(c.photoId){const url=await idbGet(c.photoId);const el=document.getElementById('ph-'+c.id);if(url&&el){el.style.backgroundImage=`url(${url})`;el.textContent=''}}});
+  cooks.forEach(async c=>{
+    const mediaId=c.mediaId||c.photoId,mediaType=c.mediaType||(c.photoId?'image':null);
+    if(!mediaId)return;const data=await idbGet(mediaId);if(!data)return;
+    const el=document.getElementById('ph-'+c.id);if(!el)return;
+    let bg=mediaType==='video'?await videoPoster(data):data;
+    if(bg){el.style.backgroundImage=`url(${bg})`;el.querySelector('.ph-fallback')?.remove()}
+  });
   body.querySelectorAll('.cook').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
 }
+function videoPoster(blob){return new Promise(res=>{const v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='metadata';const u=URL.createObjectURL(blob);let done=false;const fin=r=>{if(done)return;done=true;URL.revokeObjectURL(u);res(r)};v.src=u;v.onloadeddata=()=>{try{v.currentTime=Math.min(.1,(v.duration||1))}catch(e){fin(null)}};v.onseeked=()=>{try{const c=document.createElement('canvas');c.width=v.videoWidth||320;c.height=v.videoHeight||320;c.getContext('2d').drawImage(v,0,0,c.width,c.height);fin(c.toDataURL('image/jpeg',.7))}catch(e){fin(null)}};v.onerror=()=>fin(null);setTimeout(()=>fin(null),3500)})}
 async function openDetail(id){
   const c=loadCooks().find(x=>x.id===id);if(!c)return;
-  let photoHtml='';if(c.photoId){const url=await idbGet(c.photoId);if(url)photoHtml=`<img src="${url}" style="width:100%;border-radius:16px;margin-bottom:14px">`}
+  const mediaId=c.mediaId||c.photoId,mediaType=c.mediaType||(c.photoId?'image':null);
+  let mediaHtml='';
+  if(mediaId){const data=await idbGet(mediaId);
+    if(data&&mediaType==='video')mediaHtml=`<video src="${URL.createObjectURL(data)}" controls playsinline style="width:100%;border-radius:16px;margin-bottom:14px"></video>`;
+    else if(data)mediaHtml=`<img src="${data}" style="width:100%;border-radius:16px;margin-bottom:14px">`}
   $('#detailSheet').innerHTML=`
-    ${photoHtml||`<div style="font-size:60px;text-align:center;margin-bottom:10px">${c.ico}</div>`}
+    ${mediaHtml||`<div style="font-size:60px;text-align:center;margin-bottom:10px">${c.ico}</div>`}
     <h3>${c.weight} lb ${c.meatName}</h3>
     <div class="sh-sub">${c.methodName} · ${new Date(c.date).toLocaleString()}</div>
     <div style="text-align:center;font-size:22px;color:var(--gold);margin:6px 0 4px">${c.rating?'⭐'.repeat(c.rating):'Not rated'}</div>
     ${c.notes?`<div class="field"><label>📝 Notes</label><p class="rub-line">${c.notes.replace(/</g,'&lt;')}</p></div>`:''}
+    <button class="share-btn" id="shareCook" style="width:100%;padding:15px;border-radius:16px;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;border:none;margin-top:18px">📤 Share &amp; Tag Tenderism</button>
     <div class="sheet-btns">
       <button class="btn-danger" id="delCook">Delete</button>
       <button class="btn-primary" id="cookAgain">Cook This Again</button>
     </div>`;
   $('#detailModal').classList.add('show');
-  $('#delCook').onclick=async()=>{if(!confirm('Delete this cook?'))return;if(c.photoId)await idbDel(c.photoId);saveCooks(loadCooks().filter(x=>x.id!==id));$('#detailModal').classList.remove('show');renderLog()};
+  $('#shareCook').onclick=()=>shareCook(c);
+  $('#delCook').onclick=async()=>{if(!confirm('Delete this cook?'))return;if(mediaId)await idbDel(mediaId);saveCooks(loadCooks().filter(x=>x.id!==id));$('#detailModal').classList.remove('show');renderLog()};
   $('#cookAgain').onclick=()=>{$('#detailModal').classList.remove('show');switchView('cook');const meat=meatById(c.meatId),el=[...meatGrid.children][MEATS.indexOf(meat)];pickMeat(meat,el);setWeight(c.weight);const mt=methodById(c.methodId),mEl=[...methodList.children][METHODS.indexOf(mt)];pickMethod(mt,mEl);setTimeout(()=>$('#goBtn').click(),300)};
 }
 /* close modals on backdrop tap */

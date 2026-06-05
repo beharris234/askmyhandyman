@@ -38,6 +38,38 @@ HARD SAFETY RULES (never break these)
 
 Stay in character as Big Drop at all times.`
 
+// ---- Abuse protection ----
+// Caps on every request (cheap, always on).
+const MAX_MSG_CHARS = 2000       // per message
+const MAX_IMG_B64 = 2_500_000    // ~1.8MB image
+const MAX_HISTORY = 12
+// Coarse per-IP throttle. NOTE: this lives in a single warm instance's memory,
+// so it's a basic guard, not a hard limit. For production-grade limiting, back
+// this with Vercel KV / Upstash Redis (see DEPLOY.md).
+const WINDOW_MS = 60_000
+const MAX_PER_WINDOW = 15
+const hits = new Map() // ip -> [timestamps]
+function throttled(ip) {
+  const now = Date.now()
+  const arr = (hits.get(ip) || []).filter(t => now - t < WINDOW_MS)
+  arr.push(now)
+  hits.set(ip, arr)
+  if (hits.size > 5000) hits.clear() // guard against unbounded growth
+  return arr.length > MAX_PER_WINDOW
+}
+
+function profileNote(p) {
+  if (!p || typeof p !== 'object') return null
+  const type = String(p.cookType || '').slice(0, 40)
+  const goals = Array.isArray(p.goals) ? p.goals.map(g => String(g).slice(0, 30)).slice(0, 6) : []
+  if (!type && !goals.length) return null
+  let s = 'CONTEXT ON THIS USER (tailor your help, do not read this back to them):'
+  if (type) s += `\n- They describe themselves as: ${type}.`
+  if (goals.length) s += `\n- What they want from BoneDropper: ${goals.join(', ')}.`
+  s += '\n- Match your depth and assumptions to their level. A beginner needs the basics and encouragement; a pro wants precise, advanced tips.'
+  return s
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.status(405).json({ error: 'Method not allowed' })
@@ -48,10 +80,28 @@ export default async function handler(req, res) {
     return
   }
 
+  const ip = (req.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown'
+  if (throttled(ip)) {
+    res.status(429).json({ error: "Whoa, slow down at the pit 🔥 Too many questions too fast — give it a few seconds." })
+    return
+  }
+
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body || '{}') : (req.body || {})
-    const history = Array.isArray(body.messages) ? body.messages.slice(-12) : []
+    const history = (Array.isArray(body.messages) ? body.messages : []).slice(-MAX_HISTORY)
     const image = body.image // { media_type, data } (base64, no data: prefix)
+
+    // Input caps
+    for (const m of history) {
+      if (m && typeof m.content === 'string' && m.content.length > MAX_MSG_CHARS) {
+        res.status(413).json({ error: 'That message is a little long for the pit — trim it down and try again.' })
+        return
+      }
+    }
+    if (image && image.data && image.data.length > MAX_IMG_B64) {
+      res.status(413).json({ error: 'That photo is too big — try a smaller shot.' })
+      return
+    }
 
     // Build Anthropic messages. Attach the image (if any) to the final user turn.
     const messages = history.map((m, i) => {
@@ -73,6 +123,11 @@ export default async function handler(req, res) {
       return
     }
 
+    // System = cached persona + (optional) per-user profile context.
+    const system = [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }]
+    const note = profileNote(body.profile)
+    if (note) system.push({ type: 'text', text: note })
+
     const client = new Anthropic() // reads ANTHROPIC_API_KEY from env
 
     const response = await client.messages.create({
@@ -80,7 +135,7 @@ export default async function handler(req, res) {
       max_tokens: 1024,
       thinking: { type: 'adaptive' },
       output_config: { effort: 'low' }, // snappy + cheap; this is a quick coaching chat
-      system: [{ type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } }],
+      system,
       messages,
     })
 

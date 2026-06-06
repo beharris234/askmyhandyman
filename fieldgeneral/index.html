@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0d0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>FieldGeneral</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:#0a0d0a;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
+.loader{display:flex;flex-direction:column;align-items:center;gap:14px}
+.mark{width:84px;height:84px;border-radius:22px;background:linear-gradient(135deg,#16a34a,#0a0d0a);border:1px solid rgba(34,197,94,.35);display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 60px rgba(34,197,94,.25);animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 50px rgba(34,197,94,.22)}50%{box-shadow:0 0 90px rgba(34,197,94,.4)}}
+.name{font-family:'Oswald',sans-serif;font-size:38px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#e7ece4}
+.name span{color:#22c55e}
+.tag{font-size:11px;letter-spacing:3px;color:#8a9581;text-transform:uppercase;text-align:center;margin-top:4px}
+.spin{width:26px;height:26px;border-radius:50%;border:2px solid rgba(34,197,94,.2);border-top-color:#22c55e;animation:spin 1s linear infinite;margin-top:10px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="loader">
+  <div class="mark">🏈</div>
+  <div>
+    <div class="name">FIELD<span>GENERAL</span></div>
+    <div class="tag">Your voice. The whole team. Every day.</div>
+  </div>
+  <div class="spin"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/config.js"></script>
+<script>
+(async () => {
+  // Player deep link?  index.html?t=<token>  → send straight to player view
+  const t = new URLSearchParams(location.search).get('t')
+  if (t) { location.href = '/player.html?t=' + encodeURIComponent(t); return }
+  try {
+    const coach = await db.currentCoach()
+    location.href = coach ? '/coach.html' : '/onboarding.html'
+  } catch (e) {
+    location.href = '/onboarding.html'
+  }
+})()
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js').catch(() => {}))
+}
+</script>
+</body>
+</html>

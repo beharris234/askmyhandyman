@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0d0a">
+<title>FieldGeneral — Set Up</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0d0a;color:#e7ece4;font-family:'Inter',sans-serif;min-height:100vh;padding:24px 18px 60px}
+.wrap{max-width:480px;margin:0 auto}
+.brand{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:4px}
+.brand span{color:#22c55e}
+.sub{text-align:center;color:#8a9581;font-size:12px;letter-spacing:1px;margin-bottom:18px}
+.demo{display:none;text-align:center;font-size:11px;color:#eab308;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);border-radius:8px;padding:7px;margin-bottom:16px}
+.steps{display:flex;gap:6px;margin-bottom:22px}
+.steps div{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.08)}
+.steps div.on{background:#22c55e}
+.card{background:#11150f;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:22px}
+h2{font-family:'Oswald',sans-serif;font-size:22px;font-weight:600;margin-bottom:4px}
+.hint{color:#8a9581;font-size:13px;margin-bottom:18px;line-height:1.5}
+label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a9581;margin:14px 0 6px}
+input,textarea,select{width:100%;background:#0a0d0a;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:13px;color:#e7ece4;font-family:'Inter',sans-serif;font-size:15px}
+textarea{resize:vertical;min-height:70px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#22c55e}
+.btn{width:100%;margin-top:20px;padding:15px;border-radius:11px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#06180c;font-family:'Oswald',sans-serif;font-weight:600;font-size:15px;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+.btn:disabled{opacity:.5}
+.ghost{background:none;border:1px solid rgba(255,255,255,.12);color:#8a9581}
+.link{text-align:center;margin-top:14px;font-size:13px;color:#8a9581}
+.link a{color:#22c55e;text-decoration:none;cursor:pointer}
+.ex{display:flex;gap:8px;margin-bottom:8px}
+.ex textarea{min-height:46px}
+.ex button{flex:0 0 auto;width:42px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:#0a0d0a;color:#ef4444;cursor:pointer;font-size:18px}
+.row{display:flex;gap:8px}
+.row select{flex:0 0 130px}
+.plist{margin-top:16px;display:flex;flex-direction:column;gap:8px}
+.pill{display:flex;align-items:center;justify-content:space-between;background:#0a0d0a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:11px 13px;font-size:14px}
+.pos{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1px;color:#22c55e;background:rgba(34,197,94,.1);padding:3px 8px;border-radius:6px;margin-left:8px}
+.pill button{background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px}
+.guard{margin-top:18px;font-size:11px;color:#8a9581;line-height:1.6;border-top:1px solid rgba(255,255,255,.06);padding-top:14px}
+.guard b{color:#e7ece4;display:block;margin-bottom:6px;font-family:'Oswald',sans-serif;letter-spacing:1px}
+.err{color:#ef4444;font-size:13px;margin-top:10px;display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">FIELD<span>GENERAL</span></div>
+  <div class="sub">COACH SETUP</div>
+  <div class="demo" id="demo">⚡ Demo mode — no login needed, data saves in this browser. Add Supabase keys in config.js to go live.</div>
+  <div class="steps"><div id="s0"></div><div id="s1"></div><div id="s2"></div></div>
+
+  <!-- STEP 0: account -->
+  <div class="card" id="step0">
+    <h2 id="accTitle">Create your account</h2>
+    <div class="hint">You're the customer — your players never pay and never log in with a password.</div>
+    <label>Your name</label><input id="fullName" placeholder="Coach Harris">
+    <label>Team name</label><input id="teamName" placeholder="Central High Tigers">
+    <label>Email</label><input id="email" type="email" placeholder="coach@school.edu">
+    <label>Password</label><input id="password" type="password" placeholder="••••••••">
+    <button class="btn" id="accBtn">Continue</button>
+    <div class="err" id="accErr"></div>
+    <div class="link" id="toggleLink">Already set up? <a id="toggle">Sign in</a></div>
+  </div>
+
+  <!-- STEP 1: voice -->
+  <div class="card" id="step1" style="display:none">
+    <h2>Set your voice</h2>
+    <div class="hint">Paste 3–5 real texts you've sent your team. The AI writes every daily message in <i>your</i> voice so it feels like you personally texted each kid.</div>
+    <label>Tone notes (optional)</label>
+    <textarea id="tone" placeholder="Old-school, demanding but caring. Short sentences. Lots of 'we', not 'you'."></textarea>
+    <label>Example texts in your voice</label>
+    <div id="examples"></div>
+    <button class="btn ghost" id="addEx" style="margin-top:8px">+ Add another example</button>
+    <label>Sign-off</label><input id="signoff" placeholder="— Coach Harris">
+    <button class="btn" id="voiceBtn">Continue</button>
+  </div>
+
+  <!-- STEP 2: roster -->
+  <div class="card" id="step2" style="display:none">
+    <h2>Add your roster</h2>
+    <div class="hint">Name, position, and a parent contact (parent visibility is built in). Add a few to start — you can import the rest later.</div>
+    <div class="row">
+      <input id="pName" placeholder="Player name">
+      <select id="pPos"></select>
+    </div>
+    <input id="pParent" placeholder="Parent email or phone (optional)" style="margin-top:8px">
+    <button class="btn ghost" id="addP" style="margin-top:10px">+ Add player</button>
+    <div class="plist" id="plist"></div>
+    <button class="btn" id="doneBtn" style="margin-top:20px">Finish — open my dashboard</button>
+    <div class="guard"><b>BUILT-IN GUARDRAILS</b><span id="guardText"></span></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/config.js"></script>
+<script>
+let coach = null, mode = 'signup'
+const $ = id => document.getElementById(id)
+
+function setStep(n){ for(let i=0;i<3;i++){ $('step'+i).style.display = i===n?'block':'none'; $('s'+i).className = i<=n?'on':'' } window.scrollTo(0,0) }
+
+// position dropdown
+const posSel = $('pPos')
+Object.keys(POSITION_GROUPS).forEach(k => { const o=document.createElement('option'); o.value=k; o.textContent=k+' · '+POSITION_GROUPS[k].name; posSel.appendChild(o) })
+$('guardText').textContent = GUARDRAILS.join(' ')
+
+if (DEMO) $('demo').style.display='block'
+
+// ---- account / voice examples ----
+function addExample(val){ const d=document.createElement('div'); d.className='ex'; d.innerHTML='<textarea placeholder="Paste a text you\'ve really sent...">'+(val||'')+'</textarea><button title="remove">×</button>'; d.querySelector('button').onclick=()=>d.remove(); $('examples').appendChild(d) }
+addExample(); addExample(); addExample()
+$('addEx').onclick = ()=>addExample()
+
+function toggleMode() {
+  mode = mode==='signup'?'signin':'signup'
+  const signup = mode==='signup'
+  $('accTitle').textContent = signup?'Create your account':'Welcome back'
+  $('accBtn').textContent = signup?'Continue':'Sign in'
+  $('fullName').style.display = signup?'block':'none'
+  $('teamName').style.display = signup?'block':'none'
+  // hide the "Your name" / "Team name" labels (first two labels in the card)
+  const labels = $('step0').querySelectorAll('label')
+  labels[0].style.display = signup?'block':'none'
+  labels[1].style.display = signup?'block':'none'
+  $('toggleLink').innerHTML = signup ? 'Already set up? <a id="toggle">Sign in</a>' : 'Need an account? <a id="toggle">Create one</a>'
+  $('toggle').onclick = toggleMode
+}
+$('toggle').onclick = toggleMode
+
+$('accBtn').onclick = async () => {
+  const err=$('accErr'); err.style.display='none'
+  const email=$('email').value.trim(), password=$('password').value
+  try {
+    $('accBtn').disabled=true
+    if (mode==='signin') {
+      coach = await db.signIn(email, password)
+      if (!coach) throw new Error('No account found in this browser. Create one instead.')
+      location.href='/coach.html'; return
+    }
+    coach = await db.signUp(email, password, $('fullName').value.trim()||'Coach', $('teamName').value.trim()||'My Team')
+    // preload existing voice/roster if returning
+    setStep(1)
+  } catch(e){ err.textContent = e.message||String(e); err.style.display='block' }
+  finally { $('accBtn').disabled=false }
+}
+
+$('voiceBtn').onclick = async () => {
+  const examples = [...document.querySelectorAll('#examples textarea')].map(t=>t.value.trim()).filter(Boolean)
+  await db.saveVoice(coach.id, { tone_notes:$('tone').value.trim(), examples, sign_off:$('signoff').value.trim()|| ('— '+(coach.full_name||'Coach')) })
+  setStep(2)
+}
+
+// ---- roster ----
+let roster=[]
+async function refresh(){ roster = await db.getPlayers(coach?coach.id:null); render() }
+function render(){
+  $('plist').innerHTML = roster.map(p=>`<div class="pill"><span>${p.full_name}<span class="pos">${p.position||'—'}</span></span><button data-id="${p.id}">×</button></div>`).join('')
+  $('plist').querySelectorAll('button').forEach(b=>b.onclick=async()=>{ await db.removePlayer(b.dataset.id); refresh() })
+}
+$('addP').onclick = async () => {
+  const name=$('pName').value.trim(); if(!name) return
+  await db.addPlayer(coach.id, { full_name:name, position:$('pPos').value, parent_contact:$('pParent').value.trim() })
+  $('pName').value=''; $('pParent').value=''; refresh(); $('pName').focus()
+}
+$('doneBtn').onclick = () => location.href='/coach.html'
+
+// if already signed in, jump ahead
+;(async()=>{ const c = await db.currentCoach(); if(c){ coach=c; await refresh() } })()
+</script>
+</body>
+</html>

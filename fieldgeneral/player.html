@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0d0a">
+<title>FieldGeneral — Today</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0d0a;color:#e7ece4;font-family:'Inter',sans-serif;min-height:100vh;padding:22px 18px 50px}
+.wrap{max-width:460px;margin:0 auto}
+.hdr{text-align:center;margin-bottom:18px}
+.hdr .team{font-family:'Oswald',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#22c55e}
+.hdr h1{font-family:'Oswald',sans-serif;font-size:26px;font-weight:600;margin-top:2px}
+.hdr .pg{font-size:12px;color:#8a9581;margin-top:2px}
+.card{background:#11150f;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;margin-bottom:14px}
+.label{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#8a9581;margin-bottom:10px}
+.msgbox{white-space:pre-wrap;font-size:15px;line-height:1.65}
+.wrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.wrow:last-child{border:none}
+.wrow .reps{color:#8a9581;font-family:'Oswald',sans-serif}
+.nutri{font-size:13px;color:#cdd6c6;line-height:1.55}
+.checks{display:flex;flex-direction:column;gap:10px}
+.chk{display:flex;align-items:center;gap:14px;background:#0a0d0a;border:1px solid rgba(255,255,255,.1);border-radius:13px;padding:15px 16px;cursor:pointer;transition:.15s}
+.chk .ico{font-size:24px}
+.chk .t{flex:1}
+.chk .t .n{font-size:15px;font-weight:600}
+.chk .t .d{font-size:12px;color:#8a9581}
+.chk .box{width:26px;height:26px;border-radius:8px;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;color:#06180c}
+.chk.on{border-color:#22c55e;background:rgba(34,197,94,.08)}
+.chk.on .box{background:#22c55e;border-color:#22c55e}
+.done{text-align:center;margin-top:16px;font-family:'Oswald',sans-serif;letter-spacing:1px;color:#22c55e;font-size:14px;display:none}
+.safety{font-size:11px;color:#8a9581;line-height:1.6;text-align:center;margin-top:18px}
+.safety b{color:#f97316}
+.empty{text-align:center;color:#8a9581;padding:40px 10px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#22c55e;color:#06180c;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:.3s}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"><div class="empty">Loading…</div></div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/config.js"></script>
+<script>
+const $ = id => document.getElementById(id)
+const date = todayStr()
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1600) }
+
+;(async () => {
+  const tok = new URLSearchParams(location.search).get('t')
+  if (!tok){ $('app').innerHTML='<div class="empty">No player link found. Ask your coach for your check-in link.</div>'; return }
+  const res = await db.getPlayerByToken(tok)
+  if (!res){ $('app').innerHTML='<div class="empty">Link not recognized. Ask your coach to resend it.</div>'; return }
+  const { player, coach } = res
+  const group = player.position
+  const g = POSITION_GROUPS[group] || { name:'Team', focus:'' }
+  const msg = await db.getMessage(player.coach_id || (coach&&coach.id), date, group)
+  let chk = await db.getCheckin(player.id, date) || { lift_done:false, ate_right:false, film_watched:false }
+
+  const items = [
+    { k:'lift_done', ico:'🏋️', n:'Did the lift', d:"Today's workout, done" },
+    { k:'ate_right', ico:'🍎', n:'Ate right', d:'Real food, plenty of water' },
+    { k:'film_watched', ico:'🎬', n:'Watched film', d:'Studied your assignments' }
+  ]
+
+  function render(){
+    $('app').innerHTML = `
+      <div class="hdr">
+        <div class="team">${(coach&&coach.team_name)||'Team'}</div>
+        <h1>What's up, ${player.full_name.split(' ')[0]}</h1>
+        <div class="pg">${g.name} · ${niceDate(date)}</div>
+      </div>
+      ${ msg && msg.status==='sent' ? `
+        <div class="card"><div class="label">From ${(coach&&coach.full_name)||'Coach'}</div><div class="msgbox">${(msg.message_text||'').replace(/</g,'&lt;')}</div></div>
+        <div class="card"><div class="label">Today's Workout</div>${(msg.workout||[]).map(w=>`<div class="wrow"><span>${w.name}</span><span class="reps">${w.sets} × ${w.reps}</span></div>`).join('')||'<div class="nutri">No workout posted yet.</div>'}</div>
+        ${ msg.nutrition ? `<div class="card"><div class="label">Fuel</div><div class="nutri">${msg.nutrition}</div></div>`:'' }
+      ` : `<div class="card"><div class="nutri">Coach hasn't posted today's drop yet. Check back soon — but you can still log your check-ins below.</div></div>` }
+
+      <div class="card">
+        <div class="label">Check in</div>
+        <div class="checks" id="checks"></div>
+        <div class="done" id="done">✓ All in. Coach can see you're bought in.</div>
+      </div>
+      <div class="safety">Questions about an <b>injury or pain</b>? Tell the athletic trainer. This app gives general healthy-habit guidance only — no diets or calorie targets.</div>
+    `
+    const box=$('checks')
+    box.innerHTML = items.map(it=>`
+      <div class="chk ${chk[it.k]?'on':''}" data-k="${it.k}">
+        <div class="ico">${it.ico}</div>
+        <div class="t"><div class="n">${it.n}</div><div class="d">${it.d}</div></div>
+        <div class="box">${chk[it.k]?'✓':''}</div>
+      </div>`).join('')
+    box.querySelectorAll('.chk').forEach(el=>el.onclick=async()=>{
+      const k=el.dataset.k; chk[k]=!chk[k]
+      await db.setCheckin(player.id, date, { lift_done:chk.lift_done, ate_right:chk.ate_right, film_watched:chk.film_watched })
+      render(); toast(chk[k]?'Checked ✓':'Unchecked')
+    })
+    $('done').style.display = (chk.lift_done&&chk.ate_right&&chk.film_watched)?'block':'none'
+  }
+  render()
+})()
+</script>
+</body>
+</html>

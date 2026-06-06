@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0a0d0a">
+<title>FieldGeneral — Dashboard</title>
+<link rel="manifest" href="/manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0d0a;color:#e7ece4;font-family:'Inter',sans-serif;min-height:100vh;padding-bottom:50px}
+.top{position:sticky;top:0;z-index:5;background:rgba(10,13,10,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(255,255,255,.06);padding:14px 18px;display:flex;align-items:center;justify-content:space-between}
+.top .b{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:18px}
+.top .b span{color:#22c55e}
+.top .team{font-size:11px;color:#8a9581}
+.top button{background:none;border:1px solid rgba(255,255,255,.12);color:#8a9581;border-radius:8px;padding:7px 11px;font-size:12px;cursor:pointer}
+.wrap{max-width:560px;margin:0 auto;padding:18px}
+.demo{display:none;text-align:center;font-size:11px;color:#eab308;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.25);border-radius:8px;padding:7px;margin-bottom:14px}
+.card{background:#11150f;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;margin-bottom:16px}
+h2{font-family:'Oswald',sans-serif;font-size:19px;font-weight:600;letter-spacing:.5px;display:flex;align-items:center;gap:8px}
+.date{font-size:12px;color:#8a9581;font-weight:400;margin-left:auto}
+.hint{color:#8a9581;font-size:13px;margin:6px 0 14px;line-height:1.5}
+label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:#8a9581;margin:12px 0 6px}
+select,input,textarea{width:100%;background:#0a0d0a;border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px;color:#e7ece4;font-family:'Inter',sans-serif;font-size:15px}
+select:focus,input:focus,textarea:focus{outline:none;border-color:#22c55e}
+.btn{width:100%;margin-top:14px;padding:14px;border-radius:11px;background:linear-gradient(135deg,#22c55e,#16a34a);border:none;color:#06180c;font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;letter-spacing:2px;text-transform:uppercase;cursor:pointer}
+.btn:disabled{opacity:.5}
+.btn.ghost{background:none;border:1px solid rgba(255,255,255,.12);color:#e7ece4}
+.btn.orange{background:linear-gradient(135deg,#f97316,#ea580c);color:#1a0a00}
+.preview{margin-top:16px;border-top:1px solid rgba(255,255,255,.06);padding-top:16px;display:none}
+.msgbox{white-space:pre-wrap;background:#0a0d0a;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:14px;font-size:14px;line-height:1.6}
+.srcbadge{font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 7px;border-radius:5px;margin-left:6px}
+.src-local{background:rgba(234,179,8,.12);color:#eab308}
+.src-claude{background:rgba(34,197,94,.12);color:#22c55e}
+.wlist{margin-top:12px}
+.wrow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
+.wrow .reps{color:#8a9581;font-family:'Oswald',sans-serif;letter-spacing:.5px}
+.nutri{margin-top:12px;font-size:13px;color:#cdd6c6;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.18);border-radius:10px;padding:12px;line-height:1.5}
+.sent{display:none;text-align:center;color:#22c55e;font-size:13px;margin-top:12px;font-family:'Oswald',sans-serif;letter-spacing:1px}
+/* board */
+.summary{display:flex;gap:8px;margin-bottom:14px}
+.stat{flex:1;text-align:center;border-radius:12px;padding:12px 6px;border:1px solid rgba(255,255,255,.08)}
+.stat .n{font-family:'Oswald',sans-serif;font-size:26px;font-weight:700;line-height:1}
+.stat .l{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:#8a9581;margin-top:4px}
+.unit{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#8a9581;margin:14px 0 8px}
+.prow{display:flex;align-items:center;gap:12px;padding:11px 12px;background:#0a0d0a;border:1px solid rgba(255,255,255,.07);border-radius:11px;margin-bottom:8px}
+.dot{width:13px;height:13px;border-radius:50%;flex:0 0 auto;box-shadow:0 0 10px currentColor}
+.prow .nm{flex:1;font-size:14px}
+.prow .pg{font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:1px;color:#8a9581}
+.prow .marks{font-size:13px;letter-spacing:2px}
+.empty{color:#8a9581;font-size:13px;text-align:center;padding:18px}
+.nudge{margin-top:6px}
+.nudgerow{display:flex;gap:8px;align-items:center;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+.nudgerow span{flex:1}
+.nudgerow button{flex:0 0 auto;background:none;border:1px solid rgba(255,255,255,.15);color:#e7ece4;border-radius:7px;padding:6px 10px;font-size:11px;cursor:pointer}
+.linkrow{display:flex;gap:8px;align-items:center;margin-bottom:8px;font-size:13px}
+.linkrow .nm{flex:1}
+.linkrow button{background:none;border:1px solid rgba(34,197,94,.3);color:#22c55e;border-radius:7px;padding:6px 10px;font-size:11px;cursor:pointer}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#22c55e;color:#06180c;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:.3s;z-index:50}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="top">
+  <div><div class="b">FIELD<span>GENERAL</span></div><div class="team" id="teamName"></div></div>
+  <button id="signout">Sign out</button>
+</div>
+<div class="wrap">
+  <div class="demo" id="demo">⚡ Demo mode — data saves in this browser only.</div>
+
+  <!-- TODAY'S DROP -->
+  <div class="card">
+    <h2>🏈 Today's Drop <span class="date" id="today"></span></h2>
+    <div class="hint">Pick a position group, give it a vibe, and the AI writes the workout + message in your voice. Review, then send.</div>
+    <label>Position group</label>
+    <select id="group"></select>
+    <label>Today's vibe / focus (optional)</label>
+    <input id="vibe" placeholder="e.g. Bounce back from Friday. Effort is non-negotiable.">
+    <button class="btn" id="gen">Generate today's drop</button>
+    <button class="btn ghost" id="genAll" style="margin-top:8px">Generate for every group on my roster</button>
+
+    <div class="preview" id="preview">
+      <h2 style="font-size:16px">Message <span id="src"></span></h2>
+      <div class="msgbox" id="msg"></div>
+      <h2 style="font-size:16px;margin-top:16px">Workout</h2>
+      <div class="wlist" id="workout"></div>
+      <div class="nutri" id="nutri"></div>
+      <button class="btn orange" id="send">Approve & send to players ↗</button>
+      <div class="sent" id="sent">✓ Sent — players can see it now</div>
+    </div>
+  </div>
+
+  <!-- ACCOUNTABILITY BOARD -->
+  <div class="card">
+    <h2>📋 Accountability Board <span class="date" id="today2"></span></h2>
+    <div class="hint">Green = bought in (all 3). Yellow = partial. Red = slacking or no check-in.</div>
+    <div class="summary">
+      <div class="stat" style="border-color:rgba(34,197,94,.3)"><div class="n" id="cG" style="color:#22c55e">0</div><div class="l">Bought in</div></div>
+      <div class="stat" style="border-color:rgba(234,179,8,.3)"><div class="n" id="cY" style="color:#eab308">0</div><div class="l">Partial</div></div>
+      <div class="stat" style="border-color:rgba(239,68,68,.3)"><div class="n" id="cR" style="color:#ef4444">0</div><div class="l">Slacking</div></div>
+    </div>
+    <div id="board"></div>
+  </div>
+
+  <!-- AUTO-NUDGE -->
+  <div class="card" id="nudgeCard" style="display:none">
+    <h2>📣 Nudge the slackers</h2>
+    <div class="hint">Copy a ready-made nudge in your voice for anyone who hasn't checked in.</div>
+    <div class="nudge" id="nudges"></div>
+  </div>
+
+  <!-- PLAYER LINKS -->
+  <div class="card">
+    <h2>🔗 Player check-in links</h2>
+    <div class="hint">Each player gets their own link (no password). Send it once; they tap to check in daily.</div>
+    <div id="links"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/config.js"></script>
+<script>
+const $ = id => document.getElementById(id)
+const date = todayStr()
+let coach, voice, players=[], lastGen=null
+$('today').textContent = niceDate(date); $('today2').textContent = niceDate(date)
+if (DEMO) $('demo').style.display='block'
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); setTimeout(()=>el.classList.remove('show'),1800) }
+
+;(async () => {
+  coach = await db.currentCoach()
+  if (!coach) { location.href='/onboarding.html'; return }
+  $('teamName').textContent = (coach.team_name||'My Team') + ' · ' + (coach.full_name||'Coach')
+  voice = await db.getVoice(coach.id) || { examples:[], sign_off:'— '+(coach.full_name||'Coach') }
+  players = await db.getPlayers(coach.id)
+
+  // group dropdown = groups present on roster (fallback to all)
+  const present = [...new Set(players.map(p=>p.position).filter(Boolean))]
+  const groups = present.length ? present : Object.keys(POSITION_GROUPS)
+  $('group').innerHTML = groups.map(g=>`<option value="${g}">${g} · ${POSITION_GROUPS[g].name}</option>`).join('')
+
+  renderBoard(); renderLinks()
+})()
+
+$('signout').onclick = async () => { await db.signOut(); if(DEMO) localStorage.removeItem('fg_demo'); location.href='/onboarding.html' }
+
+// ---- generation ----
+async function generate(group){
+  return generateDaily({
+    coachName: coach.full_name, teamName: coach.team_name, group,
+    vibe: $('vibe').value, signOff: voice.sign_off, examples: voice.examples, toneNotes: voice.tone_notes
+  })
+}
+function showPreview(group, out){
+  lastGen = { group, out }
+  $('msg').textContent = out.message
+  $('src').innerHTML = `<span class="srcbadge ${out.source==='claude'?'src-claude':'src-local'}">${out.source==='claude'?'Claude AI':'Local engine'}</span>`
+  $('workout').innerHTML = out.workout.map(w=>`<div class="wrow"><span>${w.name}</span><span class="reps">${w.sets} × ${w.reps}</span></div>`).join('')
+  $('nutri').textContent = out.nutrition
+  $('preview').style.display='block'; $('sent').style.display='none'
+  $('preview').scrollIntoView({behavior:'smooth',block:'nearest'})
+}
+$('gen').onclick = async () => {
+  $('gen').disabled=true; $('gen').textContent='Generating…'
+  try { const g=$('group').value; showPreview(g, await generate(g)) }
+  finally { $('gen').disabled=false; $('gen').textContent="Generate today's drop" }
+}
+$('genAll').onclick = async () => {
+  const groups = [...new Set(players.map(p=>p.position).filter(Boolean))]
+  if (!groups.length) { toast('Add players first'); return }
+  $('genAll').disabled=true; $('genAll').textContent='Generating all…'
+  try {
+    for (const g of groups){ const out = await generate(g); await db.saveMessage(coach.id, date, g, {...out, status:'sent'}) }
+    toast('Sent to all '+groups.length+' groups'); renderBoard()
+  } finally { $('genAll').disabled=false; $('genAll').textContent='Generate for every group on my roster' }
+}
+$('send').onclick = async () => {
+  if (!lastGen) return
+  await db.saveMessage(coach.id, date, lastGen.group, {...lastGen.out, status:'sent'})
+  $('sent').style.display='block'; toast('Sent to '+lastGen.group)
+}
+
+// ---- board ----
+async function renderBoard(){
+  const board=$('board')
+  if (!players.length){ board.innerHTML='<div class="empty">No players yet. Add your roster in setup.</div>'; return }
+  const checks = await db.getCheckins(coach.id, date)
+  let g=0,y=0,r=0
+  let html=''
+  UNITS.forEach(unit=>{
+    const inUnit = players.filter(p=>POSITION_GROUPS[p.position]?.unit===unit)
+    if(!inUnit.length) return
+    html += `<div class="unit">${unit}</div>`
+    inUnit.forEach(p=>{
+      const c=checks[p.id]; const st=checkinStatus(c)
+      if(st==='green')g++; else if(st==='yellow')y++; else r++
+      const m = c ? (c.lift_done?'🏋️':'·')+' '+(c.ate_right?'🍎':'·')+' '+(c.film_watched?'🎬':'·') : '· · ·'
+      html += `<div class="prow"><div class="dot" style="color:${STATUS[st].color};background:${STATUS[st].color}"></div><div class="nm">${p.full_name} <span class="pg">${p.position||''}</span></div><div class="marks">${m}</div></div>`
+    })
+  })
+  board.innerHTML=html
+  $('cG').textContent=g; $('cY').textContent=y; $('cR').textContent=r
+  renderNudges(checks)
+}
+function renderNudges(checks){
+  const slackers = players.filter(p => checkinStatus(checks[p.id])==='red')
+  const card=$('nudgeCard'), box=$('nudges')
+  if(!slackers.length){ card.style.display='none'; return }
+  card.style.display='block'
+  box.innerHTML = slackers.map(p=>{
+    const first=p.full_name.split(' ')[0]
+    const text = `${first} — didn't see your check-ins today. Get your lift, food, and film in and tap them off. We need you bought in. ${voice.sign_off||'— Coach'}`
+    return `<div class="nudgerow"><span>${p.full_name}</span><button data-t="${encodeURIComponent(text)}">Copy nudge</button></div>`
+  }).join('')
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ navigator.clipboard?.writeText(decodeURIComponent(b.dataset.t)); toast('Nudge copied') })
+}
+
+// ---- player links ----
+function renderLinks(){
+  const box=$('links')
+  if(!players.length){ box.innerHTML='<div class="empty">No players yet.</div>'; return }
+  box.innerHTML = players.map(p=>{
+    const url = location.origin+'/player.html?t='+p.access_token
+    return `<div class="linkrow"><span class="nm">${p.full_name}</span><button data-u="${url}">Copy link</button></div>`
+  }).join('')
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ navigator.clipboard?.writeText(b.dataset.u); toast('Link copied') })
+}
+</script>
+</body>
+</html>

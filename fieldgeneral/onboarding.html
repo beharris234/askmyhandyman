@@ -109,8 +109,11 @@ $('guardText').textContent = GUARDRAILS.join(' ')
 if (DEMO) $('demo').style.display='block'
 
 // ---- account / voice examples ----
-function addExample(val){ const d=document.createElement('div'); d.className='ex'; d.innerHTML='<textarea placeholder="Paste a text you\'ve really sent...">'+(val||'')+'</textarea><button title="remove">×</button>'; d.querySelector('button').onclick=()=>d.remove(); $('examples').appendChild(d) }
-addExample(); addExample(); addExample()
+function addExample(val){ const d=document.createElement('div'); d.className='ex'; const ta=document.createElement('textarea'); ta.placeholder="Paste a text you've really sent..."; ta.value=val||''; const b=document.createElement('button'); b.title='remove'; b.textContent='×'; b.onclick=()=>d.remove(); d.appendChild(ta); d.appendChild(b); $('examples').appendChild(d) }
+// Pre-fill with the coach's starter voice so it sounds like him from day one
+DEFAULT_VOICE.examples.forEach(addExample)
+$('tone').value = DEFAULT_VOICE.tone_notes
+$('signoff').placeholder = DEFAULT_VOICE.sign_off
 $('addEx').onclick = ()=>addExample()
 
 function toggleMode() {

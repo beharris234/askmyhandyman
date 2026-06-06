@@ -60,6 +60,19 @@ const GUARDRAILS = [
   'Players never pay and never enter payment info. The coach is the customer.'
 ]
 
+// ---- Coach's starter voice profile (real example texts) ----
+// Pre-fills onboarding and feeds both the local engine and the Claude prompt so
+// every message sounds like the coach from day one. Coach can edit anytime.
+const DEFAULT_VOICE = {
+  tone_notes: 'Short, direct, no fluff. Calls players out by jersey number. Rally-cry energy. The work is the point — winning follows.',
+  examples: [
+    '18, we gotta get it together.',
+    "We're the best in the conference.",
+    "Stay motivated. Stay prepared. Winning's just the outcome."
+  ],
+  sign_off: '— Coach'
+}
+
 // ============================================================
 //  LOCAL GENERATOR — works today with NO API key.
 //  Builds a position-aware workout + a message in the coach's
@@ -82,13 +95,15 @@ function localWorkout(group, focus) {
 
 function localMessage({ coachName, teamName, group, vibe, signOff, examples }) {
   const g = POSITION_GROUPS[group]
+  const ex = (examples && examples.length) ? examples : DEFAULT_VOICE.examples
+  const rally = ex[Math.floor(Math.random() * ex.length)]
   const v = (vibe || '').trim()
-  const opener = v ? `${v}.` : `Today we get 1% better.`
-  const styleHint = (examples && examples[0]) ? '' : ''
+  const opener = v ? `${v}.` : rally
+  const close = signOff || DEFAULT_VOICE.sign_off || (coachName ? `— Coach ${coachName.split(' ').pop()}` : '— Coach')
   return [
     `${g.name} — ${opener}`,
-    `We're locking in on ${g.focus}. Knock out today's lift, eat clean (real food, plenty of water), and get your film in. Small wins stack into Friday nights.`,
-    `Tap your check-ins when each one's done so I can see who's bought in. ${signOff || (coachName ? `— Coach ${coachName.split(' ').pop()}` : '— Coach')}`
+    `Lock in on ${g.focus}. Get your lift, eat right (real food, plenty of water), watch your film. ${opener !== rally ? rally + ' ' : ''}Small wins stack into Friday nights.`,
+    `Tap your check-ins when each one's done so I can see who's bought in. ${close}`
   ].join('\n\n')
 }
 

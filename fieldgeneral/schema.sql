@@ -28,11 +28,61 @@ create table if not exists players (
   id             uuid primary key default gen_random_uuid(),
   coach_id       uuid not null references coaches(id) on delete cascade,
   full_name      text not null,
+  jersey         text,                        -- jersey number (coach calls guys by #)
   position       text,                        -- one of QB,RB,WR,OL,DL,LB,DB,ST
   position_group text,                        -- mirror of position group key
   parent_contact text,                        -- parent email/phone (parent visibility)
   access_token   text unique not null,        -- player opens player.html?t=<token>
   created_at     timestamptz default now()
+);
+
+-- ---------- ATHLETE GOALS (player owns these) ----------
+create table if not exists goals (
+  id          uuid primary key default gen_random_uuid(),
+  player_id   uuid not null references players(id) on delete cascade,
+  text        text not null,
+  done        boolean default false,
+  created_at  timestamptz default now()
+);
+
+-- ---------- ATHLETE NOTES / JOURNAL (health flags route to trainer) ----------
+create table if not exists notes (
+  id                   uuid primary key default gen_random_uuid(),
+  player_id            uuid not null references players(id) on delete cascade,
+  for_date             date default current_date,
+  body                 text,
+  flagged_for_trainer  boolean default false,
+  created_at           timestamptz default now()
+);
+
+-- ---------- DAILY QUOTE (one per coach per day, AI-generated) ----------
+create table if not exists daily_quotes (
+  id          uuid primary key default gen_random_uuid(),
+  coach_id    uuid not null references coaches(id) on delete cascade,
+  for_date    date not null,
+  text        text,
+  created_at  timestamptz default now(),
+  unique (coach_id, for_date)
+);
+
+-- ---------- SHOUT-OUTS (coach recognizes a player) ----------
+create table if not exists shoutouts (
+  id          uuid primary key default gen_random_uuid(),
+  coach_id    uuid not null references coaches(id) on delete cascade,
+  player_id   uuid not null references players(id) on delete cascade,
+  text        text,
+  created_at  timestamptz default now()
+);
+
+-- ---------- TEAM CHAT (players only; coaches do not read it) ----------
+create table if not exists chat_messages (
+  id           uuid primary key default gen_random_uuid(),
+  coach_id     uuid not null references coaches(id) on delete cascade,  -- team scope
+  player_id    uuid not null references players(id) on delete cascade,
+  player_name  text,
+  body         text not null,
+  hidden       boolean default false,   -- set true when flagged/moderated out
+  created_at   timestamptz default now()
 );
 
 -- ---------- DAILY MESSAGES (one per coach/date/position group) ----------
@@ -83,6 +133,21 @@ create policy "coach messages"    on daily_messages for all using (auth.uid() = 
 create policy "coach checkins"    on checkins       for all using (
   exists (select 1 from players p where p.id = checkins.player_id and p.coach_id = auth.uid())
 );
+
+-- New tables (Phase 1 hardening: move player-token reads/writes behind an Edge Function)
+alter table goals         enable row level security;
+alter table notes         enable row level security;
+alter table daily_quotes  enable row level security;
+alter table shoutouts     enable row level security;
+alter table chat_messages enable row level security;
+
+-- Coach can see/manage their players' goals, notes, shout-outs, quotes.
+create policy "coach goals"     on goals     for all using (exists (select 1 from players p where p.id = goals.player_id and p.coach_id = auth.uid()));
+create policy "coach notes"     on notes     for all using (exists (select 1 from players p where p.id = notes.player_id and p.coach_id = auth.uid()));
+create policy "coach quotes"    on daily_quotes for all using (auth.uid() = coach_id) with check (auth.uid() = coach_id);
+create policy "coach shoutouts" on shoutouts for all using (auth.uid() = coach_id) with check (auth.uid() = coach_id);
+-- Team chat: coaches intentionally do NOT get a read policy here. Player access is
+-- token-scoped via the Phase-1 Edge Function (see note below).
 
 -- NOTE (Phase 1 security gate): player.html currently reads/writes with the anon
 -- key using the access_token. Before real student data goes in, move player reads

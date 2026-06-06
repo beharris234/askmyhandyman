@@ -69,6 +69,17 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:#22c55e}
 <div class="wrap">
   <div class="demo" id="demo">⚡ Demo mode — data saves in this browser only.</div>
 
+  <!-- WORD OF THE DAY -->
+  <div class="card">
+    <h2>💬 Word of the Day <span class="date">auto</span></h2>
+    <div class="hint">An AI line in your voice goes to every athlete automatically each morning. Edit it or spin a new one.</div>
+    <textarea id="quote" rows="2"></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="btn ghost" id="regenQuote" style="flex:1">↻ New quote</button>
+      <button class="btn" id="saveQuote" style="flex:1">Save</button>
+    </div>
+  </div>
+
   <!-- TODAY'S DROP -->
   <div class="card">
     <h2>🏈 Today's Drop <span class="date" id="today"></span></h2>
@@ -101,6 +112,15 @@ select:focus,input:focus,textarea:focus{outline:none;border-color:#22c55e}
       <div class="stat" style="border-color:rgba(239,68,68,.3)"><div class="n" id="cR" style="color:#ef4444">0</div><div class="l">Slacking</div></div>
     </div>
     <div id="board"></div>
+  </div>
+
+  <!-- SHOUT-OUT -->
+  <div class="card">
+    <h2>🔥 Give a shout-out</h2>
+    <div class="hint">Recognition is fuel. Tap a kid some props — he sees it the second he opens the app.</div>
+    <select id="soPlayer"></select>
+    <input id="soText" placeholder="#18, film study showed today. Proud of you." style="margin-top:8px">
+    <button class="btn orange" id="soSend">Send props ↗</button>
   </div>
 
   <!-- AUTO-NUDGE -->
@@ -141,10 +161,30 @@ function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show
   const groups = present.length ? present : Object.keys(POSITION_GROUPS)
   $('group').innerHTML = groups.map(g=>`<option value="${g}">${g} · ${POSITION_GROUPS[g].name}</option>`).join('')
 
+  // shout-out dropdown
+  $('soPlayer').innerHTML = players.length ? players.map(p=>`<option value="${p.id}">${p.jersey?'#'+p.jersey+' ':''}${p.full_name}</option>`).join('') : '<option>Add players first</option>'
+  // word of the day (auto-generated on first load of the day)
+  $('quote').value = await db.getDailyQuote(coach.id, date, voice)
+
   renderBoard(); renderLinks()
 })()
 
 $('signout').onclick = async () => { await db.signOut(); if(DEMO) localStorage.removeItem('fg_demo'); location.href='/onboarding.html' }
+
+// ---- word of the day ----
+$('regenQuote').onclick = async () => {
+  $('regenQuote').disabled=true
+  const q = await generateQuote({ coachName: coach.full_name, examples: voice.examples, toneNotes: voice.tone_notes })
+  $('quote').value = q; await db.setDailyQuote(coach.id, date, q); $('regenQuote').disabled=false; toast('New quote set')
+}
+$('saveQuote').onclick = async () => { await db.setDailyQuote(coach.id, date, $('quote').value.trim()); toast('Saved — athletes see this') }
+
+// ---- shout-out ----
+$('soSend').onclick = async () => {
+  const pid=$('soPlayer').value, text=$('soText').value.trim()
+  if(!players.length||!text) { toast('Pick a player and write something'); return }
+  await db.addShoutout(coach.id, pid, text); $('soText').value=''; toast('Props sent 🔥')
+}
 
 // ---- generation ----
 async function generate(group){
@@ -187,6 +227,7 @@ async function renderBoard(){
   const board=$('board')
   if (!players.length){ board.innerHTML='<div class="empty">No players yet. Add your roster in setup.</div>'; return }
   const checks = await db.getCheckins(coach.id, date)
+  const streaks = {}; await Promise.all(players.map(async p=>{ streaks[p.id]=await db.getStreak(p.id) }))
   let g=0,y=0,r=0
   let html=''
   UNITS.forEach(unit=>{
@@ -197,7 +238,9 @@ async function renderBoard(){
       const c=checks[p.id]; const st=checkinStatus(c)
       if(st==='green')g++; else if(st==='yellow')y++; else r++
       const m = c ? (c.lift_done?'🏋️':'·')+' '+(c.ate_right?'🍎':'·')+' '+(c.film_watched?'🎬':'·') : '· · ·'
-      html += `<div class="prow"><div class="dot" style="color:${STATUS[st].color};background:${STATUS[st].color}"></div><div class="nm">${p.full_name} <span class="pg">${p.position||''}</span></div><div class="marks">${m}</div></div>`
+      const sk = streaks[p.id] ? `<span style="color:#f97316;font-family:'Oswald';font-size:12px;margin-left:6px">${streaks[p.id]}🔥</span>` : ''
+      const num = p.jersey ? `<b style="color:#22c55e">#${p.jersey}</b> ` : ''
+      html += `<div class="prow"><div class="dot" style="color:${STATUS[st].color};background:${STATUS[st].color}"></div><div class="nm">${num}${p.full_name} <span class="pg">${p.position||''}</span>${sk}</div><div class="marks">${m}</div></div>`
     })
   })
   board.innerHTML=html
@@ -223,7 +266,7 @@ function renderLinks(){
   if(!players.length){ box.innerHTML='<div class="empty">No players yet.</div>'; return }
   box.innerHTML = players.map(p=>{
     const url = location.origin+'/player.html?t='+p.access_token
-    return `<div class="linkrow"><span class="nm">${p.full_name}</span><button data-u="${url}">Copy link</button></div>`
+    return `<div class="linkrow"><span class="nm">${p.jersey?'#'+p.jersey+' ':''}${p.full_name}</span><button data-u="${url}">Copy link</button></div>`
   }).join('')
   box.querySelectorAll('button').forEach(b=>b.onclick=()=>{ navigator.clipboard?.writeText(b.dataset.u); toast('Link copied') })
 }

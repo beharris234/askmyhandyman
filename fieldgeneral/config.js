@@ -192,7 +192,7 @@ const db = {
     return data || []
   },
   async addPlayer(coachId, p) {
-    const row = { full_name: p.full_name, position: p.position, position_group: p.position, parent_contact: p.parent_contact || '', access_token: token() }
+    const row = { full_name: p.full_name, jersey: p.jersey || '', position: p.position, position_group: p.position, parent_contact: p.parent_contact || '', access_token: token() }
     if (DEMO) { const s = _ls.read(); s.players = s.players || []; row.id = token(); s.players.push(row); _ls.write(s); return row }
     const { data, error } = await supabase.from('players').insert({ coach_id: coachId, ...row }).select().single()
     if (error) throw error
@@ -256,3 +256,154 @@ const db = {
   },
   async getMessageForGroup(coachId, date, group) { return this.getMessage(coachId, date, group) }
 }
+
+// ============================================================
+//  DAILY "WORD OF THE DAY" — AI quote in the coach's voice, on autopilot.
+//  First load of the day generates + stores ONE quote everyone sees.
+// ============================================================
+const QUOTE_BANK = [
+  'Champions are built when nobody is watching. Get your work in.',
+  'Talent sets the floor. Effort sets the ceiling. Raise it today.',
+  'Be the teammate you would want lining up next to you.',
+  'Discipline is doing it right when you do not feel like it.',
+  'We do not hope to be ready. We prepare to be ready.',
+  'The standard is the standard. Hold it for each other.',
+  'Win the rep in front of you. Then win the next one.',
+  'Tough times do not build character — they reveal it. Show me yours.'
+]
+function localQuote(examples) {
+  const ex = (examples && examples.length) ? examples : DEFAULT_VOICE.examples
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)]
+  // 50/50: echo a coach line, or a bank line tagged in his cadence
+  return Math.random() < 0.5 ? pick(ex) : pick(QUOTE_BANK)
+}
+async function generateQuote({ coachName, examples, toneNotes }) {
+  if (!DEMO && supabase) {
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-daily', {
+        body: { mode: 'quote', coachName, examples, toneNotes, guardrails: GUARDRAILS }
+      })
+      if (!error && data && data.quote) return data.quote
+    } catch (e) { /* fall through */ }
+  }
+  return localQuote(examples)
+}
+
+// ============================================================
+//  TEAM CHAT MODERATION — players-only, keep it team/motivation.
+//  Blocks profanity + derogatory/slur terms client- and (Phase 1)
+//  server-side. Honest feelings OK; abuse is not.
+// ============================================================
+const BLOCKLIST = ['fuck','shit','bitch','nigg','fag','slut','whore','retard','cunt','dick','pussy','asshole','bastard','kys','kill yourself']
+function moderate(text) {
+  const t = (text || '').toLowerCase()
+  const hit = BLOCKLIST.find(w => t.includes(w))
+  if (hit) return { ok: false, reason: 'Keep it clean and team-first — no profanity or putting teammates down.' }
+  if ((text || '').trim().length < 1) return { ok: false, reason: 'Say something.' }
+  return { ok: true }
+}
+
+// ============================================================
+//  EXTENDED DATA LAYER — goals, notes, daily quote, shout-outs,
+//  team chat, streaks. Same demo/live split as db.*
+// ============================================================
+Object.assign(db, {
+  // ---- streak: consecutive days (ending today) with all-3 check-ins ----
+  async getStreak(playerId) {
+    let n = 0
+    for (let i = 0; i < 60; i++) {
+      const d = new Date(); d.setDate(d.getDate() - i)
+      const ds = d.toISOString().slice(0, 10)
+      const c = await this.getCheckin(playerId, ds)
+      const all = c && c.lift_done && c.ate_right && c.film_watched
+      if (all) n++
+      else if (i === 0) continue   // today not done yet shouldn't break a prior streak
+      else break
+    }
+    return n
+  },
+
+  // ---- athlete goals ----
+  async getGoals(playerId) {
+    if (DEMO) { return (_ls.read().goals || {})[playerId] || [] }
+    const { data } = await supabase.from('goals').select('*').eq('player_id', playerId).order('created_at')
+    return data || []
+  },
+  async addGoal(playerId, text) {
+    const g = { id: token(), player_id: playerId, text, done: false, created_at: new Date().toISOString() }
+    if (DEMO) { const s = _ls.read(); s.goals = s.goals || {}; (s.goals[playerId] = s.goals[playerId] || []).push(g); _ls.write(s); return g }
+    const { data } = await supabase.from('goals').insert({ player_id: playerId, text }).select().single()
+    return data
+  },
+  async toggleGoal(playerId, id, done) {
+    if (DEMO) { const s = _ls.read(); const arr = (s.goals||{})[playerId]||[]; const g = arr.find(x=>x.id===id); if(g) g.done=done; _ls.write(s); return }
+    await supabase.from('goals').update({ done }).eq('id', id)
+  },
+  async removeGoal(playerId, id) {
+    if (DEMO) { const s = _ls.read(); if(s.goals&&s.goals[playerId]) s.goals[playerId]=s.goals[playerId].filter(x=>x.id!==id); _ls.write(s); return }
+    await supabase.from('goals').delete().eq('id', id)
+  },
+
+  // ---- athlete notes / journal (with trainer routing for health flags) ----
+  async getNotes(playerId) {
+    if (DEMO) { return (_ls.read().notes || {})[playerId] || [] }
+    const { data } = await supabase.from('notes').select('*').eq('player_id', playerId).order('created_at', { ascending: false })
+    return data || []
+  },
+  async addNote(playerId, body, flagged_for_trainer) {
+    const n = { id: token(), player_id: playerId, body, flagged_for_trainer: !!flagged_for_trainer, for_date: todayStr(), created_at: new Date().toISOString() }
+    if (DEMO) { const s = _ls.read(); s.notes = s.notes || {}; (s.notes[playerId] = s.notes[playerId] || []).unshift(n); _ls.write(s); return n }
+    const { data } = await supabase.from('notes').insert({ player_id: playerId, body, flagged_for_trainer: !!flagged_for_trainer, for_date: todayStr() }).select().single()
+    return data
+  },
+
+  // ---- daily quote (one per coach per day, generated on first load) ----
+  async getDailyQuote(coachId, date, voice) {
+    if (DEMO) {
+      const s = _ls.read(); s.quotes = s.quotes || {}
+      if (!s.quotes[date]) { s.quotes[date] = await generateQuote({ coachName: (s.coach||{}).full_name, examples: (voice||{}).examples, toneNotes: (voice||{}).tone_notes }); _ls.write(s) }
+      return s.quotes[date]
+    }
+    let { data } = await supabase.from('daily_quotes').select('text').eq('coach_id', coachId).eq('for_date', date).single()
+    if (data) return data.text
+    const text = await generateQuote({ examples: (voice||{}).examples, toneNotes: (voice||{}).tone_notes })
+    await supabase.from('daily_quotes').upsert({ coach_id: coachId, for_date: date, text }, { onConflict: 'coach_id,for_date' })
+    return text
+  },
+  async setDailyQuote(coachId, date, text) {
+    if (DEMO) { const s = _ls.read(); s.quotes = s.quotes || {}; s.quotes[date] = text; _ls.write(s); return }
+    await supabase.from('daily_quotes').upsert({ coach_id: coachId, for_date: date, text }, { onConflict: 'coach_id,for_date' })
+  },
+
+  // ---- coach shout-outs / props ----
+  async getShoutouts(playerId) {
+    if (DEMO) { return ((_ls.read().shoutouts || {})[playerId] || []) }
+    const { data } = await supabase.from('shoutouts').select('*').eq('player_id', playerId).order('created_at', { ascending: false })
+    return data || []
+  },
+  async addShoutout(coachId, playerId, text) {
+    const s2 = { id: token(), coach_id: coachId, player_id: playerId, text, created_at: new Date().toISOString() }
+    if (DEMO) { const s = _ls.read(); s.shoutouts = s.shoutouts || {}; (s.shoutouts[playerId] = s.shoutouts[playerId] || []).unshift(s2); _ls.write(s); return s2 }
+    const { data } = await supabase.from('shoutouts').insert({ coach_id: coachId, player_id: playerId, text }).select().single()
+    return data
+  },
+
+  // ---- team chat (players only; coaches do not read it) ----
+  async getChat(coachId) {
+    if (DEMO) { return (_ls.read().chat || []).filter(m => !m.hidden) }
+    const { data } = await supabase.from('chat_messages').select('*').eq('coach_id', coachId).eq('hidden', false).order('created_at').limit(200)
+    return data || []
+  },
+  async postChat(coachId, player, body) {
+    const mod = moderate(body)
+    if (!mod.ok) return { error: mod.reason }
+    const m = { id: token(), coach_id: coachId, player_id: player.id, player_name: (player.jersey ? '#' + player.jersey + ' ' : '') + player.full_name.split(' ')[0], body: body.trim(), hidden: false, created_at: new Date().toISOString() }
+    if (DEMO) { const s = _ls.read(); s.chat = s.chat || []; s.chat.push(m); _ls.write(s); return { message: m } }
+    const { data } = await supabase.from('chat_messages').insert({ coach_id: coachId, player_id: player.id, player_name: m.player_name, body: m.body }).select().single()
+    return { message: data }
+  },
+  async flagChat(id) {
+    if (DEMO) { const s = _ls.read(); const m = (s.chat||[]).find(x=>x.id===id); if(m) m.hidden=true; _ls.write(s); return }
+    await supabase.from('chat_messages').update({ hidden: true }).eq('id', id)
+  }
+})

@@ -82,7 +82,10 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#22c55e}
     <h2>Add your roster</h2>
     <div class="hint">Name, position, and a parent contact (parent visibility is built in). Add a few to start — you can import the rest later.</div>
     <div class="row">
+      <input id="pJersey" placeholder="#" style="flex:0 0 56px;text-align:center">
       <input id="pName" placeholder="Player name">
+    </div>
+    <div class="row" style="margin-top:8px">
       <select id="pPos"></select>
     </div>
     <input id="pParent" placeholder="Parent email or phone (optional)" style="margin-top:8px">
@@ -159,13 +162,13 @@ $('voiceBtn').onclick = async () => {
 let roster=[]
 async function refresh(){ roster = await db.getPlayers(coach?coach.id:null); render() }
 function render(){
-  $('plist').innerHTML = roster.map(p=>`<div class="pill"><span>${p.full_name}<span class="pos">${p.position||'—'}</span></span><button data-id="${p.id}">×</button></div>`).join('')
+  $('plist').innerHTML = roster.map(p=>`<div class="pill"><span>${p.jersey?'<b style="color:#22c55e">#'+p.jersey+'</b> ':''}${p.full_name}<span class="pos">${p.position||'—'}</span></span><button data-id="${p.id}">×</button></div>`).join('')
   $('plist').querySelectorAll('button').forEach(b=>b.onclick=async()=>{ await db.removePlayer(b.dataset.id); refresh() })
 }
 $('addP').onclick = async () => {
   const name=$('pName').value.trim(); if(!name) return
-  await db.addPlayer(coach.id, { full_name:name, position:$('pPos').value, parent_contact:$('pParent').value.trim() })
-  $('pName').value=''; $('pParent').value=''; refresh(); $('pName').focus()
+  await db.addPlayer(coach.id, { full_name:name, jersey:$('pJersey').value.trim(), position:$('pPos').value, parent_contact:$('pParent').value.trim() })
+  $('pName').value=''; $('pJersey').value=''; $('pParent').value=''; refresh(); $('pJersey').focus()
 }
 $('doneBtn').onclick = () => location.href='/coach.html'
 

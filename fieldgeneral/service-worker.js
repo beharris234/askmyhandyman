@@ -1,6 +1,6 @@
 // FieldGeneral service worker — lightweight offline shell
-const CACHE = 'fieldgeneral-v1'
-const ASSETS = ['/index.html', '/onboarding.html', '/coach.html', '/player.html', '/config.js', '/offline.html', '/manifest.json']
+const CACHE = 'fieldgeneral-v2'
+const ASSETS = ['/index.html', '/onboarding.html', '/coach.html', '/player.html', '/chat.html', '/config.js', '/offline.html', '/manifest.json']
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()))

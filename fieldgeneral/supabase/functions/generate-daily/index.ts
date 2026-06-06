@@ -29,6 +29,23 @@ Deno.serve(async (req) => {
     const examples = (b.examples || []).filter(Boolean).map((t: string) => `- "${t}"`).join("\n");
     const guardrails = (b.guardrails || []).map((g: string) => `- ${g}`).join("\n");
 
+    // ---- QUOTE MODE: one short "Word of the Day" in the coach's voice ----
+    if (b.mode === "quote") {
+      const r = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "x-api-key": key, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+        body: JSON.stringify({
+          model: MODEL,
+          max_tokens: 120,
+          system: `You write ONE short motivational line for a high school football team, in the head coach's voice. Match this cadence:\n${examples || "(confident, short, demanding-but-caring)"}\nTone notes: ${b.toneNotes || "(none)"}. One sentence, no quotes around it, no emojis. Keep it clean and team-first.`,
+          messages: [{ role: "user", content: "Give me today's one-line word of the day for the team." }],
+        }),
+      });
+      const d = await r.json();
+      const quote = (d?.content?.[0]?.text || "").trim().replace(/^["']|["']$/g, "");
+      return new Response(JSON.stringify({ quote }), { headers: { ...cors, "content-type": "application/json" } });
+    }
+
     const system = `You are the AI chief of staff for a high school football coach. You write the day's
 team message and a position-group workout IN THE COACH'S OWN VOICE so every player feels personally texted.
 

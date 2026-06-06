@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create your free athlete profile — NILocal</title>
+<meta name="description" content="College athletes: build a free NIL profile and get discovered by local businesses near you.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/nil.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/index.html"><span class="dot">N</span> NILocal</a>
+    <nav class="nav-links">
+      <a href="/athletes.html">Find athletes</a>
+      <a class="btn btn-navy" href="/for-business.html">List your business</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap form-wrap">
+    <div class="center" style="margin-bottom:24px">
+      <span class="tag">For athletes · 100% free</span>
+      <h2 style="font-size:30px;letter-spacing:-1px;color:var(--navy);margin-top:6px">Get paid by local businesses</h2>
+      <p style="color:var(--muted);margin-top:6px">Build your profile in two minutes. Set your own rates. We'll match your first deal personally.</p>
+    </div>
+
+    <div class="form-card">
+      <div id="demoBanner" class="banner demo hidden">⚡ Demo mode: this signup is saved to your browser so you can test the flow. Add Supabase credentials in <code>nil-config.js</code> to capture signups for real.</div>
+
+      <form id="form">
+        <div class="row2">
+          <div class="field"><label>Full name *</label><input name="name" required placeholder="Maya Robinson"></div>
+          <div class="field"><label>Email *</label><input name="email" type="email" required placeholder="you@school.edu"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Sport *</label><select name="sport" id="sport" required></select></div>
+          <div class="field"><label>Phone <span class="hint">(optional)</span></label><input name="phone" placeholder="(555) 555-5555"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>School *</label><input name="school" required placeholder="State University"></div>
+          <div class="field"><label>City *</label><input name="city" required placeholder="Springfield"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Total social followers <span class="hint">(approx.)</span></label><input name="followers" type="number" min="0" placeholder="18000"></div>
+          <div class="field"><label>Instagram / TikTok handle</label><input name="handle" placeholder="@maya.rob"></div>
+        </div>
+        <div class="field">
+          <label>Short bio <span class="hint">— what makes you a great local partner?</span></label>
+          <textarea name="bio" placeholder="Outside hitter, two-time all-conference. Love supporting local food spots and youth clinics."></textarea>
+        </div>
+        <div class="field">
+          <label>Deal types you're open to</label>
+          <div class="checks" id="deals"></div>
+        </div>
+        <div class="field">
+          <label>Starting rate per deal <span class="hint">— you can change this anytime</span></label>
+          <input name="rate" type="number" min="0" placeholder="100">
+        </div>
+        <button class="btn btn-primary btn-lg btn-block" type="submit">Create my free profile →</button>
+        <p class="note">By joining you confirm you're responsible for following your school & state NIL rules.</p>
+      </form>
+
+      <div id="success" class="success hidden">
+        <div class="ic">✅</div>
+        <h3>You're on the roster!</h3>
+        <p id="successMsg">We'll review your profile and reach out about your first local deal. Keep an eye on your inbox.</p>
+        <div class="mt24"><a class="btn btn-navy" href="/athletes.html">See the directory →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="wrap"><div><div class="brand"><span class="dot">N</span> NILocal</div></div><div class="copy">© 2026 NILocal</div></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/nil-config.js"></script>
+<script>
+const sportSel=document.getElementById('sport')
+NIL.sports.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sportSel.appendChild(o)})
+const dealsBox=document.getElementById('deals')
+NIL.dealTypes.forEach(d=>{
+  const l=document.createElement('label')
+  l.innerHTML=`<input type="checkbox" value="${d}"> ${d}`
+  dealsBox.appendChild(l)
+})
+if(!NIL.configured) document.getElementById('demoBanner').classList.remove('hidden')
+
+document.getElementById('form').addEventListener('submit', async e=>{
+  e.preventDefault()
+  const btn=e.target.querySelector('button[type=submit]')
+  btn.disabled=true; btn.textContent='Saving…'
+  const fd=new FormData(e.target)
+  const deals=[...dealsBox.querySelectorAll('input:checked')].map(c=>c.value)
+  const rec={
+    name:fd.get('name'), email:fd.get('email'), phone:fd.get('phone'),
+    sport:fd.get('sport'), school:fd.get('school'), city:fd.get('city'),
+    followers:Number(fd.get('followers'))||0, handle:fd.get('handle'),
+    bio:fd.get('bio'), deals, rate:Number(fd.get('rate'))||0,
+    verified:false, approved:!NIL.configured
+  }
+  try{
+    const res=await NIL.submitAthlete(rec)
+    document.getElementById('form').classList.add('hidden')
+    document.getElementById('success').classList.remove('hidden')
+    if(res.mode==='local') document.getElementById('successMsg').textContent='Saved locally (demo mode). Hook up Supabase to collect real signups.'
+    window.scrollTo({top:0,behavior:'smooth'})
+  }catch(err){
+    alert('Something went wrong: '+(err.message||err)); btn.disabled=false; btn.textContent='Create my free profile →'
+  }
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Find athletes — NILocal</title>
+<meta name="description" content="Browse college athletes near you by sport, school, audience size and price. Book NIL deals directly.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/nil.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/index.html"><span class="dot">N</span> NILocal</a>
+    <nav class="nav-links">
+      <a href="/index.html#how">How it works</a>
+      <a href="/for-athletes.html">For athletes</a>
+      <a class="btn btn-navy" href="/for-business.html">List your business</a>
+    </nav>
+  </div>
+</header>
+
+<section style="padding:40px 0 20px">
+  <div class="wrap">
+    <div style="margin-bottom:24px">
+      <span class="tag">Athlete directory</span>
+      <h2 style="font-size:32px;letter-spacing:-1px;color:var(--navy);margin-top:6px">Find athletes near you</h2>
+      <p style="color:var(--muted);margin-top:6px">Filter by sport, school, city and budget. See something you like? Start a deal.</p>
+    </div>
+
+    <div class="filters">
+      <input id="q" type="search" placeholder="Search name, school or city…">
+      <select id="sport"><option value="">All sports</option></select>
+      <select id="sort">
+        <option value="reach">Sort: Most reach</option>
+        <option value="low">Sort: Lowest price</option>
+        <option value="high">Sort: Highest price</option>
+      </select>
+    </div>
+
+    <div id="count" style="color:var(--muted);font-size:13px;margin-bottom:14px"></div>
+    <div id="grid" class="dir-grid"></div>
+    <div id="empty" class="center hidden" style="padding:50px 0;color:var(--muted)">No athletes match your filters yet.</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div><div class="brand"><span class="dot">N</span> NILocal</div></div>
+    <div><h5>Get started</h5><a href="/for-athletes.html">Athlete signup</a><a href="/for-business.html">Business signup</a></div>
+    <div class="copy">© 2026 NILocal</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/nil-config.js"></script>
+<script>
+let ALL = []
+const grid = document.getElementById('grid')
+const sportSel = document.getElementById('sport')
+
+NIL.sports.forEach(s => { const o=document.createElement('option'); o.value=s; o.textContent=s; sportSel.appendChild(o) })
+
+function avaColor(name){
+  const g=[['#00d27a','#0a1f3c'],['#ff5a1f','#0a1f3c'],['#12305c','#00d27a'],['#0a1f3c','#ff5a1f']]
+  let h=0; for(const c of name) h=(h+c.charCodeAt(0))%g.length
+  return `linear-gradient(135deg,${g[h][0]},${g[h][1]})`
+}
+function initials(name){ return name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase() }
+
+function render(list){
+  document.getElementById('count').textContent = list.length + ' athlete' + (list.length===1?'':'s')
+  document.getElementById('empty').classList.toggle('hidden', list.length>0)
+  grid.innerHTML = list.map(a => `
+    <div class="ath">
+      <div class="ath-top">
+        <div class="ava" style="background:${avaColor(a.name)}">${initials(a.name)}</div>
+        <div>
+          <div class="nm">${a.name} ${a.verified?'<span class="vb" title="Verified">✔</span>':''}</div>
+          <div class="sub">${a.sport} · ${a.school||''}${a.city?(' · '+a.city):''}</div>
+        </div>
+      </div>
+      <div class="bio">${a.bio||''}</div>
+      <div class="pills">${(a.deals||[]).slice(0,3).map(d=>`<span class="pill">${d}</span>`).join('')}</div>
+      <div class="ath-foot">
+        <div class="reach">👥 <b>${NIL.fmtFollowers(a.followers)}</b> reach</div>
+        <div class="rate">from $${a.rate||0}</div>
+      </div>
+      <a class="btn btn-primary btn-block" style="margin-top:14px" href="/for-business.html?athlete=${encodeURIComponent(a.name)}">Start a deal →</a>
+    </div>`).join('')
+}
+
+function apply(){
+  const q=document.getElementById('q').value.toLowerCase().trim()
+  const sport=sportSel.value, sort=document.getElementById('sort').value
+  let list = ALL.filter(a=>{
+    const hay=(a.name+' '+(a.school||'')+' '+(a.city||'')).toLowerCase()
+    return (!q||hay.includes(q)) && (!sport||a.sport===sport)
+  })
+  if(sort==='reach') list.sort((a,b)=>(b.followers||0)-(a.followers||0))
+  if(sort==='low')  list.sort((a,b)=>(a.rate||0)-(b.rate||0))
+  if(sort==='high') list.sort((a,b)=>(b.rate||0)-(a.rate||0))
+  render(list)
+}
+['q','sport','sort'].forEach(id=>document.getElementById(id).addEventListener('input',apply))
+
+;(async()=>{
+  ALL = await NIL.loadAthletes()
+  apply()
+})()
+</script>
+</body>
+</html>

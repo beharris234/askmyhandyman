@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>List your business — NILocal</title>
+<meta name="description" content="Local businesses: find and book college athletes near you for affordable NIL deals.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/nil.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/index.html"><span class="dot">N</span> NILocal</a>
+    <nav class="nav-links">
+      <a href="/athletes.html">Find athletes</a>
+      <a class="btn btn-navy" href="/for-athletes.html">I'm an athlete</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap form-wrap">
+    <div class="center" style="margin-bottom:24px">
+      <span class="tag">For local businesses</span>
+      <h2 style="font-size:30px;letter-spacing:-1px;color:var(--navy);margin-top:6px">Book the athletes your customers love</h2>
+      <p style="color:var(--muted);margin-top:6px">Tell us what you're looking for. We'll match you with nearby athletes and help set up your first deal — free to start.</p>
+    </div>
+
+    <div class="form-card">
+      <div id="demoBanner" class="banner demo hidden">⚡ Demo mode: this request is saved to your browser so you can test the flow. Add Supabase credentials in <code>nil-config.js</code> to capture leads for real.</div>
+      <div id="preBanner" class="banner ok hidden"></div>
+
+      <form id="form">
+        <div class="row2">
+          <div class="field"><label>Business name *</label><input name="business" required placeholder="Tony's Pizzeria"></div>
+          <div class="field"><label>Your name *</label><input name="contact" required placeholder="Tony R."></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Email *</label><input name="email" type="email" required placeholder="owner@business.com"></div>
+          <div class="field"><label>Phone <span class="hint">(optional)</span></label><input name="phone" placeholder="(555) 555-5555"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>City *</label><input name="city" required placeholder="Springfield"></div>
+          <div class="field"><label>Budget per deal <span class="hint">(USD)</span></label><input name="budget" type="number" min="0" placeholder="250"></div>
+        </div>
+        <div class="field">
+          <label>What kind of deal are you after?</label>
+          <div class="checks" id="deals"></div>
+        </div>
+        <div class="field">
+          <label>Sport preference <span class="hint">(optional)</span></label>
+          <select name="sport" id="sport"><option value="">Any sport</option></select>
+        </div>
+        <div class="field">
+          <label>Anything else? <span class="hint">— goals, timing, specific athletes</span></label>
+          <textarea name="notes" placeholder="Grand opening on the 15th — want a couple of athletes to post and stop by for an hour."></textarea>
+        </div>
+        <button class="btn btn-orange btn-lg btn-block" type="submit">Find my athletes →</button>
+        <p class="note">No charge to browse or post. A flat 10–20% fee applies only to completed bookings.</p>
+      </form>
+
+      <div id="success" class="success hidden">
+        <div class="ic">🎯</div>
+        <h3>Request received!</h3>
+        <p id="successMsg">We'll hand-match you with athletes near you and email a shortlist within 48 hours.</p>
+        <div class="mt24"><a class="btn btn-navy" href="/athletes.html">Browse athletes now →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer"><div class="wrap"><div><div class="brand"><span class="dot">N</span> NILocal</div></div><div class="copy">© 2026 NILocal</div></div></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/nil-config.js"></script>
+<script>
+const sportSel=document.getElementById('sport')
+NIL.sports.forEach(s=>{const o=document.createElement('option');o.value=s;o.textContent=s;sportSel.appendChild(o)})
+const dealsBox=document.getElementById('deals')
+NIL.dealTypes.forEach(d=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" value="${d}"> ${d}`;dealsBox.appendChild(l)})
+if(!NIL.configured) document.getElementById('demoBanner').classList.remove('hidden')
+
+// Pre-fill if they clicked "Start a deal" on a specific athlete
+const pre=new URLSearchParams(location.search).get('athlete')
+if(pre){const b=document.getElementById('preBanner');b.classList.remove('hidden');b.textContent='👋 Starting a deal with '+pre+'. Fill this out and we\'ll connect you.';}
+
+document.getElementById('form').addEventListener('submit', async e=>{
+  e.preventDefault()
+  const btn=e.target.querySelector('button[type=submit]')
+  btn.disabled=true; btn.textContent='Saving…'
+  const fd=new FormData(e.target)
+  const deals=[...dealsBox.querySelectorAll('input:checked')].map(c=>c.value)
+  const rec={
+    business:fd.get('business'), contact:fd.get('contact'), email:fd.get('email'),
+    phone:fd.get('phone'), city:fd.get('city'), budget:Number(fd.get('budget'))||0,
+    deals, sport:fd.get('sport'), notes:fd.get('notes'),
+    requested_athlete:pre||null
+  }
+  try{
+    const res=await NIL.submitBusiness(rec)
+    document.getElementById('form').classList.add('hidden')
+    document.getElementById('success').classList.remove('hidden')
+    if(res.mode==='local') document.getElementById('successMsg').textContent='Saved locally (demo mode). Hook up Supabase to collect real leads.'
+    window.scrollTo({top:0,behavior:'smooth'})
+  }catch(err){
+    alert('Something went wrong: '+(err.message||err)); btn.disabled=false; btn.textContent='Find my athletes →'
+  }
+})
+</script>
+</body>
+</html>

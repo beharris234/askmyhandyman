@@ -56,6 +56,9 @@ Deploy this `fieldgeneral/` folder as its own Vercel project
 - **Injuries always route to the athletic trainer** — the app never diagnoses or treats.
 - **No private adult–minor channel** — everything is team/group context and parent-visible.
 - **Players never pay** and never enter payment info — the coach is the customer.
+- **Athlete's goals + personal notes are private to the athlete** — the coach cannot read
+  them (enforced in `schema.sql`: no coach RLS policy on `goals`/`notes`). The only exception
+  is a note the athlete *chooses* to flag for the athletic trainer (injury/pain).
 
 **Phase-1 security gate (before real student data):** player reads/writes currently use the anon
 key with a per-player token (fine for demo). Move them behind a Supabase Edge Function that

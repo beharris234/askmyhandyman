@@ -141,11 +141,14 @@ alter table daily_quotes  enable row level security;
 alter table shoutouts     enable row level security;
 alter table chat_messages enable row level security;
 
--- Coach can see/manage their players' goals, notes, shout-outs, quotes.
-create policy "coach goals"     on goals     for all using (exists (select 1 from players p where p.id = goals.player_id and p.coach_id = auth.uid()));
-create policy "coach notes"     on notes     for all using (exists (select 1 from players p where p.id = notes.player_id and p.coach_id = auth.uid()));
+-- PRIVACY: goals + personal notes belong to the ATHLETE ALONE. No coach policy
+-- exists for them on purpose, so a logged-in coach can never read them. The only
+-- exception is a note the athlete *chooses* to flag for the athletic trainer
+-- (safety) — surfaced to the trainer via a dedicated Phase-1 view, never the coach.
+-- Athlete access itself is token-scoped through the Phase-1 Edge Function.
 create policy "coach quotes"    on daily_quotes for all using (auth.uid() = coach_id) with check (auth.uid() = coach_id);
 create policy "coach shoutouts" on shoutouts for all using (auth.uid() = coach_id) with check (auth.uid() = coach_id);
+-- (intentionally: NO coach policy on goals, NO coach policy on notes — private to the athlete)
 -- Team chat: coaches intentionally do NOT get a read policy here. Player access is
 -- token-scoped via the Phase-1 Edge Function (see note below).
 

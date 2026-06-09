@@ -24,6 +24,7 @@ body{background:#0a0d0a;color:#e7ece4;font-family:'Inter',sans-serif;min-height:
 .card{background:#11150f;border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:18px;margin-bottom:14px}
 .shout{background:linear-gradient(135deg,rgba(249,115,22,.16),rgba(249,115,22,.05));border:1px solid rgba(249,115,22,.4)}
 .label{font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#8a9581;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.priv{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.5px;text-transform:none;color:#22c55e;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);padding:3px 8px;border-radius:20px}
 .msgbox{white-space:pre-wrap;font-size:15px;line-height:1.65}
 .wrow{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:14px}
 .wrow:last-child{border:none}
@@ -130,15 +131,15 @@ function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show
       </div>
 
       <div class="card">
-        <div class="label">My Goals</div>
+        <div class="label">My Goals &amp; Wins <span class="priv">🔒 Only you</span></div>
         <div id="goals"></div>
         <div class="addrow"><input id="goalInput" placeholder="Squat 315 · Earn a starting spot…"><button class="mini" id="addGoal">+</button></div>
       </div>
 
       <div class="card">
-        <div class="label">My Notes</div>
+        <div class="label">My Notes <span class="priv">🔒 Only you</span></div>
         <textarea id="noteInput" placeholder="How'd today feel? What are you working on?"></textarea>
-        <div class="flag" id="flag"><div class="fb"></div><span>Flag this for the athletic trainer (injury / pain)</span></div>
+        <div class="flag" id="flag"><div class="fb"></div><span>Only share with the athletic trainer if it's an injury / pain</span></div>
         <button class="btn add" id="addNote">Save note</button>
         <div id="notes"></div>
       </div>

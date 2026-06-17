@@ -137,6 +137,44 @@ buy it?**
 > Keep the disclaimer tight: this is a **decision aid / estimate**, not formal tax advice —
 > and big purchases ("should I really spend $40k?") should nudge toward the CPA review.
 
+### Pillar 7 — Credits, Depreciation & "Found Money" from Prior Years
+Deductions reduce your *income*; **credits reduce your *tax bill dollar-for-dollar*** — they're
+worth far more, and owners almost never know which ones they qualify for. On top of that,
+**big assets keep giving deductions for years** (depreciation), and **you can often go back
+and fix missed deductions/credits on past returns for an actual refund check.** This pillar
+chases all three.
+
+**A. Tax-credit finder (most missed money)**
+- A short profile + Q&A surfaces credits the owner likely qualifies for, e.g.: hiring
+  credits (Work Opportunity), retirement-plan startup credits, health-coverage credits,
+  energy/EV and clean-vehicle credits, R&D for some trades, accessibility credits, and
+  education/training credits.
+- Plain-English: *"You may qualify for a $X credit for the new HVAC/EV/solar — that's
+  $X straight off your tax bill, not just a deduction."*
+
+**B. Long-term depreciation tracker (the multi-year deduction)**
+- When they buy a big asset (truck, equipment, building improvement), the app sets up the
+  **depreciation schedule** and **reminds them every year** of the deduction they still get
+  — so it's never forgotten.
+- Pairs with the Lease-vs-Buy advisor: *"Take it all now (Section 179) or spread it over
+  5–7 years (depreciation)?"* — and shows which is smarter given their income trend.
+
+**C. Prior-year refund finder (the "found money" hook)**
+- Walks the owner through the last **up to 3 tax years** asking what they *didn't* claim —
+  missed mileage, home office, equipment, supplies, credits, etc.
+- Estimates a potential **refund from amending** those returns (IRS Form 1040-X) and flags:
+  *"You may be owed ~$X from 2024 — here's how to claim it."*
+- **Critical guardrail:** there's generally a **~3-year window** to amend for a refund, and
+  amended returns should be **filed/reviewed by a tax pro.** The app finds and estimates the
+  money; it then **hands off to the CPA review** to actually file it (paid upsell + safety).
+
+**Why this is powerful:**
+- **Credits + back-refunds = the biggest "this app just found me real money" moments** — far
+  bigger than a single receipt. Great for testimonials and word-of-mouth.
+- It's a **reason to subscribe immediately** ("let's see if you're owed money from last year")
+  instead of waiting to accumulate value.
+- Natural **paid CPA-review upsell** on anything that requires actually amending a return.
+
 ---
 
 ## 4. EIGHT+ PAIN POINTS IT SOLVES (your "7-8" requirement)
@@ -154,6 +192,12 @@ buy it?**
 11. **"Should I lease or buy this truck/equipment?"** → Lease vs. Buy Advisor runs the
     tax + cash-flow math and gives a plain verdict before they sign — the highest-dollar
     decision in their year.
+12. **"What tax credits do I qualify for?"** → Credit finder surfaces dollar-for-dollar
+    credits (hiring, retirement, energy/EV, etc.) owners never knew existed.
+13. **"I forgot to claim stuff on past returns."** → Prior-year refund finder reviews up to
+    3 past years, estimates money owed, and routes an amended return to a CPA — found money.
+14. **"I lose track of multi-year write-offs."** → Depreciation tracker reminds them each
+    year of the deduction a big purchase still owes them.
 
 ---
 

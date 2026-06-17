@@ -11,6 +11,33 @@
 
 ---
 
+## 0. NORTH STAR — The Owner's Most Reliable Partner
+
+The app isn't a "tax tool" (opened in April, forgotten by May). It's the business owner's
+**most reliable partner** — trusted year-round. That positioning is the brand soul, and it
+dictates how every feature must *behave*:
+
+| A partner... | ...so the app | Pillar |
+|---|---|---|
+| Looks out for you before you ask | proactive nudges ("set aside $X," "buy before Dec 31," "you qualify for a credit") | P5, P7, P8 |
+| Is there year-round, not just tax season | quarterly check-ins, deadline reminders, January refresh | P5, spine |
+| Tells you the truth even when it costs them | need-first guardrail ("don't buy junk for the write-off") | P8 |
+| Has your back when things go wrong | audit-ready trail + "tap a CPA" when serious | P7, CPA layer |
+| Knows you — your trade, your history | trade-specific packs, remembers your situation | P1, onboarding |
+| Speaks your language | plain talk, voice, bilingual — built for the truck, not the desk | brand |
+
+**The one job (resist scope creep):** keep more of the owner's money in their pocket and
+keep the IRS off their back. NOT invoicing/CRM/scheduling/marketing — that's fighting
+QuickBooks and dilutes the promise. Be the *best* at the money+taxes job, year-round, and
+that is what earns "most reliable." Everything else is Phase 4+.
+
+**Brand promise:**
+> **"The partner who makes sure you keep what you earn — and never get surprised by the IRS."**
+
+**Name candidates (right-hand-man feel):** RightHand · Foreman · Sidekick · Anchor · Backbone · WriteOff · TaxStash
+
+---
+
 ## 1. THE WHY (Why this needs to exist)
 
 Small, "boots-on-the-ground" business owners — contractors, store owners, mechanics,

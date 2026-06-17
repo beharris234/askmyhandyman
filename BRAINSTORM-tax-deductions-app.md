@@ -177,6 +177,41 @@ chases all three.
 
 ---
 
+## 3.5 MISSING / UNDISCOVERED COMPONENTS (the layer beyond the visible features)
+
+The pillars above are *what the user sees*. But a real tax app for these owners needs a
+deeper layer that decides whether they actually save money and stay out of trouble. These
+are the candidate components still being figured out — split into **game-changers**
+(strategic, money-moving) and **table-stakes** (mandatory or the app feels broken).
+
+### Game-changers (the big "aha" pieces)
+- **Quarterly estimated taxes.** The #1 thing that wrecks self-employed owners — they skip
+  quarterly payments, then face a huge April bill + penalties. App auto-calculates *"set
+  aside $X, due [date]"* every quarter. Worth the subscription by itself.
+- **Entity structure advisor (LLC vs. S-corp).** The single biggest legal tax lever. Past
+  ~$60–80k profit, an **S-corp election** can save thousands/yr in self-employment tax.
+  *"You're leaving ~$6,000/yr on the table by not being an S-corp."*
+- **Business bank account + debit card (fintech wedge).** Money flowing through *our* card
+  means **every expense auto-categorizes** (receipts become backup, not a chore), **auto-
+  separates business vs. personal**, and unlocks the **real revenue model** (interchange +
+  float) beyond subscriptions. Possibly the whole business. (See Found, Lili, Novo.)
+- **Human CPA layer.** Owners ultimately want a *person* to trust. A "tap to connect with a
+  vetted tax pro" marketplace — for amended returns, S-corp filing, audits — is the trust
+  anchor and the richest upsell.
+
+### Table-stakes (mandatory or it feels broken)
+- **Sales tax** — critical for *store owners* (collect + remit; totally different from
+  income tax). Easy to forget since contractors don't deal with it.
+- **Tax calendar & deadline reminders** — quarterly dates, 1099 deadline, annual return.
+- **Paying workers** — 1099 vs. W-2, issuing 1099s to cash labor, reporting thresholds.
+- **Audit protection / defense** — receipt-backed trail + paid audit-support add-on.
+- **Multi-user access** — spouse/bookkeeper and the accountant need a way in.
+- **Peer benchmarking** — *"stores like yours deduct $X in utilities"* → flags misses, builds trust.
+
+> **Open question to resolve:** which of the game-changers is the *core* of the product?
+> A "tax answer app" (Q&A + capture) and a "business banking app" (card + auto-categorize)
+> are two very different companies. Pick the spine before building.
+
 ## 4. EIGHT+ PAIN POINTS IT SOLVES (your "7-8" requirement)
 
 1. **"I don't know what's deductible."** → Ask Anything + trade-specific deduction lists.

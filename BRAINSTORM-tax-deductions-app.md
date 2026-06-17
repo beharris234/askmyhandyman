@@ -99,6 +99,44 @@ effortless and answer any tax question in plain English.* Built around 5 pillars
   new credits. Push notification: *"3 new write-offs available to your trade in 2027."*
 - This justifies the **subscription** and keeps churn low.
 
+### Pillar 6 — Lease vs. Buy Advisor (the high-dollar decision tool)
+The biggest tax decision these owners make isn't a $40 receipt — it's a **$40,000 truck,
+a $15,000 trailer, an excavator, or a walk-in cooler.** Almost none of them run the math,
+and getting it wrong costs thousands. The app should advise: **should you lease it or
+buy it?**
+
+**How it works (a 5-question wizard, not a spreadsheet):**
+1. *What is it and what does it cost?* (truck / equipment / tool — $ price)
+2. *Buy outright, finance, or lease?* (and the monthly payment if known)
+3. *How long will you use it?* (3 yrs? 10 yrs? until it dies?)
+4. *Roughly what's your tax bracket / business income?*
+5. *How's your cash right now?* (tight / comfortable)
+
+**What it gives back — a plain-English recommendation with the dollar logic:**
+- **The tax angle:** Buying may let you **write off most/all of it this year** via
+  **Section 179** or **bonus depreciation** (huge first-year deduction). Leasing is
+  **deductible as you pay** (smooth, smaller deductions over time). The tool shows the
+  **year-1 vs. multi-year deduction difference in real dollars.**
+- **The cash-flow angle:** Lease = low money down, preserve cash, but you own nothing.
+  Buy = big cash out (or loan + deductible interest), but you build an **asset you own**
+  and can sell later.
+- **The verdict:** *"For your situation — high income this year, you'll keep this truck
+  8+ years, and you have the cash — **buy it and take the Section 179 deduction.** It
+  saves you ~$X this year vs. leasing."* Or the opposite for a cash-tight owner who
+  upgrades trucks every 3 years → **lease.**
+
+**Why this is a killer feature:**
+- It's the **single highest-dollar piece of advice** in the whole app → biggest "this app
+  paid for itself" moment.
+- **No competitor offers a tax-aware lease-vs-buy tool for this crowd** — it's usually
+  buried in a CPA conversation the owner never has.
+- It's a natural **tax-season + equipment-buying-season** re-engagement hook ("Thinking
+  about a new truck? Run the numbers first.").
+- Easy upsell to a **"talk to a CPA before you sign"** paid review on big-ticket items.
+
+> Keep the disclaimer tight: this is a **decision aid / estimate**, not formal tax advice —
+> and big purchases ("should I really spend $40k?") should nudge toward the CPA review.
+
 ---
 
 ## 4. EIGHT+ PAIN POINTS IT SOLVES (your "7-8" requirement)
@@ -113,6 +151,9 @@ effortless and answer any tax question in plain English.* Built around 5 pillars
 8. **"Tax rules keep changing."** → Yearly auto-refresh + alerts.
 9. **(Bonus) "I mix personal and business spending."** → Quick "business / personal / split" tag on each expense.
 10. **(Bonus) "I forget mileage."** → Auto/quick mileage logging — pure found money.
+11. **"Should I lease or buy this truck/equipment?"** → Lease vs. Buy Advisor runs the
+    tax + cash-flow math and gives a plain verdict before they sign — the highest-dollar
+    decision in their year.
 
 ---
 

@@ -177,6 +177,32 @@ chases all three.
 
 ---
 
+### Pillar 8 — The "Smart Buy" / Real-Cost Advisor (the emotional payoff)
+A deductible purchase doesn't really cost the sticker price — the write-off (and sometimes
+a credit on top) comes back. This pillar makes owners *feel* that, and reframes spending as
+saving. It's the dopamine layer that ties Lease-vs-Buy (P6) and Credits (P7) together.
+
+**What it does:**
+- **True cost after tax** on any item: *"That $1,000 compressor really costs ~$700 after the
+  write-off."* Sticker vs. real price, instantly.
+- **"It pays for itself" stacking:** when a credit applies (EV, solar, efficient HVAC), show
+  deduction + credit together → *"$6,000 unit, ~$1,900 back, real cost $4,100"* — sometimes
+  nearly free.
+- **Savings-wallet reframe:** *"Your write-offs saved you $3,400 this year — enough to cover
+  that new tool. Go get it."* The motivational hit that drives repeat opens.
+- **Year-end timing nudges:** *"You're projected to owe $5k. Buying gear you already need
+  before Dec 31 cuts that ~$1,500."*
+
+**The guardrail that makes it honest (and builds trust):**
+> A write-off returns *cents on the dollar* — never "spend $1 to save 30¢." The app always
+> leads with **need first**: *"Only buy it if you'd actually use it. Since you need a new
+> compressor anyway, here's how to time it to save the most."* This flips the feature from
+> salesy to "this app looks out for me" — core to the blue-collar trust brand.
+
+**Bonus revenue:** with after-tax price shown, link **"buy it here"** to tool/equipment
+suppliers for **affiliate commission** — carefully, need-first, never letting commission
+push waste (or it torches trust).
+
 ## 3.5 MISSING / UNDISCOVERED COMPONENTS (the layer beyond the visible features)
 
 The pillars above are *what the user sees*. But a real tax app for these owners needs a
@@ -251,6 +277,8 @@ the monetization, added once trust exists.
     3 past years, estimates money owed, and routes an amended return to a CPA — found money.
 14. **"I lose track of multi-year write-offs."** → Depreciation tracker reminds them each
     year of the deduction a big purchase still owes them.
+15. **"Can I even afford this purchase?"** → Smart Buy advisor shows the real after-tax cost
+    (and stacked credits) so a needed tool feels paid-for — "your savings already cover it."
 
 ---
 

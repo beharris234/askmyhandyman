@@ -208,9 +208,27 @@ are the candidate components still being figured out — split into **game-chang
 - **Multi-user access** — spouse/bookkeeper and the accountant need a way in.
 - **Peer benchmarking** — *"stores like yours deduct $X in utilities"* → flags misses, builds trust.
 
-> **Open question to resolve:** which of the game-changers is the *core* of the product?
-> A "tax answer app" (Q&A + capture) and a "business banking app" (card + auto-categorize)
-> are two very different companies. Pick the spine before building.
+### DECISION — The spine and the roadmap
+**Spine = a year-round "tax co-pilot" (the "never get surprised by the IRS" app).**
+Not a Q&A toy (too small), and NOT a bank on day one (regulated, slow, trust-gated, and
+walks straight into Found/Lili/Novo). Start as the painkiller, graduate into the platform.
+
+**Why co-pilot first:** it earns trust cheaply (Q&A hook + quarterly + S-corp savings),
+proves people will pay, and gathers the user base + financial picture you *need* before a
+card can succeed. Then the card supercharges everything (auto-categorize every swipe).
+**Found followed this same path** — narrow painkiller first, banking later.
+
+**Phased roadmap:**
+- **Phase 1 — Co-pilot core:** Ask-Anything Q&A + receipt capture + YTD savings counter +
+  **quarterly "set aside $X" estimator** + **S-corp savings nudge**. Revenue: subscription.
+- **Phase 2 — Human + found money:** CPA-connect marketplace, prior-year refund finder,
+  audit trail. Revenue: + CPA-review revenue share.
+- **Phase 3 — The card (fintech wedge):** business account + debit card via a banking-as-a-
+  service partner → auto-categorization, auto biz/personal split. Revenue: + interchange + float.
+
+**Edge vs. Found/Lili/Novo:** trade-specific, plain-talk, S-corp-nudging *co-pilot* — not
+"yet another business checking account." The tax brain is the differentiator; the card is
+the monetization, added once trust exists.
 
 ## 4. EIGHT+ PAIN POINTS IT SOLVES (your "7-8" requirement)
 

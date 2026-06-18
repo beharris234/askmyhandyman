@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0b1f17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Muster — Your tour, handled.</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#070d0a;
+  --panel:#0e1813;
+  --panel2:#13241b;
+  --line:#1f3327;
+  --green:#2fbf71;
+  --green-d:#1f7d4d;
+  --olive:#7d8b5a;
+  --gold:#d9b25b;
+  --txt:#e7f0ea;
+  --mut:#7e9587;
+  --mut2:#566d60;
+  --red:#e0584f;
+  --blue:#5aa9d9;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  background:#000;
+  font-family:'Inter',system-ui,sans-serif;
+  color:var(--txt);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+}
+/* Phone shell (desktop preview); fills screen on mobile */
+.phone{
+  width:100%;max-width:430px;height:100vh;max-height:932px;
+  background:var(--bg);position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+  box-shadow:0 0 0 1px #14241b, 0 40px 120px rgba(0,0,0,.6);
+}
+@media(min-width:480px){ .phone{border-radius:42px;height:92vh} }
+
+/* ---------- Screens ---------- */
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none;padding-bottom:96px}
+.screen.active{display:block}
+.screen::-webkit-scrollbar{display:none}
+
+/* ---------- Top bar ---------- */
+.topbar{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(180deg,rgba(7,13,10,.96),rgba(7,13,10,.82));
+  backdrop-filter:blur(14px);
+  padding:14px 18px 12px;border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.basebtn{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);
+  padding:8px 12px;border-radius:14px;cursor:pointer}
+.basebtn .flag{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--green-d),var(--olive));
+  display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.basebtn .meta{line-height:1.15;text-align:left}
+.basebtn .meta b{font-size:13px;font-weight:700;display:block}
+.basebtn .meta span{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px}
+.basebtn .chev{color:var(--mut);font-size:11px;margin-left:2px}
+.iconbtn{width:40px;height:40px;border-radius:13px;background:var(--panel);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:17px;cursor:pointer;position:relative}
+.iconbtn .dot{position:absolute;top:9px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--red);border:2px solid var(--panel)}
+
+/* ---------- Generic ---------- */
+.pad{padding:18px}
+.h1{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.h2{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.sub{color:var(--mut);font-size:13px;margin-top:3px}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:700}
+.sectionhdr{display:flex;align-items:center;justify-content:space-between;margin:22px 18px 12px}
+.sectionhdr a{color:var(--green);font-size:12px;font-weight:600;cursor:pointer}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:16px}
+.card+.card{margin-top:12px}
+
+/* ---------- Hero / payday ---------- */
+.hero{margin:16px 18px 4px;background:
+   radial-gradient(120% 120% at 100% 0%, rgba(47,191,113,.22), transparent 55%),
+   linear-gradient(160deg,#10241a,#0c1812);
+  border:1px solid #244b35;border-radius:24px;padding:20px;position:relative;overflow:hidden}
+.hero .label{display:flex;align-items:center;gap:8px;color:#bfe9d2;font-size:12px;font-weight:600}
+.hero .big{font-size:40px;font-weight:900;letter-spacing:-1.5px;margin-top:8px;font-family:'JetBrains Mono',monospace}
+.hero .row{display:flex;gap:18px;margin-top:14px}
+.hero .row div span{display:block;font-size:11px;color:var(--mut)}
+.hero .row div b{font-size:15px;font-weight:700}
+.countpill{position:absolute;top:18px;right:18px;background:rgba(0,0,0,.3);border:1px solid #2c5640;
+  border-radius:999px;padding:6px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#8fe6b5}
+
+/* ---------- Quick tools grid ---------- */
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 18px}
+.tool{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:15px;cursor:pointer;
+  transition:.15s;position:relative;overflow:hidden}
+.tool:active{transform:scale(.97)}
+.tool .ic{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:30px}
+.tool b{font-size:14px;font-weight:700;display:block}
+.tool span{font-size:11.5px;color:var(--mut)}
+.tool .arrow{position:absolute;top:16px;right:15px;color:var(--mut2);font-size:14px}
+
+/* status chips */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;padding:4px 9px;border-radius:999px}
+.chip.g{background:rgba(47,191,113,.14);color:#7fe3aa}
+.chip.gold{background:rgba(217,178,91,.14);color:var(--gold)}
+.chip.r{background:rgba(224,88,79,.14);color:#f0938c}
+.chip.b{background:rgba(90,169,217,.14);color:#9ad0ee}
+
+/* ---------- PCS progress ---------- */
+.pcs-banner{margin:16px 18px;border-radius:22px;padding:18px;background:
+  linear-gradient(160deg,#1a1407,#0e1813);border:1px solid #3a3115;position:relative;overflow:hidden}
+.progress{height:9px;border-radius:999px;background:#0a120d;overflow:hidden;margin-top:14px}
+.progress i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--gold),var(--green))}
+
+/* checklist */
+.check{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.check:last-child{border-bottom:0}
+.box{width:24px;height:24px;border-radius:8px;border:2px solid var(--mut2);flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:transparent;transition:.15s;margin-top:1px}
+.check.done .box{background:var(--green);border-color:var(--green);color:#06120b}
+.check .ctext b{font-size:14.5px;font-weight:600;display:block}
+.check.done .ctext b{text-decoration:line-through;color:var(--mut)}
+.check .ctext span{font-size:12px;color:var(--mut)}
+
+/* segmented */
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px;margin:0 18px 4px;gap:4px}
+.seg button{flex:1;border:0;background:transparent;color:var(--mut);font-weight:600;font-size:13px;padding:9px;border-radius:10px;cursor:pointer;font-family:inherit}
+.seg button.on{background:var(--green-d);color:#eafff3}
+
+/* calc */
+.field{margin-bottom:14px}
+.field label{font-size:12px;color:var(--mut);font-weight:600;display:block;margin-bottom:7px}
+.field select,.field input{width:100%;background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+  padding:13px 14px;border-radius:13px;font-size:15px;font-family:inherit;font-weight:600}
+.payout{background:linear-gradient(160deg,#10241a,#0c1812);border:1px solid #244b35;border-radius:20px;padding:18px;margin-top:6px}
+.payline{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.payline:last-child{border-bottom:0}
+.payline b{font-family:'JetBrains Mono',monospace;font-weight:700}
+.payline.total{font-size:17px;padding-top:14px}
+.payline.total b{color:var(--green);font-size:22px}
+
+/* list rows */
+.lrow{display:flex;align-items:center;gap:14px;padding:15px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.lrow:last-child{border-bottom:0}
+.lrow .lic{width:42px;height:42px;border-radius:13px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.lrow .ltext{flex:1}
+.lrow .ltext b{font-size:14.5px;font-weight:600;display:block}
+.lrow .ltext span{font-size:12px;color:var(--mut)}
+.lrow .lchev{color:var(--mut2)}
+
+/* ---------- Bottom nav ---------- */
+.nav{position:absolute;bottom:0;left:0;right:0;z-index:30;display:flex;
+  background:rgba(9,16,12,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line);
+  padding:9px 8px calc(env(safe-area-inset-bottom) + 10px)}
+.nav button{flex:1;background:0;border:0;color:var(--mut2);font-family:inherit;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:4px;padding:4px;font-size:10px;font-weight:600}
+.nav button .ni{font-size:20px;line-height:1}
+.nav button.on{color:var(--green)}
+
+/* ---------- Onboarding ---------- */
+.onb{position:absolute;inset:0;z-index:100;background:
+  radial-gradient(120% 80% at 50% -10%, rgba(47,191,113,.18), transparent 60%), var(--bg);
+  display:flex;flex-direction:column;padding:30px 26px calc(env(safe-area-inset-bottom) + 26px)}
+.onb.hide{display:none}
+.brand{display:flex;flex-direction:column;align-items:center;margin-top:40px}
+.logo{width:78px;height:78px;border-radius:22px;background:linear-gradient(135deg,var(--green),var(--green-d));
+  display:flex;align-items:center;justify-content:center;font-size:38px;
+  box-shadow:0 0 0 1px #2c5640, 0 18px 50px rgba(47,191,113,.28)}
+.brand h1{font-size:30px;font-weight:900;letter-spacing:-.5px;margin-top:18px}
+.brand p{color:var(--mut);font-size:14px;margin-top:6px;letter-spacing:1px;font-weight:500}
+.onb-step{flex:1;display:flex;flex-direction:column;justify-content:center}
+.onb-q{font-size:20px;font-weight:800;margin-bottom:4px}
+.onb-sub{color:var(--mut);font-size:13.5px;margin-bottom:20px}
+.opts{display:flex;flex-wrap:wrap;gap:10px}
+.opt{padding:12px 16px;border:1px solid var(--line);background:var(--panel);border-radius:14px;font-size:14px;font-weight:600;cursor:pointer}
+.opt.sel{border-color:var(--green);background:rgba(47,191,113,.12);color:#9ff0c1}
+.btn{background:var(--green);color:#06120b;border:0;width:100%;padding:16px;border-radius:16px;
+  font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:auto}
+.btn.ghost{background:var(--panel);color:var(--txt);border:1px solid var(--line);font-weight:600}
+.dots{display:flex;gap:7px;justify-content:center;margin-bottom:20px}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.dots i.on{background:var(--green);width:22px}
+
+/* toast */
+.toast{position:absolute;bottom:108px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:#10241a;border:1px solid #2c5640;color:#cdeedd;padding:11px 18px;border-radius:13px;
+  font-size:13px;font-weight:600;opacity:0;transition:.25s;z-index:60;pointer-events:none;white-space:nowrap;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.banner-note{font-size:10px;color:var(--mut2);text-align:center;padding:14px 24px 4px;line-height:1.5}
+.streak{display:flex;align-items:center;gap:7px;background:var(--panel);border:1px solid var(--line);
+  border-radius:999px;padding:7px 13px;font-size:12px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ============ ONBOARDING ============ -->
+  <div class="onb" id="onb">
+    <div class="brand">
+      <div class="logo">★</div>
+      <h1>Muster</h1>
+      <p>YOUR TOUR, HANDLED.</p>
+    </div>
+
+    <div class="onb-step" id="ostep">
+      <div class="onb-q">Welcome aboard.</div>
+      <div class="onb-sub">The one app for pay, PCS, promotions &amp; everything your duty station throws at you. Free, forever.</div>
+      <div class="card" style="background:var(--panel2)">
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><span style="font-size:20px">💵</span><div><b style="font-size:14px">Know your pay to the dollar</b><div class="sub" style="margin:0">BAH, BAS &amp; LES, decoded for your rank + base.</div></div></div>
+        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px"><span style="font-size:20px">📦</span><div><b style="font-size:14px">Survive your PCS</b><div class="sub" style="margin:0">A countdown + checklist that runs your whole move.</div></div></div>
+        <div style="display:flex;gap:12px;align-items:center"><span style="font-size:20px">🎖️</span><div><b style="font-size:14px">Track your next stripe</b><div class="sub" style="margin:0">Promotion points + board dates, always current.</div></div></div>
+      </div>
+    </div>
+
+    <div class="dots" id="dots"><i class="on"></i><i></i><i></i><i></i></div>
+    <button class="btn" id="onbnext" onclick="onbNext()">Get started</button>
+  </div>
+
+  <!-- ============ TOP BAR ============ -->
+  <div class="topbar" id="topbar" style="display:none">
+    <div class="basebtn" onclick="go('base')">
+      <div class="flag" id="branchEmoji">🇺🇸</div>
+      <div class="meta"><b id="baseName">Fort Liberty</b><span id="baseSub">Army · NC</span></div>
+      <div class="chev">▾</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div class="streak" title="Daily streak">🔥 <span id="streak">6</span></div>
+      <div class="iconbtn" onclick="toast('3 new alerts: payday, board results, BAH update')">🔔<span class="dot"></span></div>
+    </div>
+  </div>
+
+  <!-- ============ HOME ============ -->
+  <section class="screen active" id="s-home">
+    <div class="hero">
+      <div class="countpill">in <b id="paydays">5</b> days</div>
+      <div class="label">⬢ NEXT PAYDAY · Jul 1</div>
+      <div class="big">$<span id="netpay">4,182</span></div>
+      <div class="row">
+        <div><span>Base pay</span><b>$3,209</b></div>
+        <div><span>BAH</span><b>$1,815</b></div>
+        <div><span>BAS</span><b>$465</b></div>
+      </div>
+    </div>
+    <div class="banner-note">Sample figures for prototype — E-5, 6 yrs, w/ dependents. Tap any tool to explore.</div>
+
+    <div class="sectionhdr"><div class="h2">Quick tools</div><a onclick="go('more')">See all</a></div>
+    <div class="grid">
+      <div class="tool" onclick="go('pay')"><div class="ic" style="background:rgba(47,191,113,.16)">💵</div><b>Pay &amp; BAH</b><span>Calculate your check</span><div class="arrow">›</div></div>
+      <div class="tool" onclick="go('pcs')"><div class="ic" style="background:rgba(217,178,91,.16)">📦</div><b>PCS Center</b><span>62 days out</span><div class="arrow">›</div></div>
+      <div class="tool" onclick="go('promo')"><div class="ic" style="background:rgba(90,169,217,.16)">🎖️</div><b>Promotion</b><span>Board in 23 days</span><div class="arrow">›</div></div>
+      <div class="tool" onclick="go('base')"><div class="ic" style="background:rgba(125,139,90,.22)">🏠</div><b>My Base</b><span>Hours, TRICARE…</span><div class="arrow">›</div></div>
+    </div>
+
+    <div class="sectionhdr"><div class="h2">Your PCS to JBLM</div><a onclick="go('pcs')">Open</a></div>
+    <div class="pcs-banner" onclick="go('pcs')" style="cursor:pointer">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><div class="eyebrow" style="color:var(--gold)">ACTIVE MOVE</div><div class="h2" style="margin-top:4px">62 days to report date</div></div>
+        <span class="chip gold">On track</span>
+      </div>
+      <div class="progress"><i style="width:38%"></i></div>
+      <div class="sub" style="margin-top:10px">9 of 24 tasks done · Next: <b style="color:var(--txt)">Schedule HHG pack-out</b></div>
+    </div>
+
+    <div class="sectionhdr"><div class="h2">On your radar</div></div>
+    <div class="pad" style="padding-top:0">
+      <div class="card">
+        <div class="lrow" onclick="go('promo')"><div class="lic">🎖️</div><div class="ltext"><b>SGT board results drop in 23 days</b><span>You're projected 12 pts over cutoff</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('TRICARE region transfers automatically on PCS')"><div class="lic">🩺</div><div class="ltext"><b>Transfer TRICARE to West region</b><span>Do this within 90 days of moving</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('Opening Tuition Assistance guide…')"><div class="lic">🎓</div><div class="ltext"><b>TA window opens Jul 15</b><span>Up to $4,500/yr — set a reminder</span></div><div class="lchev">›</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAY ============ -->
+  <section class="screen" id="s-pay">
+    <div class="pad">
+      <div class="eyebrow">CALCULATOR</div>
+      <div class="h1" style="margin-top:6px">Pay &amp; BAH</div>
+      <div class="sub">Estimate your monthly take-home in seconds.</div>
+    </div>
+    <div class="pad" style="padding-top:0">
+      <div class="card">
+        <div class="field"><label>Branch</label>
+          <select id="c_branch"><option>Army</option><option>Navy</option><option>Air Force</option><option>Marines</option><option>Space Force</option><option>Coast Guard</option></select></div>
+        <div class="field"><label>Pay grade</label>
+          <select id="c_grade" onchange="calc()">
+            <option value="2200">E-3</option><option value="2580">E-4</option><option value="3209" selected>E-5</option>
+            <option value="3550">E-6</option><option value="4100">E-7</option>
+            <option value="3950">O-1</option><option value="4600">O-2</option><option value="5300">O-3</option>
+          </select></div>
+        <div class="field"><label>Years of service</label>
+          <select id="c_yos" onchange="calc()"><option>2</option><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option></select></div>
+        <div class="field"><label>Duty station (sets BAH)</label>
+          <select id="c_bah" onchange="calc()">
+            <option value="1815" selected>Fort Liberty, NC</option>
+            <option value="2628">JBLM, WA</option>
+            <option value="3399">San Diego, CA</option>
+            <option value="2964">Norfolk, VA</option>
+            <option value="4179">Honolulu, HI</option>
+            <option value="1290">Fort Sill, OK</option>
+          </select></div>
+        <div class="field" style="margin-bottom:0"><label>Dependents</label>
+          <div class="seg" style="margin:0">
+            <button class="on" id="dep_y" onclick="setDep(true)">With dependents</button>
+            <button id="dep_n" onclick="setDep(false)">Without</button>
+          </div></div>
+      </div>
+
+      <div class="payout">
+        <div class="payline"><span>Base pay</span><b>$<span id="o_base">3,209</span></b></div>
+        <div class="payline"><span>BAH (housing)</span><b>$<span id="o_bah">1,815</span></b></div>
+        <div class="payline"><span>BAS (food)</span><b>$465</b></div>
+        <div class="payline total"><span>Est. monthly</span><b>$<span id="o_total">5,489</span></b></div>
+      </div>
+      <div class="banner-note">Prototype estimate. Real version pulls current DoD pay tables &amp; your exact ZIP BAH.</div>
+    </div>
+  </section>
+
+  <!-- ============ PCS ============ -->
+  <section class="screen" id="s-pcs">
+    <div class="pcs-banner" style="margin-top:18px">
+      <div class="eyebrow" style="color:var(--gold)">PCS COMMAND CENTER</div>
+      <div class="h1" style="margin-top:6px">Fort Liberty → JBLM</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        <div class="sub" style="margin:0">Report date · Aug 19, 2026</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-weight:700;color:var(--gold);font-size:18px">62 days</div>
+      </div>
+      <div class="progress"><i style="width:38%"></i></div>
+      <div class="sub" style="margin-top:9px"><span id="pcsdone">9</span> of 24 tasks complete</div>
+    </div>
+
+    <div class="seg">
+      <button class="on" onclick="pcsFilter(this,'all')">All</button>
+      <button onclick="pcsFilter(this,'now')">This month</button>
+      <button onclick="pcsFilter(this,'soon')">Upcoming</button>
+    </div>
+
+    <div class="pad" style="padding-top:8px">
+      <div class="card" id="checklist">
+        <div class="check done" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Get PCS orders &amp; read them twice</b><span>Done · 12 days ago</span></div></div>
+        <div class="check done" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Attend mandatory PCS briefing</b><span>Done</span></div></div>
+        <div class="check done" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Create account on Move.mil / DPS</b><span>Done</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Schedule HHG pack-out date</b><span>Due in 6 days · highest priority</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Get 10+ copies of orders</b><span>You'll need them everywhere</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Research JBLM housing &amp; BAH</b><span>Off-base BAH is $2,628 w/ deps</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Book TLE / TLF lodging</b><span>Up to 10 days reimbursed</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Transfer TRICARE to West region</b><span>Within 90 days of arrival</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Update DEERS &amp; vRED</b><span>Address + dependents</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Out-process finance / travel advance</b><span>Optional advance pay available</span></div></div>
+      </div>
+      <button class="btn ghost" style="margin-top:14px" onclick="toast('Adding custom task…')">+ Add your own task</button>
+      <div class="banner-note">Checklist auto-tailors to your branch, OCONUS vs CONUS, and whether you have dependents.</div>
+    </div>
+  </section>
+
+  <!-- ============ PROMOTION ============ -->
+  <section class="screen" id="s-promo">
+    <div class="pad">
+      <div class="eyebrow" style="color:var(--blue)">PROMOTION TRACKER</div>
+      <div class="h1" style="margin-top:6px">Road to SGT (E-6)</div>
+      <div class="sub">Next board results · 23 days</div>
+    </div>
+    <div class="pad" style="padding-top:0">
+      <div class="payout" style="background:linear-gradient(160deg,#0d1c28,#0c1812);border-color:#21506e">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div><div class="sub" style="margin:0">Your points</div><div style="font-size:40px;font-weight:900;font-family:'JetBrains Mono',monospace;letter-spacing:-1px">742</div></div>
+          <div style="text-align:right"><div class="sub" style="margin:0">Cutoff (last board)</div><div style="font-size:22px;font-weight:700;color:var(--mut)">730</div></div>
+        </div>
+        <div class="progress" style="margin-top:14px"><i style="width:84%;background:linear-gradient(90deg,var(--blue),var(--green))"></i></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:12px"><span class="chip g">+12 over cutoff</span><span class="sub" style="margin:0">Projected: competitive</span></div>
+      </div>
+
+      <div class="sectionhdr" style="margin:22px 0 12px"><div class="h2">Where your points come from</div></div>
+      <div class="card">
+        <div class="payline"><span>Weapons qual</span><b>110 / 110</b></div>
+        <div class="payline"><span>APFT / ACFT</span><b>96 / 100</b></div>
+        <div class="payline"><span>Military education</span><b>130 / 180</b></div>
+        <div class="payline"><span>Civilian education</span><b>40 / 100</b></div>
+        <div class="payline"><span>Awards &amp; decorations</span><b>120</b></div>
+      </div>
+      <div class="card" style="background:rgba(47,191,113,.08);border-color:#244b35">
+        <b style="font-size:14px">💡 Biggest opportunity</b>
+        <div class="sub" style="margin-top:5px">Finish 2 more correspondence courses (+30 pts) and you'd clear last year's cutoff by 42. Tap to see eligible courses.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BASE ============ -->
+  <section class="screen" id="s-base">
+    <div class="pad">
+      <div class="eyebrow">MY INSTALLATION</div>
+      <div class="h1" style="margin-top:6px">Fort Liberty</div>
+      <div class="sub">Fayetteville, NC · Army · ~50,000 personnel</div>
+      <button class="btn ghost" style="margin-top:14px" onclick="switchBase()">⇄ Switch base (PCS or visiting)</button>
+    </div>
+    <div class="pad" style="padding-top:4px">
+      <div class="card">
+        <div class="lrow" onclick="toast('Commissary: Mon–Sat 9a–8p, Sun 10a–6p')"><div class="lic">🛒</div><div class="ltext"><b>Commissary &amp; Exchange</b><span>Open now · closes 8:00 PM</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('TRICARE East · Womack Army Medical Center')"><div class="lic">🩺</div><div class="ltext"><b>TRICARE &amp; medical</b><span>East region · Womack AMC</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('On-base housing waitlist ~ 3 weeks')"><div class="lic">🏠</div><div class="ltext"><b>Housing office</b><span>BAH $1,815 · waitlist ~3 wks</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('CDC waitlist via MilitaryChildCare.com')"><div class="lic">🧸</div><div class="ltext"><b>Child Development Center</b><span>Waitlist ~ 4 months</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('ID card / DEERS by appointment')"><div class="lic">🪪</div><div class="ltext"><b>ID card / DEERS (RAPIDS)</b><span>Appointment required</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('Gate 1 open 24/7 · Gate 3 0500–2200')"><div class="lic">🚧</div><div class="ltext"><b>Gate hours &amp; access</b><span>Gate 1 open 24/7</span></div><div class="lchev">›</div></div>
+      </div>
+      <div class="banner-note">Switching your base re-localizes the entire app — pay, TRICARE region, hours &amp; resources. (The PCS re-engagement loop.)</div>
+    </div>
+  </section>
+
+  <!-- ============ MORE ============ -->
+  <section class="screen" id="s-more">
+    <div class="pad"><div class="eyebrow">ALL TOOLS</div><div class="h1" style="margin-top:6px">Everything else</div></div>
+    <div class="pad" style="padding-top:0">
+      <div class="sectionhdr" style="margin:6px 0 10px"><div class="h2">Money</div></div>
+      <div class="card">
+        <div class="lrow" onclick="go('pay')"><div class="lic">💵</div><div class="ltext"><b>Pay &amp; BAH calculator</b><span>Top search</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('LES decoder coming in build')"><div class="lic">🧾</div><div class="ltext"><b>LES decoder</b><span>Understand every line of your pay stub</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('TSP / SDP guide')"><div class="lic">📈</div><div class="ltext"><b>TSP &amp; savings (SDP)</b><span>10% guaranteed on deployment</span></div><div class="lchev">›</div></div>
+      </div>
+      <div class="sectionhdr" style="margin:18px 0 10px"><div class="h2">Career &amp; life</div></div>
+      <div class="card">
+        <div class="lrow" onclick="go('promo')"><div class="lic">🎖️</div><div class="ltext"><b>Promotion tracker</b><span>Points + board countdown</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('Deployment readiness checklist')"><div class="lic">✈️</div><div class="ltext"><b>Deployment prep</b><span>POAs, family readiness, gear</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('GI Bill + TA education hub')"><div class="lic">🎓</div><div class="ltext"><b>Education &amp; GI Bill</b><span>TA, credentialing, transfer</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('Transition / separation timeline')"><div class="lic">🪖</div><div class="ltext"><b>Transition (ETS/retire)</b><span>Terminal leave, VA, civilian job</span></div><div class="lchev">›</div></div>
+      </div>
+      <div class="sectionhdr" style="margin:18px 0 10px"><div class="h2">Support</div></div>
+      <div class="card">
+        <div class="lrow" onclick="toast('Confidential — Military OneSource & MFLC')"><div class="lic">💚</div><div class="ltext"><b>Mental health &amp; counseling</b><span>Confidential, off-the-record options</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="toast('Spouse employment + PCS resources')"><div class="lic">👨‍👩‍👧</div><div class="ltext"><b>Family &amp; spouse</b><span>Childcare, schools, jobs</span></div><div class="lchev">›</div></div>
+      </div>
+      <div class="banner-note">Muster · prototype build · all data illustrative</div>
+    </div>
+  </section>
+
+  <!-- ============ NAV ============ -->
+  <div class="nav" id="nav" style="display:none">
+    <button class="on" data-s="home" onclick="go('home')"><span class="ni">⬡</span>Home</button>
+    <button data-s="pay" onclick="go('pay')"><span class="ni">💵</span>Pay</button>
+    <button data-s="pcs" onclick="go('pcs')"><span class="ni">📦</span>PCS</button>
+    <button data-s="base" onclick="go('base')"><span class="ni">🏠</span>Base</button>
+    <button data-s="more" onclick="go('more')"><span class="ni">⋯</span>More</button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+/* ---------- Onboarding flow ---------- */
+let step=0;
+const branchEmoji={Army:'🪖',Navy:'⚓',"Air Force":'✈️',Marines:'🦅',"Space Force":'🛰️',"Coast Guard":'🚤'};
+const steps=[
+ null,
+ {q:"What's your branch?",sub:"We tailor terminology, ranks & processes to you.",opts:["Army","Navy","Air Force","Marines","Space Force","Coast Guard"],key:"branch"},
+ {q:"What's your pay grade?",sub:"Sets your pay, promotion path & eligibility.",opts:["E-1 – E-4","E-5 – E-6","E-7 – E-9","W / Warrant","O-1 – O-3","O-4 +"],key:"grade"},
+ {q:"Where are you stationed?",sub:"This localizes BAH, TRICARE, commissary & more.",opts:["Fort Liberty","JBLM","Camp Pendleton","Norfolk","Ramstein AB","Other / search"],key:"base"}
+];
+const profile={branch:"Army",grade:"E-5 – E-6",base:"Fort Liberty"};
+
+function renderStep(){
+  const dots=document.getElementById('dots');
+  dots.querySelectorAll('i').forEach((d,i)=>d.classList.toggle('on',i===step));
+  if(step===0)return;
+  const s=steps[step];
+  const sel=profile[s.key];
+  document.getElementById('ostep').innerHTML=
+    `<div class="onb-q">${s.q}</div><div class="onb-sub">${s.sub}</div>
+     <div class="opts">${s.opts.map(o=>`<div class="opt ${o===sel?'sel':''}" onclick="pick('${s.key}','${o.replace(/'/g,"")}',this)">${o}</div>`).join('')}</div>`;
+  document.getElementById('onbnext').textContent = step===steps.length-1 ? "Enter Muster →" : "Continue";
+}
+function pick(key,val,el){ profile[key]=val; el.parentNode.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); }
+function onbNext(){
+  if(step<steps.length-1){ step++; renderStep(); }
+  else finishOnb();
+}
+function finishOnb(){
+  document.getElementById('onb').classList.add('hide');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('nav').style.display='flex';
+  // apply profile to header
+  const baseMap={"Fort Liberty":["Army","NC"],"JBLM":["Army","WA"],"Camp Pendleton":["Marines","CA"],"Norfolk":["Navy","VA"],"Ramstein AB":["Air Force","Germany"],"Other / search":["—","—"]};
+  document.getElementById('baseName').textContent = profile.base==="Other / search"?"Fort Liberty":profile.base;
+  const bm=baseMap[profile.base]||["Army","NC"];
+  document.getElementById('baseSub').textContent = `${profile.branch} · ${bm[1]}`;
+  document.getElementById('branchEmoji').textContent = branchEmoji[profile.branch]||'🇺🇸';
+  toast('Welcome to Muster, '+profile.grade.split(' ')[0]+' 👋');
+}
+
+/* ---------- Navigation ---------- */
+function go(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-'+name).classList.add('active');
+  document.querySelectorAll('#s-'+name)[0].scrollTop=0;
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===name));
+  document.querySelector('.screen.active').scrollTop=0;
+}
+
+/* ---------- Pay calc ---------- */
+let withDep=true;
+function setDep(v){ withDep=v; document.getElementById('dep_y').classList.toggle('on',v); document.getElementById('dep_n').classList.toggle('on',!v); calc(); }
+function calc(){
+  const base=+document.getElementById('c_grade').value;
+  let bah=+document.getElementById('c_bah').value;
+  if(!withDep) bah=Math.round(bah*0.86);
+  const bas=465;
+  const total=base+bah+bas;
+  document.getElementById('o_base').textContent=base.toLocaleString();
+  document.getElementById('o_bah').textContent=bah.toLocaleString();
+  document.getElementById('o_total').textContent=total.toLocaleString();
+}
+
+/* ---------- PCS checklist ---------- */
+function toggle(el){
+  el.classList.toggle('done');
+  const done=document.querySelectorAll('#checklist .check.done').length + 4; // +4 collapsed/earlier tasks
+  document.getElementById('pcsdone').textContent=Math.min(done,24);
+}
+function pcsFilter(btn,f){ btn.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('on')); btn.classList.add('on'); toast('Filter: '+f); }
+
+/* ---------- Base switch ---------- */
+function switchBase(){ toast('Pick a new base → app re-localizes everything'); }
+
+/* ---------- Toast ---------- */
+let tt;
+function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2200); }
+
+renderStep();
+calc();
+</script>
+</body>
+</html>

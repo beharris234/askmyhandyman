@@ -6,7 +6,7 @@
     { "src": "**/*.json", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/", "dest": "/index.html" },
+    { "src": "/", "dest": "/muster.html" },
     { "src": "/(.*)", "dest": "/$1" }
   ],
   "headers": [

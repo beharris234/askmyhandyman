@@ -1,0 +1,12 @@
+# Local secrets / keys — never commit
+.env
+
+# Rendered media (large) — keep out of git; queue.json tracks paths
+output/media/
+*.mp3
+*.mp4
+*.srt
+
+# Python
+__pycache__/
+*.pyc

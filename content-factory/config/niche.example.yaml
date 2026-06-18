@@ -1,0 +1,31 @@
+# The "domain name" — one file drives the whole pipeline.
+# Copy this to config/<your-niche>.yaml and edit.
+
+slug: handyman
+topic: "Home repair & handyman tips for everyday homeowners"
+audience: "Homeowners 30-55, DIY-curious but time-poor and tool-shy"
+
+# What a view should DO. This drives the CTA and the angle.
+# One of: leads | subscribers | sales | awareness
+goal: leads
+cta: "Comment 'FIX' and I'll DM you the free repair checklist"
+
+# Where to publish. Publishers are turned on stage-by-stage.
+platforms:
+  - youtube_shorts
+  - tiktok
+  - fb_reels
+
+# Brand voice the Scriptwriter must match.
+voice: "Confident, friendly expert. Plain talk, zero jargon, a little funny."
+
+# How many pieces per run.
+cadence_per_day: 1
+
+# Optional: seed topics to bias the Scout. Leave empty to let it roam.
+seed_topics:
+  - "leaky faucet"
+  - "drywall hole patch"
+  - "squeaky door"
+  - "garbage disposal jam"
+  - "running toilet"

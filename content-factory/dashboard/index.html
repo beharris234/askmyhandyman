@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Factory — Review</title>
+<style>
+  :root{--bg:#0b0b12;--card:#15151f;--line:#26263a;--ink:#e8e8f0;--mut:#8888a0;
+        --ok:#3ddc84;--no:#ff5a7a;--accent:#b496ff}
+  *{box-sizing:border-box;margin:0}
+  body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif;padding:24px;max-width:760px;margin:0 auto}
+  h1{font-size:22px;margin-bottom:2px}
+  .sub{color:var(--mut);font-size:13px;margin-bottom:20px}
+  .bar{display:flex;gap:8px;align-items:center;margin-bottom:18px;flex-wrap:wrap}
+  .bar button,.pill{background:var(--card);border:1px solid var(--line);color:var(--ink);
+        padding:7px 12px;border-radius:9px;cursor:pointer;font-size:13px}
+  .pill{cursor:default;color:var(--mut)}
+  .save{margin-left:auto;background:var(--accent);border-color:var(--accent);color:#120c20;font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px}
+  .card.approved{border-color:var(--ok)} .card.rejected{opacity:.5}
+  .meta{display:flex;gap:8px;align-items:center;font-size:11px;color:var(--mut);margin-bottom:8px;flex-wrap:wrap}
+  .tag{background:#20202e;padding:2px 8px;border-radius:6px}
+  .hook{font-size:17px;font-weight:600;margin-bottom:8px}
+  .body{color:#c8c8d8;font-size:14px;margin-bottom:10px;white-space:pre-wrap}
+  .cap{font-size:12px;color:var(--mut);border-left:2px solid var(--line);padding-left:10px;margin-bottom:10px}
+  .tags{font-size:12px;color:var(--accent);margin-bottom:12px}
+  .actions{display:flex;gap:8px}
+  .actions button{flex:1;padding:9px;border-radius:9px;border:1px solid var(--line);cursor:pointer;font-size:13px;font-weight:600}
+  .yes{background:rgba(61,220,132,.12);border-color:var(--ok);color:var(--ok)}
+  .nope{background:rgba(255,90,122,.12);border-color:var(--no);color:var(--no)}
+  .empty{color:var(--mut);text-align:center;padding:40px}
+  code{background:#20202e;padding:2px 6px;border-radius:5px;font-size:12px}
+</style>
+</head>
+<body>
+  <h1>Content Factory 🏭</h1>
+  <div class="sub">Review drafts → approve → export. Approved cards are what the Publisher posts.</div>
+
+  <div class="bar">
+    <span class="pill" id="counts">loading…</span>
+    <button onclick="load()">↻ Reload</button>
+    <button class="save" onclick="save()">⬇ Download updated queue.json</button>
+  </div>
+
+  <div id="list"><div class="empty">Loading <code>../output/queue.json</code>…</div></div>
+
+<script>
+let cards = [];
+
+async function load(){
+  try{
+    const res = await fetch('../output/queue.json?' + Date.now());
+    cards = await res.json();
+  }catch(e){
+    document.getElementById('list').innerHTML =
+      '<div class="empty">No queue yet. Run <code>python3 run.py --niche config/niche.example.yaml --count 3</code> first.</div>';
+    return;
+  }
+  render();
+}
+
+function set(id, status){
+  const c = cards.find(x=>x.id===id); if(c) c.status = status; render();
+}
+
+function render(){
+  const drafts = cards.filter(c=>c.status==='draft').length;
+  const ok = cards.filter(c=>c.status==='approved').length;
+  document.getElementById('counts').textContent =
+    `${cards.length} total · ${drafts} to review · ${ok} approved`;
+
+  const list = document.getElementById('list');
+  if(!cards.length){ list.innerHTML='<div class="empty">Queue is empty.</div>'; return; }
+
+  list.innerHTML = cards.map(c=>{
+    const s = c.script||{};
+    return `<div class="card ${c.status}">
+      <div class="meta">
+        <span class="tag">${c.platform}</span>
+        <span class="tag">${c.niche}</span>
+        <span class="tag">${c.status}</span>
+        <span>${(c.angle||'').slice(0,60)}</span>
+      </div>
+      <div class="hook">${esc(s.hook||s.title||'(no hook)')}</div>
+      <div class="body">${esc(s.body||'')}</div>
+      ${s.caption?`<div class="cap">📝 ${esc(s.caption)}</div>`:''}
+      ${s.hashtags?.length?`<div class="tags">${s.hashtags.map(esc).join(' ')}</div>`:''}
+      <div class="actions">
+        <button class="yes" onclick="set('${c.id}','approved')">✓ Approve</button>
+        <button class="nope" onclick="set('${c.id}','rejected')">✕ Reject</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function save(){
+  const blob = new Blob([JSON.stringify(cards,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'queue.json';
+  a.click();
+  alert('Saved queue.json — replace content-factory/output/queue.json with it, then run the Publisher.');
+}
+
+function esc(s){return String(s).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m]));}
+load();
+</script>
+</body>
+</html>

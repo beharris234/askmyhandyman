@@ -1,0 +1,16 @@
+# Text pipeline (required)
+pyyaml>=6.0
+
+# Optional LLM providers — install the one you use
+# anthropic>=0.40.0
+# google-genai>=0.3.0
+
+# Stage 2 (Editor) — uncomment when you turn on video render
+# edge-tts>=6.1.0
+# openai-whisper>=20231117   # auto-captions (or faster-whisper)
+# requests>=2.31.0           # Pexels/Pixabay stock fetch
+# (ffmpeg must be installed at the OS level)
+
+# Stage 3+ (Publishers)
+# google-api-python-client>=2.0.0
+# google-auth-oauthlib>=1.0.0

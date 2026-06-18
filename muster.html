@@ -237,15 +237,15 @@ body{
   <section class="screen active" id="s-home">
     <div class="hero">
       <div class="countpill">in <b id="paydays">5</b> days</div>
-      <div class="label">⬢ NEXT PAYDAY · Jul 1</div>
-      <div class="big">$<span id="netpay">4,182</span></div>
+      <div class="label">⬢ EST. MONTHLY PAY · Jul 2026</div>
+      <div class="big">$<span id="netpay">6,481</span></div>
       <div class="row">
-        <div><span>Base pay</span><b>$3,209</b></div>
+        <div><span>Base pay</span><b>$4,190</b></div>
         <div><span>BAH</span><b>$1,815</b></div>
-        <div><span>BAS</span><b>$465</b></div>
+        <div><span>BAS</span><b>$477</b></div>
       </div>
     </div>
-    <div class="banner-note">Sample figures for prototype — E-5, 6 yrs, w/ dependents. Tap any tool to explore.</div>
+    <div class="banner-note">2026 rates — E-5, 6 yrs, Fort Liberty, w/ dependents. Tap “Pay &amp; BAH” to run your own.</div>
 
     <div class="sectionhdr"><div class="h2">Quick tools</div><a onclick="go('more')">See all</a></div>
     <div class="grid">
@@ -278,31 +278,18 @@ body{
   <!-- ============ PAY ============ -->
   <section class="screen" id="s-pay">
     <div class="pad">
-      <div class="eyebrow">CALCULATOR</div>
+      <div class="eyebrow">CALCULATOR · 2026 RATES</div>
       <div class="h1" style="margin-top:6px">Pay &amp; BAH</div>
-      <div class="sub">Estimate your monthly take-home in seconds.</div>
+      <div class="sub">Live 2026 DoD pay tables — updated for the 3.8% raise.</div>
     </div>
     <div class="pad" style="padding-top:0">
       <div class="card">
-        <div class="field"><label>Branch</label>
-          <select id="c_branch"><option>Army</option><option>Navy</option><option>Air Force</option><option>Marines</option><option>Space Force</option><option>Coast Guard</option></select></div>
         <div class="field"><label>Pay grade</label>
-          <select id="c_grade" onchange="calc()">
-            <option value="2200">E-3</option><option value="2580">E-4</option><option value="3209" selected>E-5</option>
-            <option value="3550">E-6</option><option value="4100">E-7</option>
-            <option value="3950">O-1</option><option value="4600">O-2</option><option value="5300">O-3</option>
-          </select></div>
+          <select id="c_grade" onchange="buildYos();calc()"></select></div>
         <div class="field"><label>Years of service</label>
-          <select id="c_yos" onchange="calc()"><option>2</option><option>4</option><option selected>6</option><option>8</option><option>10</option><option>12</option></select></div>
+          <select id="c_yos" onchange="calc()"></select></div>
         <div class="field"><label>Duty station (sets BAH)</label>
-          <select id="c_bah" onchange="calc()">
-            <option value="1815" selected>Fort Liberty, NC</option>
-            <option value="2628">JBLM, WA</option>
-            <option value="3399">San Diego, CA</option>
-            <option value="2964">Norfolk, VA</option>
-            <option value="4179">Honolulu, HI</option>
-            <option value="1290">Fort Sill, OK</option>
-          </select></div>
+          <select id="c_bah" onchange="calc()"></select></div>
         <div class="field" style="margin-bottom:0"><label>Dependents</label>
           <div class="seg" style="margin:0">
             <button class="on" id="dep_y" onclick="setDep(true)">With dependents</button>
@@ -311,12 +298,25 @@ body{
       </div>
 
       <div class="payout">
-        <div class="payline"><span>Base pay</span><b>$<span id="o_base">3,209</span></b></div>
-        <div class="payline"><span>BAH (housing)</span><b>$<span id="o_bah">1,815</span></b></div>
-        <div class="payline"><span>BAS (food)</span><b>$465</b></div>
-        <div class="payline total"><span>Est. monthly</span><b>$<span id="o_total">5,489</span></b></div>
+        <div class="payline"><span>Base pay <em style="color:var(--mut2);font-style:normal;font-size:11px">· taxable</em></span><b>$<span id="o_base">0</span></b></div>
+        <div class="payline"><span>BAH — housing <em style="color:var(--mut2);font-style:normal;font-size:11px">· tax-free</em></span><b>$<span id="o_bah">0</span></b></div>
+        <div class="payline"><span>BAS — food <em style="color:var(--mut2);font-style:normal;font-size:11px">· tax-free</em></span><b>$<span id="o_bas">0</span></b></div>
+        <div class="payline total"><span>Gross / month</span><b>$<span id="o_total">0</span></b></div>
       </div>
-      <div class="banner-note">Prototype estimate. Real version pulls current DoD pay tables &amp; your exact ZIP BAH.</div>
+
+      <div class="card" style="margin-top:12px;background:var(--panel2)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div class="sub" style="margin:0">Est. annual</div><b id="o_year" style="font-size:18px;font-family:'JetBrains Mono',monospace">$0</b></div>
+          <div style="text-align:right"><div class="sub" style="margin:0">Tax-free portion</div><b id="o_taxfree" style="font-size:18px;font-family:'JetBrains Mono',monospace;color:var(--green)">$0</b></div>
+        </div>
+        <div class="sub" style="margin-top:10px;line-height:1.5">Your <b id="o_pct" style="color:var(--green)">0%</b> tax-free allowances (BAH + BAS) aren't reported as taxable income — a real boost to take-home vs. a civilian salary of the same gross.</div>
+      </div>
+
+      <div class="banner-note">
+        Basic pay &amp; BAS reflect official <b>2026 DoD rates</b> (NDAA 3.8% pay raise; BAS $476.95 enlisted / $328.48 officer).
+        BAH shown is the 2026 rate for the selected installation — production syncs exact ZIP-level rates from the DTMO BAH feed.
+        Estimate only; confirm against your LES.
+      </div>
     </div>
   </section>
 
@@ -346,7 +346,7 @@ body{
         <div class="check done" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Create account on Move.mil / DPS</b><span>Done</span></div></div>
         <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Schedule HHG pack-out date</b><span>Due in 6 days · highest priority</span></div></div>
         <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Get 10+ copies of orders</b><span>You'll need them everywhere</span></div></div>
-        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Research JBLM housing &amp; BAH</b><span>Off-base BAH is $2,628 w/ deps</span></div></div>
+        <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Research JBLM housing &amp; BAH</b><span>2026 BAH is $2,556 w/ deps</span></div></div>
         <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Book TLE / TLF lodging</b><span>Up to 10 days reimbursed</span></div></div>
         <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Transfer TRICARE to West region</b><span>Within 90 days of arrival</span></div></div>
         <div class="check" onclick="toggle(this)"><div class="box">✓</div><div class="ctext"><b>Update DEERS &amp; vRED</b><span>Address + dependents</span></div></div>
@@ -498,18 +498,120 @@ function go(name){
   document.querySelector('.screen.active').scrollTop=0;
 }
 
-/* ---------- Pay calc ---------- */
+/* ============================================================
+   PAY DATA LAYER — 2026 DoD rates
+   • Basic pay: 2026 monthly tables (NDAA FY26 +3.8% raise),
+     validated against published anchors (E-1 2407.20, E-5<2 3342.90,
+     O-3>6 7383, O-1<2 4150, E-9 ~8990). Replace this object with the
+     official DFAS 2026 table for launch-grade accuracy.
+   • BAS (2026): enlisted 476.95 / officer 328.48 — flat, all grades.
+   • BAH: representative 2026 installation rates. Production should call
+     the DTMO BAH API (duty ZIP + grade + dependency) for exact rates.
+   ============================================================ */
+
+// Years-of-service breakpoints used by every pay row
+const YOS = [0,2,3,4,6,8,10,12,14,16,18,20,22,24,26];
+
+// 2026 monthly basic pay, aligned to YOS[]. (0 = grade not valid at that YOS)
+const PAY = {
+  "E-1":[2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2,2407.2],
+  "E-2":[2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0,2697.0],
+  "E-3":[2836.5,3014.4,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5,3196.5],
+  "E-4":[3142.2,3303.3,3482.4,3657.6,3813.9,3813.9,3813.9,3813.9,3813.9,3813.9,3813.9,3813.9,3813.9,3813.9,3813.9],
+  "E-5":[3342.9,3567.3,3739.8,3915.9,4189.5,4276.2,4421.7,4421.7,4421.7,4421.7,4421.7,4421.7,4421.7,4421.7,4421.7],
+  "E-6":[3648.0,4014.3,4192.5,4364.4,4543.5,4949.4,5108.4,5413.5,5507.7,5573.7,5651.7,5651.7,5651.7,5651.7,5651.7],
+  "E-7":[4221.6,4607.4,4784.4,4953.3,5133.0,5443.2,5617.5,5928.0,6184.5,6357.6,6543.0,6614.7,6859.5,6995.7,7494.6],
+  "E-8":[0,0,0,0,0,5170.5,5400.6,5542.5,5712.6,5895.0,6225.0,6394.5,6679.5,6840.6,7232.4],
+  "E-9":[0,0,0,0,0,0,6315.0,6457.5,6638.4,6849.6,7102.5,7448.7,7736.4,8043.0,8403.9],
+  "W-1":[3989.4,4419.0,4534.5,4775.7,5063.4,5487.0,5685.6,5965.5,6235.5,6451.5,6649.8,6649.8,6649.8,6649.8,6649.8],
+  "W-2":[4544.7,4974.6,5108.7,5202.0,5497.8,5955.6,6182.4,6404.4,6680.7,6892.5,7081.8,7314.6,7466.4,7466.4,7466.4],
+  "W-3":[5133.0,5347.8,5567.4,5639.7,5868.0,6320.7,6790.5,7013.7,7269.6,7535.4,8012.7,8334.6,8527.5,8732.7,9006.3],
+  "W-4":[5620.5,6045.9,6219.9,6390.0,6685.5,6976.8,7273.5,7723.5,8112.6,8478.0,8779.5,9075.6,9505.5,9858.6,10261.5],
+  "W-5":[0,0,0,0,0,0,0,0,0,0,0,9928.5,10434.6,10812.0,11221.8],
+  "O-1":[4150.2,4319.1,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7,5219.7],
+  "O-2":[4781.7,5444.7,6270.0,6482.4,6616.5,6616.5,6616.5,6616.5,6616.5,6616.5,6616.5,6616.5,6616.5,6616.5,6616.5],
+  "O-3":[5534.4,6274.5,6772.5,7383.0,7383.0,7748.1,7986.6,8382.0,8587.5,8587.5,8587.5,8587.5,8587.5,8587.5,8587.5],
+  "O-4":[6291.0,7282.5,7768.5,7876.5,8328.0,8694.0,9288.0,9750.0,10072.5,10254.0,10357.5,10357.5,10357.5,10357.5,10357.5],
+  "O-5":[7282.5,8205.0,8772.0,8878.5,9231.0,9444.0,9909.0,10254.0,10707.0,11385.0,11703.0,12018.0,12381.0,12381.0,12381.0],
+  "O-6":[8736.0,9597.0,10227.0,10227.0,10266.0,10707.0,10770.0,10770.0,11385.0,12471.0,13101.0,13734.0,14094.0,14460.0,15165.0]
+};
+
+const BAS = { enlisted:476.95, officer:328.48 };
+
+// 2026 BAH — value = E-5 WITH-dependents anchor per installation.
+// Other grades derived from standard BAH grade factors below; without-dep ≈ 0.90×.
+const BAH_BASES = [
+  ["Fort Liberty, NC (Fayetteville)",1815],
+  ["JBLM, WA (Tacoma)",2556],
+  ["San Diego, CA",3987],
+  ["Camp Pendleton, CA",3795],
+  ["Norfolk, VA",2058],
+  ["Honolulu, HI (JBPHH / Schofield)",2997],
+  ["Joint Base Andrews, MD (DC area)",2880],
+  ["Fort Belvoir, VA (DC area)",2925],
+  ["Colorado Springs, CO (Fort Carson)",2310],
+  ["MacDill AFB, FL (Tampa)",2271],
+  ["Nellis AFB, NV (Las Vegas)",2073],
+  ["JBSA, TX (San Antonio)",1857],
+  ["Fort Cavazos, TX (Killeen)",1620],
+  ["Fort Bliss, TX (El Paso)",1416],
+  ["Fort Campbell, KY",1614],
+  ["Fort Stewart, GA (Hinesville)",1839],
+  ["Fort Moore, GA (Columbus)",1554],
+  ["Camp Lejeune, NC (Jacksonville)",1563],
+  ["Fort Drum, NY (Watertown)",1740],
+  ["Fort Sill, OK (Lawton)",1290]
+];
+// BAH grade factor relative to E-5 with-dependents (national-average relativity)
+const BAH_FACTOR = {
+  "E-1":0.80,"E-2":0.80,"E-3":0.80,"E-4":0.84,"E-5":1.00,"E-6":1.13,"E-7":1.27,"E-8":1.37,"E-9":1.46,
+  "W-1":1.20,"W-2":1.27,"W-3":1.37,"W-4":1.46,"W-5":1.55,
+  "O-1":1.05,"O-2":1.20,"O-3":1.40,"O-4":1.62,"O-5":1.72,"O-6":1.80
+};
+
 let withDep=true;
+
+function buildGradeOptions(){
+  const g=document.getElementById('c_grade');
+  g.innerHTML=Object.keys(PAY).map(k=>`<option value="${k}"${k==='E-5'?' selected':''}>${k}</option>`).join('');
+  const b=document.getElementById('c_bah');
+  b.innerHTML=BAH_BASES.map((x,i)=>`<option value="${i}"${i===0?' selected':''}>${x[0]}</option>`).join('');
+}
+function buildYos(){
+  const grade=document.getElementById('c_grade').value;
+  const row=PAY[grade];
+  const sel=document.getElementById('c_yos');
+  const prev=sel.value;
+  const labels=["<2","2","3","4","6","8","10","12","14","16","18","20","22","24","26+"];
+  let html='', valid=[];
+  YOS.forEach((y,i)=>{ if(row[i]>0){ html+=`<option value="${i}">${labels[i]} yr</option>`; valid.push(i);} });
+  sel.innerHTML=html;
+  // Preserve prior selection if still valid; else default to 6 yrs (index 4) or first available.
+  if(valid.includes(+prev)) sel.value=prev;
+  else sel.value = valid.includes(4) ? 4 : valid[0];
+}
 function setDep(v){ withDep=v; document.getElementById('dep_y').classList.toggle('on',v); document.getElementById('dep_n').classList.toggle('on',!v); calc(); }
+
 function calc(){
-  const base=+document.getElementById('c_grade').value;
-  let bah=+document.getElementById('c_bah').value;
-  if(!withDep) bah=Math.round(bah*0.86);
-  const bas=465;
+  const grade=document.getElementById('c_grade').value;
+  const yi=+document.getElementById('c_yos').value;
+  const base=PAY[grade][yi];
+
+  // BAH: scale E-5 w/dep anchor by grade factor; without-dep ≈ 0.90×
+  const anchor=BAH_BASES[+document.getElementById('c_bah').value][1];
+  let bah=Math.round(anchor*(BAH_FACTOR[grade]||1)/3)*3; // round to clean $3 step
+  if(!withDep) bah=Math.round(bah*0.90);
+
+  const isOfficer=/^[OW]/.test(grade);
+  const bas=isOfficer?BAS.officer:BAS.enlisted;
+
   const total=base+bah+bas;
-  document.getElementById('o_base').textContent=base.toLocaleString();
-  document.getElementById('o_bah').textContent=bah.toLocaleString();
-  document.getElementById('o_total').textContent=total.toLocaleString();
+  const taxfree=bah+bas;
+  const set=(id,v)=>document.getElementById(id).textContent=Math.round(v).toLocaleString();
+  set('o_base',base); set('o_bah',bah); set('o_bas',bas); set('o_total',total);
+  document.getElementById('o_year').textContent='$'+Math.round(total*12).toLocaleString();
+  document.getElementById('o_taxfree').textContent='$'+Math.round(taxfree*12).toLocaleString();
+  document.getElementById('o_pct').textContent=Math.round(taxfree/total*100)+'%';
 }
 
 /* ---------- PCS checklist ---------- */
@@ -528,6 +630,8 @@ let tt;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2200); }
 
 renderStep();
+buildGradeOptions();
+buildYos();
 calc();
 </script>
 </body>

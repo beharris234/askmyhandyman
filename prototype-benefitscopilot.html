@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="theme-color" content="#0b1f2a" />
-<title>BenefitsCopilot — Prototype</title>
+<title>VetWin — Prototype v2</title>
 <style>
   :root{
     --navy:#0b1f2a; --navy2:#10303f; --steel:#163a4d;
@@ -20,15 +20,13 @@
     background:#2a3942; color:var(--ink);
     display:flex; align-items:center; justify-content:center; min-height:100vh; padding:18px;
   }
-  /* phone frame */
   .phone{
-    width:390px; max-width:100%; height:780px; max-height:94vh;
+    width:390px; max-width:100%; height:800px; max-height:94vh;
     background:var(--bg); border-radius:38px; overflow:hidden; position:relative;
     box-shadow:0 30px 70px rgba(0,0,0,.45), 0 0 0 11px #11181c, 0 0 0 13px #2a3942;
   }
   .notch{position:absolute; top:0; left:50%; transform:translateX(-50%); width:150px; height:26px;
     background:#11181c; border-radius:0 0 18px 18px; z-index:50}
-  /* On real phones: fill the whole screen instead of a tiny floating card */
   @media (max-width:480px){
     body{padding:0; background:var(--bg); align-items:stretch}
     .phone{width:100%; height:100vh; max-height:none; border-radius:0; box-shadow:none}
@@ -38,140 +36,120 @@
   .screen.active{display:flex}
   .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch}
   .pad{padding:20px}
-
-  /* generic */
   h1{font-size:25px; line-height:1.15; margin:0 0 8px; letter-spacing:-.5px}
   h2{font-size:19px; margin:0 0 10px; letter-spacing:-.3px}
   p{line-height:1.5; margin:0 0 12px}
-  .muted{color:var(--muted)}
-  .center{text-align:center}
-  .btn{display:block; width:100%; border:0; border-radius:14px; padding:16px;
-    font-size:16px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.2px}
+  .muted{color:var(--muted)} .center{text-align:center}
+  .btn{display:block; width:100%; border:0; border-radius:14px; padding:16px; font-size:16px; font-weight:700; cursor:pointer; transition:.15s; letter-spacing:.2px}
   .btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#3a2a06}
   .btn-gold:active{transform:scale(.98)}
   .btn-ghost{background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.4)}
   .btn-dark{background:var(--navy); color:#fff}
+  .btn-green{background:linear-gradient(135deg,#2e9e6b,#36b97e); color:#fff}
   .link{color:var(--gold); font-weight:700; background:none; border:0; cursor:pointer; font-size:15px}
   .pill{display:inline-block; padding:5px 11px; border-radius:999px; font-size:12px; font-weight:700}
-
-  /* HERO / splash */
-  .hero{background:radial-gradient(120% 90% at 50% 0%, #16465c 0%, var(--navy) 60%); color:#fff;
-    flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:64px 26px 28px}
-  .badge{width:78px;height:78px;border-radius:20px;display:flex;align-items:center;justify-content:center;
-    background:linear-gradient(135deg,var(--gold),var(--gold2)); font-size:38px; box-shadow:0 10px 24px rgba(0,0,0,.3); margin-bottom:22px}
-  .stars{letter-spacing:3px; color:var(--gold); font-size:13px; margin-bottom:6px}
-
-  /* progress */
+  .opts{display:grid; gap:11px; margin:14px 0}
+  .opts.two{grid-template-columns:1fr 1fr}
+  .opt{border:1.5px solid var(--line); background:var(--card); border-radius:14px; padding:15px 14px; font-size:15px; font-weight:600; cursor:pointer; text-align:left; transition:.15s; display:flex; align-items:center; gap:10px}
+  .opt .ic{font-size:20px}
+  .opt:active{transform:scale(.98)}
+  .opt.sel{border-color:var(--gold); background:#fdf6e7; box-shadow:0 0 0 3px rgba(217,164,65,.18)}
+  select,input{width:100%; padding:15px; border:1.5px solid var(--line); border-radius:14px; font-size:16px; background:var(--card); color:var(--ink); appearance:none; outline:none}
+  select:focus,input:focus{border-color:var(--gold)}
+  label.fld{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:block;margin:14px 0 7px}
   .topbar{display:flex; align-items:center; gap:12px; padding:18px 18px 6px; background:var(--bg)}
   .back{background:none;border:0;font-size:22px;color:var(--navy);cursor:pointer;width:30px}
   .bar{flex:1;height:7px;background:var(--line);border-radius:99px;overflow:hidden}
   .bar > i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:99px;transition:width .35s}
-
-  /* option chips */
-  .opts{display:grid; gap:11px; margin:14px 0}
-  .opts.two{grid-template-columns:1fr 1fr}
-  .opt{border:1.5px solid var(--line); background:var(--card); border-radius:14px; padding:15px 14px;
-    font-size:15px; font-weight:600; cursor:pointer; text-align:left; transition:.15s; display:flex; align-items:center; gap:10px}
-  .opt .ic{font-size:20px}
-  .opt:active{transform:scale(.98)}
-  .opt.sel{border-color:var(--gold); background:#fdf6e7; box-shadow:0 0 0 3px rgba(217,164,65,.18)}
-  select,input{width:100%; padding:15px; border:1.5px solid var(--line); border-radius:14px; font-size:16px;
-    background:var(--card); color:var(--ink); appearance:none; outline:none}
-  select:focus,input:focus{border-color:var(--gold)}
-  label.fld{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;display:block;margin:14px 0 7px}
-
   .footer{padding:14px 18px 22px; background:var(--bg); border-top:1px solid var(--line)}
-
-  /* scanning */
+  .hero{background:radial-gradient(120% 90% at 50% 0%, #16465c 0%, var(--navy) 60%); color:#fff; flex:1; display:flex; flex-direction:column; justify-content:space-between; padding:60px 26px 26px}
+  .badge{width:74px;height:74px;border-radius:20px;display:flex;align-items:center;justify-content:center; background:linear-gradient(135deg,var(--gold),var(--gold2)); font-size:36px; box-shadow:0 10px 24px rgba(0,0,0,.3); margin-bottom:18px}
+  .stars{letter-spacing:3px; color:var(--gold); font-size:13px; margin-bottom:6px}
+  .vs{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:14px;margin-top:16px;display:flex;align-items:center;gap:10px}
+  .vs .x{flex:1;text-align:center} .vs .strike{text-decoration:line-through;color:#9fb6c1}
   .scanwrap{flex:1;background:var(--navy);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
   .ring{width:120px;height:120px;border-radius:50%;border:6px solid rgba(255,255,255,.12);border-top-color:var(--gold);animation:spin 1s linear infinite;margin-bottom:26px}
   @keyframes spin{to{transform:rotate(360deg)}}
   .scanline{opacity:0;transform:translateY(6px);transition:.4s;color:#cfe0e8;margin:5px 0;font-size:14.5px}
   .scanline.show{opacity:1;transform:none}
   .scanline b{color:var(--gold2)}
-
-  /* results header */
-  .rhead{background:radial-gradient(120% 100% at 50% 0,#16465c,var(--navy));color:#fff;padding:24px 20px 22px}
-  .money{font-size:40px;font-weight:800;letter-spacing:-1px;color:var(--gold2)}
-  .ratebox{display:flex;gap:12px;margin-top:16px}
-  .ratebox > div{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:12px;text-align:center}
-  .ratebox .big{font-size:26px;font-weight:800}
-  .arrow{align-self:center;color:var(--gold2);font-size:24px;font-weight:800}
-
-  /* cards */
+  .rhead{background:radial-gradient(120% 100% at 50% 0,#16465c,var(--navy));color:#fff;padding:22px 20px 20px}
+  .money{font-size:38px;font-weight:800;letter-spacing:-1px;color:var(--gold2)}
+  .ratebox{display:flex;gap:12px;margin-top:14px}
+  .ratebox > div{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:11px;text-align:center}
+  .ratebox .big{font-size:24px;font-weight:800}
+  .arrow{align-self:center;color:var(--gold2);font-size:22px;font-weight:800}
+  /* win-probability gauge */
+  .gauge{display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:16px;padding:14px;margin-top:14px}
+  .donut{width:78px;height:78px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:21px;color:#fff;
+    background:conic-gradient(var(--green) 0 84%, rgba(255,255,255,.15) 84% 100%)}
+  .donut span{width:56px;height:56px;border-radius:50%;background:var(--navy);display:flex;align-items:center;justify-content:center}
   .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow);margin-bottom:13px}
   .row{display:flex;gap:12px;align-items:flex-start}
   .ic-circ{width:42px;height:42px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;font-size:20px}
-  .b-est{background:#eaf6f0;color:var(--green)}
-  .b-money{background:#fff5e1;color:var(--amber)}
-  .b-doc{background:#eef3f7;color:var(--steel)}
-  .tag-new{background:#eaf6f0;color:var(--green)}
-  .tag-hot{background:#fdeceb;color:var(--red)}
+  .b-est{background:#eaf6f0;color:var(--green)} .b-money{background:#fff5e1;color:var(--amber)} .b-doc{background:#eef3f7;color:var(--steel)}
+  .tag-new{background:#eaf6f0;color:var(--green)} .tag-hot{background:#fdeceb;color:var(--red)} .tag-blue{background:#e8f0f6;color:var(--steel)}
   .sectitle{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin:20px 2px 10px}
-
-  /* tracker timeline */
+  .datacard{background:linear-gradient(135deg,#10303f,#0b1f2a);color:#fff;border:0}
+  .datastat{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.1);font-size:14.5px}
+  .datastat:last-child{border:0} .datastat b{color:var(--gold2)}
   .step{display:flex;gap:13px;margin-bottom:2px}
   .step .dot{width:18px;height:18px;border-radius:50%;flex:none;margin-top:2px;border:3px solid var(--line);background:#fff}
   .step.done .dot{background:var(--green);border-color:var(--green)}
   .step.now .dot{background:var(--gold);border-color:var(--gold);box-shadow:0 0 0 4px rgba(217,164,65,.25)}
-  .step .line{width:2px;flex:none;background:var(--line);margin:2px 0 0 8px}
-  .step .txt{padding-bottom:18px}
-  .step .txt small{color:var(--muted)}
-
-  /* bottom nav */
+  .step .txt{padding-bottom:18px} .step .txt small{color:var(--muted)}
   .nav{display:flex;background:#fff;border-top:1px solid var(--line);padding:8px 4px 14px}
   .nav button{flex:1;background:none;border:0;cursor:pointer;font-size:11px;color:var(--muted);font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px}
-  .nav button .ni{font-size:21px}
-  .nav button.on{color:var(--navy)}
-  .nav button.on .ni{filter:drop-shadow(0 2px 4px rgba(217,164,65,.5))}
-
-  /* check-in / crisis */
+  .nav button .ni{font-size:21px} .nav button.on{color:var(--navy)}
   .mood{display:flex;justify-content:space-between;margin:14px 0}
   .mood button{font-size:30px;background:none;border:0;cursor:pointer;transition:.15s;opacity:.55}
   .mood button:active,.mood button.sel{transform:scale(1.25);opacity:1}
   .crisis{background:#fdeceb;border:1.5px solid #f5c6c2;border-radius:16px;padding:16px}
   .crisis a{display:block;background:var(--red);color:#fff;text-decoration:none;text-align:center;padding:14px;border-radius:12px;font-weight:800;margin-top:10px}
-  .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;
-    padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:.3s;z-index:60;box-shadow:var(--shadow);white-space:nowrap}
+  .toast{position:absolute;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff; padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:.3s;z-index:60;box-shadow:var(--shadow);max-width:80%;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .disclaim{font-size:11.5px;color:var(--muted);line-height:1.5;padding:4px 2px 0}
+  .freeflag{font-size:11.5px;color:var(--green);font-weight:700;background:#eaf6f0;border-radius:8px;padding:4px 8px;display:inline-block}
 </style>
 </head>
 <body>
 <noscript>
-  <div style="position:fixed;inset:0;background:#0b1f2a;color:#fff;z-index:999;display:flex;
-    align-items:center;justify-content:center;text-align:center;padding:30px;font-family:sans-serif">
+  <div style="position:fixed;inset:0;background:#0b1f2a;color:#fff;z-index:999;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;font-family:sans-serif">
     <div><h2 style="color:#f0c46b">Open this in a web browser</h2>
-    <p>This prototype needs JavaScript. You're viewing it in a file-preview that blocks it.<br><br>
-    Tap the <b>Share</b> icon → <b>Open in Safari / Chrome</b> to use the interactive demo.</p></div>
+    <p>This prototype needs JavaScript. Tap <b>Share</b> → <b>Open in Safari / Chrome</b>.</p></div>
   </div>
 </noscript>
 <div class="phone">
   <div class="notch"></div>
 
-  <!-- 0: SPLASH -->
+  <!-- SPLASH -->
   <section class="screen active" id="s-splash">
     <div class="hero">
       <div>
         <div class="badge">🎖️</div>
-        <div class="stars">★ ★ ★ ★ ★</div>
-        <h1 style="color:#fff;font-size:30px">Find every benefit<br>you earned.</h1>
-        <p style="color:#cfe0e8">Most veterans are leaving money and benefits on the table. In 2 minutes, see what you actually qualify for — free, always, for those who served.</p>
+        <div class="stars">★ ★ ★ ★ ★ &nbsp;4.9 · 50k+ vets</div>
+        <h1 style="color:#fff;font-size:29px">Win the rating<br>you earned.</h1>
+        <p style="color:#cfe0e8">We do what $9,000 claim companies do — auto-file, win-strategy from real veteran outcomes, and a doctor for your evidence. <b style="color:#fff">Free for you.</b></p>
+        <div class="vs">
+          <div class="x"><div class="muted" style="font-size:12px;color:#9fb6c1">Trajector / VA Claims Insider</div><div class="strike" style="font-size:22px;font-weight:800">$9,000</div></div>
+          <div style="color:var(--gold2);font-weight:800">vs</div>
+          <div class="x"><div class="muted" style="font-size:12px;color:#9fb6c1">VetWin</div><div style="font-size:22px;font-weight:800;color:var(--gold2)">$0</div></div>
+        </div>
       </div>
       <div>
-        <button class="btn btn-gold" onclick="go('s-q1')">Start my free scan</button>
+        <button class="btn btn-gold" onclick="go('s-q1')">See what I'm owed — free</button>
         <button class="btn btn-ghost" style="margin-top:10px" onclick="go('s-home')">I already have an account</button>
-        <p class="center" style="color:#8fa6b1;font-size:12px;margin-top:14px">🔒 Private &amp; encrypted. We never sell your data.</p>
+        <p class="center" style="color:#8fa6b1;font-size:12px;margin-top:12px">🔒 Lenders &amp; accredited reps pay us — never you.</p>
       </div>
     </div>
   </section>
 
-  <!-- Q1 branch -->
+  <!-- Q1 -->
   <section class="screen" id="s-q1">
     <div class="topbar"><button class="back" onclick="go('s-splash')">‹</button><div class="bar"><i style="width:20%"></i></div></div>
     <div class="scroll pad">
       <h1>Which branch did you serve in?</h1>
-      <p class="muted">This shapes the benefits we check for you.</p>
+      <p class="muted">We match you to veterans with the same profile.</p>
       <div class="opts">
         <button class="opt" onclick="pick(this,'s-q2')"><span class="ic">🪖</span> Army</button>
         <button class="opt" onclick="pick(this,'s-q2')"><span class="ic">⚓</span> Navy</button>
@@ -183,21 +161,16 @@
     </div>
   </section>
 
-  <!-- Q2 years + discharge -->
+  <!-- Q2 -->
   <section class="screen" id="s-q2">
-    <div class="topbar"><button class="back" onclick="go('s-q1')">‹</button><div class="bar"><i style="width:40%"></i></div></div>
+    <div class="topbar"><button class="back" onclick="go('s-q1')">‹</button><div class="bar"><i style="width:45%"></i></div></div>
     <div class="scroll pad">
-      <h1>Tell us about your service.</h1>
+      <h1>Your service & job (MOS)?</h1>
+      <label class="fld">Military job / MOS</label>
+      <select><option selected>11B — Infantry</option><option>68W — Combat Medic</option><option>88M — Motor Transport</option><option>25B — IT Specialist</option><option>Other</option></select>
       <label class="fld">Years of service</label>
-      <select><option>Less than 2 years</option><option selected>2–6 years</option><option>6–12 years</option><option>12–20 years</option><option>20+ years (retired)</option></select>
-      <label class="fld">Discharge status</label>
-      <div class="opts two">
-        <button class="opt sel" onclick="pickOne(this)">Honorable</button>
-        <button class="opt" onclick="pickOne(this)">General</button>
-        <button class="opt" onclick="pickOne(this)">Medical</button>
-        <button class="opt" onclick="pickOne(this)">Other / OTH</button>
-      </div>
-      <label class="fld">Did you deploy / serve in a combat zone?</label>
+      <select><option>Less than 2</option><option selected>2–6 years</option><option>6–12 years</option><option>20+ (retired)</option></select>
+      <label class="fld">Did you deploy / combat zone?</label>
       <div class="opts two">
         <button class="opt sel" onclick="pickOne(this)">Yes</button>
         <button class="opt" onclick="pickOne(this)">No</button>
@@ -206,17 +179,16 @@
     <div class="footer"><button class="btn btn-gold" onclick="go('s-q3')">Continue</button></div>
   </section>
 
-  <!-- Q3 rating + state -->
+  <!-- Q3 -->
   <section class="screen" id="s-q3">
-    <div class="topbar"><button class="back" onclick="go('s-q2')">‹</button><div class="bar"><i style="width:65%"></i></div></div>
+    <div class="topbar"><button class="back" onclick="go('s-q2')">‹</button><div class="bar"><i style="width:75%"></i></div></div>
     <div class="scroll pad">
-      <h1>Your current VA disability rating?</h1>
-      <p class="muted">No worries if you're not sure — we'll estimate it.</p>
-      <label class="fld">Current rating</label>
-      <select><option>I've never filed</option><option selected>0% (denied / pending)</option><option>10–20%</option><option>30–40%</option><option>50–60%</option><option>70%+</option></select>
-      <label class="fld">State you live in</label>
-      <select><option selected>Texas</option><option>Florida</option><option>California</option><option>Georgia</option><option>North Carolina</option><option>Virginia</option><option>Other</option></select>
-      <label class="fld">Conditions you experience (tap all that apply)</label>
+      <h1>Current rating & symptoms</h1>
+      <label class="fld">Current VA rating</label>
+      <select><option>Never filed</option><option selected>0–20%</option><option>30–40%</option><option>50–60%</option><option>70%+</option></select>
+      <label class="fld">State</label>
+      <select><option selected>Texas</option><option>Florida</option><option>Georgia</option><option>Other</option></select>
+      <label class="fld">What do you deal with? (tap all)</label>
       <div class="opts two">
         <button class="opt sel" onclick="pickMulti(this)">Tinnitus</button>
         <button class="opt sel" onclick="pickMulti(this)">Back / knees</button>
@@ -226,19 +198,19 @@
         <button class="opt" onclick="pickMulti(this)">Hearing loss</button>
       </div>
     </div>
-    <div class="footer"><button class="btn btn-gold" onclick="runScan()">Run my benefits scan ▸</button></div>
+    <div class="footer"><button class="btn btn-gold" onclick="runScan()">Run my win analysis ▸</button></div>
   </section>
 
-  <!-- SCANNING -->
+  <!-- SCAN -->
   <section class="screen" id="s-scan">
     <div class="scanwrap">
       <div class="ring"></div>
-      <h2 style="color:#fff">Scanning your benefits…</h2>
-      <div class="scanline" id="sl0">Checking <b>federal VA programs</b>…</div>
-      <div class="scanline" id="sl1">Cross-referencing <b>Texas state benefits</b>…</div>
-      <div class="scanline" id="sl2">Matching your <b>conditions to ratings</b>…</div>
-      <div class="scanline" id="sl3">Finding <b>local &amp; corporate discounts</b>…</div>
-      <div class="scanline" id="sl4">Building your <b>action plan</b>…</div>
+      <h2 style="color:#fff">Analyzing your case…</h2>
+      <div class="scanline" id="sl0">Matching you to <b>11,400 vets like you</b>…</div>
+      <div class="scanline" id="sl1">Calculating your <b>win probability</b>…</div>
+      <div class="scanline" id="sl2">Mapping the <b>highest-rated filing path</b>…</div>
+      <div class="scanline" id="sl3">Pricing your <b>back-pay & monthly increase</b>…</div>
+      <div class="scanline" id="sl4">Building your <b>done-for-you plan</b>…</div>
     </div>
   </section>
 
@@ -246,57 +218,67 @@
   <section class="screen" id="s-home">
     <div class="scroll">
       <div class="rhead">
-        <p style="margin:0;color:#cfe0e8;font-size:14px">Good afternoon, Sergeant 👋</p>
-        <p style="margin:6px 0 2px;color:#cfe0e8;font-size:14px">You may be leaving up to</p>
-        <div class="money">$1,716<span style="font-size:18px">/mo</span></div>
-        <p style="margin:4px 0 0;color:#cfe0e8;font-size:13px">in disability pay on the table — let's go get it.</p>
+        <p style="margin:0;color:#cfe0e8;font-size:14px">Your case, Sergeant 👋</p>
+        <p style="margin:6px 0 2px;color:#cfe0e8;font-size:14px">You're likely owed about</p>
+        <div class="money">$1,716<span style="font-size:18px">/mo</span> <span style="font-size:15px;color:#cfe0e8">+ $14,200 back-pay</span></div>
         <div class="ratebox">
-          <div><div style="font-size:11px;color:#9fb6c1">CURRENT</div><div class="big">0%</div></div>
+          <div><div style="font-size:11px;color:#9fb6c1">NOW</div><div class="big">20%</div></div>
           <div class="arrow">→</div>
-          <div><div style="font-size:11px;color:#9fb6c1">EST. ELIGIBLE</div><div class="big" style="color:var(--gold2)">70%</div></div>
+          <div><div style="font-size:11px;color:#9fb6c1">ACHIEVABLE</div><div class="big" style="color:var(--gold2)">70%</div></div>
+        </div>
+        <div class="gauge">
+          <div class="donut"><span>84%</span></div>
+          <div><div style="font-weight:800;font-size:15px">Your win probability: 84%</div>
+          <div style="color:#cfe0e8;font-size:13px;margin-top:3px">Based on 11,400 veterans with your exact profile.</div></div>
         </div>
       </div>
       <div class="pad" style="padding-top:16px">
-        <div class="sectitle">⚡ Top opportunities for you</div>
 
-        <div class="card">
-          <div class="row">
-            <div class="ic-circ b-money">💵</div>
-            <div style="flex:1">
-              <span class="pill tag-hot">HIGH VALUE</span>
-              <h2 style="margin:8px 0 4px;font-size:17px">File a PTSD &amp; tinnitus claim</h2>
-              <p class="muted" style="margin:0;font-size:14px">Based on your answers, you likely qualify for a combined ~70% rating. Est. <b style="color:var(--ink)">+$1,716/mo</b>.</p>
-              <button class="btn btn-dark" style="margin-top:12px;padding:12px" onclick="go('s-tracker')">Start my claim ▸</button>
-            </div>
-          </div>
+        <button class="btn btn-green" onclick="go('s-file')">⚡ Auto-file my claim — free</button>
+        <p class="center freeflag" style="margin:10px auto 0;display:block;width:fit-content">No $9k consultant. We do it for you.</p>
+
+        <div class="sectitle">🧠 Vets exactly like you</div>
+        <div class="card datacard">
+          <div style="font-size:13px;color:#9fb6c1;margin-bottom:6px">11B Infantry · combat · PTSD + tinnitus + back</div>
+          <div class="datastat"><span>Filed this way</span><b>11,400 vets</b></div>
+          <div class="datastat"><span>Approved</span><b>84%</b></div>
+          <div class="datastat"><span>Average final rating</span><b>70%</b></div>
+          <div class="datastat"><span>Most-won condition first</span><b>PTSD (50%)</b></div>
+          <p style="margin:12px 0 0;font-size:12.5px;color:#9fb6c1">🔒 Anonymized real outcomes. This data gets smarter every day — and you can't Google it.</p>
         </div>
 
+        <div class="sectitle">💰 Your money moments</div>
         <div class="card">
           <div class="row">
             <div class="ic-circ b-est">🏠</div>
             <div style="flex:1">
-              <span class="pill tag-new">YOU QUALIFY</span>
-              <h2 style="margin:8px 0 4px;font-size:17px">VA Home Loan — $0 down</h2>
-              <p class="muted" style="margin:0;font-size:14px">No down payment, no PMI. We'll connect you to a vetted VA-loan specialist (free).</p>
-              <button class="btn btn-dark" style="margin-top:12px;padding:12px" onclick="toast('Demo: would connect you to a vetted VA lender')">See if I'm ready ▸</button>
+              <span class="pill tag-new">UNLOCKS AT 70%</span>
+              <h2 style="margin:8px 0 4px;font-size:17px">$0-down VA Home Loan</h2>
+              <p class="muted" style="margin:0;font-size:14px">No down payment, no PMI, funding-fee waived at your rating. We connect you to a vetted VA specialist.</p>
+              <button class="btn btn-dark" style="margin-top:12px;padding:12px" onclick="toast('Demo: routes you to a vetted VA lender (this is how the app stays free)')">Get matched — free ▸</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <div class="ic-circ b-money">💵</div>
+            <div style="flex:1">
+              <span class="pill tag-blue">ESTIMATE</span>
+              <h2 style="margin:8px 0 4px;font-size:17px">$14,200 back-pay coming</h2>
+              <p class="muted" style="margin:0;font-size:14px">Once approved. Need cash sooner? See partner advance options.</p>
+              <button class="btn btn-dark" style="margin-top:12px;padding:12px" onclick="toast('Demo: shows partner back-pay advance options')">See my options ▸</button>
             </div>
           </div>
         </div>
 
-        <div class="sectitle">🎁 Benefits you're missing</div>
+        <div class="sectitle">🎁 Also unlocked for you</div>
         <div class="card" style="padding:0">
-          <div class="row" style="padding:14px;border-bottom:1px solid var(--line)">
-            <div class="ic-circ b-doc">🎓</div><div style="flex:1"><b>GI Bill transfer to family</b><br><span class="muted" style="font-size:13.5px">Pass unused education benefits to a spouse/child.</span></div>
-          </div>
-          <div class="row" style="padding:14px;border-bottom:1px solid var(--line)">
-            <div class="ic-circ b-doc">🏛️</div><div style="flex:1"><b>TX property tax exemption</b><br><span class="muted" style="font-size:13.5px">At 70%+ rating, big property-tax relief in Texas.</span></div>
-          </div>
-          <div class="row" style="padding:14px">
-            <div class="ic-circ b-doc">🪪</div><div style="flex:1"><b>Veteran ID + 1,200 discounts</b><br><span class="muted" style="font-size:13.5px">Retail, travel, parks, and local businesses near you.</span></div>
-          </div>
+          <div class="row" style="padding:14px;border-bottom:1px solid var(--line)"><div class="ic-circ b-doc">🏛️</div><div style="flex:1"><b>TX property-tax exemption</b><br><span class="muted" style="font-size:13.5px">Big relief at 70%+ in Texas.</span></div></div>
+          <div class="row" style="padding:14px;border-bottom:1px solid var(--line)"><div class="ic-circ b-doc">🎓</div><div style="flex:1"><b>GI Bill transfer to family</b><br><span class="muted" style="font-size:13.5px">Pass benefits to spouse/kids.</span></div></div>
+          <div class="row" style="padding:14px"><div class="ic-circ b-doc">🪪</div><div style="flex:1"><b>1,200+ veteran discounts near you</b></div></div>
         </div>
 
-        <p class="disclaim">Estimates are educational and not legal advice or a guarantee of benefits. Initial VA claim prep guidance is provided free; we are not affiliated with the U.S. Dept. of Veterans Affairs.</p>
+        <p class="disclaim">Estimates are educational, not legal advice or a guarantee. Initial claim guidance is free; we are not affiliated with the U.S. Dept. of Veterans Affairs. We earn referral fees from vetted lenders, accredited reps, and partners — never from you.</p>
       </div>
     </div>
     <div class="nav">
@@ -307,33 +289,55 @@
     </div>
   </section>
 
+  <!-- DONE-FOR-YOU FILE -->
+  <section class="screen" id="s-file">
+    <div class="topbar"><button class="back" onclick="go('s-home')">‹</button><b style="font-size:16px">Auto-file my claim</b></div>
+    <div class="scroll pad">
+      <h1 style="margin-top:4px">We do the work. You approve it.</h1>
+      <p class="muted">This is what the $9,000 companies charge for. Here it's free.</p>
+
+      <div class="card">
+        <div class="step done"><div class="dot"></div><div class="txt"><b>Pull your service & medical records</b><br><small>Connected via VA.gov ✓ — 4 records found</small></div></div>
+        <div class="step done"><div class="dot"></div><div class="txt"><b>Auto-fill VA Form 21-526EZ</b><br><small>Pre-filled from your answers ✓</small></div></div>
+        <div class="step now"><div class="dot"></div><div class="txt"><b>Get your medical evidence (nexus / DBQ)</b><br><small style="color:var(--red);font-weight:700">The #1 reason claims win — book below 👇</small></div></div>
+        <div class="step"><div class="dot"></div><div class="txt"><b>Review & e-submit to the VA</b><br><small>One tap, once your evidence is in</small></div></div>
+      </div>
+
+      <div class="card" style="background:#fdf6e7;border-color:#e9d6a6">
+        <div class="row">
+          <div class="ic-circ b-money">🩺</div>
+          <div style="flex:1">
+            <b>Telehealth nexus exam</b>
+            <p class="muted" style="margin:6px 0 0;font-size:14px">A licensed doctor documents your conditions — the evidence claims live or die on. Next slot: <b>tomorrow 2:00 PM</b>.</p>
+          </div>
+        </div>
+        <button class="btn btn-gold" style="margin-top:12px;padding:13px" onclick="toast('Demo: books telehealth exam (app earns a small fee here)')">Book my exam ▸</button>
+      </div>
+
+      <button class="btn btn-green" onclick="go('s-tracker')">Review & submit my claim ▸</button>
+      <p class="disclaim">We help you prepare and file your own claim. For appeals we connect you to a VA-accredited representative. Not affiliated with the VA.</p>
+    </div>
+  </section>
+
   <!-- TRACKER -->
   <section class="screen" id="s-tracker">
     <div class="scroll">
       <div class="rhead" style="padding-bottom:18px">
         <p style="margin:0;color:#cfe0e8;font-size:13px">CLAIM #VA-2026-0418</p>
-        <h1 style="color:#fff;margin:6px 0 2px">PTSD + Tinnitus Claim</h1>
-        <span class="pill" style="background:rgba(217,164,65,.25);color:var(--gold2)">● In review at the VA</span>
+        <h1 style="color:#fff;margin:6px 0 2px">PTSD + Tinnitus + Back</h1>
+        <span class="pill" style="background:rgba(217,164,65,.25);color:var(--gold2)">● In review at the VA · 84% win odds</span>
       </div>
       <div class="pad">
         <div class="card">
-          <div class="step done"><div class="dot"></div><div class="txt"><b>Evidence gathered</b><br><small>Apr 2 — 4 documents in your vault ✓</small></div></div>
-          <div class="step done"><div class="dot"></div><div class="txt"><b>Claim filed with VA</b><br><small>Apr 18 — confirmation received ✓</small></div></div>
-          <div class="step now"><div class="dot"></div><div class="txt"><b>C&amp;P exam scheduled</b><br><small style="color:var(--red);font-weight:700">⏰ June 24, 9:00 AM — tap for prep checklist</small></div></div>
-          <div class="step"><div class="dot"></div><div class="txt"><b>VA review &amp; decision</b><br><small>Est. Aug–Sep 2026</small></div></div>
+          <div class="step done"><div class="dot"></div><div class="txt"><b>Evidence gathered</b><br><small>4 documents in your vault ✓</small></div></div>
+          <div class="step done"><div class="dot"></div><div class="txt"><b>Filed with VA</b><br><small>Apr 18 — confirmation received ✓</small></div></div>
+          <div class="step now"><div class="dot"></div><div class="txt"><b>C&amp;P exam</b><br><small style="color:var(--red);font-weight:700">⏰ June 24, 9:00 AM — tap for prep checklist</small></div></div>
+          <div class="step"><div class="dot"></div><div class="txt"><b>Decision</b><br><small>Est. Aug–Sep 2026 · ~$1,716/mo + $14,200 back-pay</small></div></div>
         </div>
-
-        <div class="sectitle">📂 Your document vault</div>
-        <div class="card" style="padding:0">
-          <div class="row" style="padding:13px;border-bottom:1px solid var(--line)"><div class="ic-circ b-doc">📄</div><div style="flex:1"><b>DD-214</b><br><span class="muted" style="font-size:13px">Uploaded · encrypted 🔒</span></div></div>
-          <div class="row" style="padding:13px;border-bottom:1px solid var(--line)"><div class="ic-circ b-doc">📄</div><div style="flex:1"><b>Service medical records</b><br><span class="muted" style="font-size:13px">Uploaded · encrypted 🔒</span></div></div>
-          <div class="row" style="padding:13px"><div class="ic-circ b-est">＋</div><div style="flex:1"><b>Add a buddy / nexus letter</b><br><span class="muted" style="font-size:13px">Strengthens your claim</span></div></div>
-        </div>
-
         <div class="card" style="background:#fdf6e7;border-color:#e9d6a6">
-          <b>Need an expert?</b>
-          <p class="muted" style="margin:6px 0 12px;font-size:14px">For appeals or complex cases, we'll connect you with a VA-accredited rep — at no cost to you.</p>
-          <button class="btn btn-gold" style="padding:12px" onclick="toast('Demo: matches a VA-accredited rep')">Match me free ▸</button>
+          <b>Denied or low-balled?</b>
+          <p class="muted" style="margin:6px 0 12px;font-size:14px">We auto-match you to a VA-accredited rep for the appeal — they only get paid if you win.</p>
+          <button class="btn btn-gold" style="padding:12px" onclick="toast('Demo: matches a VA-accredited rep (referral revenue)')">Match me free ▸</button>
         </div>
       </div>
     </div>
@@ -345,44 +349,34 @@
     </div>
   </section>
 
-  <!-- CHECK-IN / BUDDY -->
+  <!-- BUDDY -->
   <section class="screen" id="s-checkin">
     <div class="scroll pad">
       <h1 style="margin-top:6px">Daily check-in</h1>
       <p class="muted">How you holdin' up today, Sergeant?</p>
       <div class="card">
         <div class="mood">
-          <button onclick="moodPick(this)">😄</button>
-          <button onclick="moodPick(this)">🙂</button>
-          <button class="sel" onclick="moodPick(this)">😐</button>
-          <button onclick="moodPick(this)">😞</button>
-          <button onclick="moodPick(this)">😣</button>
+          <button onclick="moodPick(this)">😄</button><button onclick="moodPick(this)">🙂</button>
+          <button class="sel" onclick="moodPick(this)">😐</button><button onclick="moodPick(this)">😞</button><button onclick="moodPick(this)">😣</button>
         </div>
         <button class="btn btn-dark" style="padding:12px" onclick="toast('Check-in logged — streak: 6 days 🔥')">Log check-in</button>
       </div>
-
       <div class="sectitle">🤝 Your battle buddy</div>
       <div class="card">
         <div class="row">
           <div class="ic-circ" style="background:var(--navy);color:#fff">🪖</div>
-          <div style="flex:1">
-            <b>Marcus D.</b> <span class="muted" style="font-size:13px">· Army · paired 3 wks ago</span>
-            <p class="muted" style="margin:6px 0 0;font-size:14px">"Hooah — saw you got your C&amp;P exam. You got this. Hit me if you need prep tips."</p>
-          </div>
+          <div style="flex:1"><b>Marcus D.</b> <span class="muted" style="font-size:13px">· Army · 78% → 90%</span>
+          <p class="muted" style="margin:6px 0 0;font-size:14px">"Hooah — saw you got your C&amp;P exam. I used the telehealth doc, sealed my PTSD claim. You got this."</p></div>
         </div>
         <button class="btn btn-dark" style="padding:12px;margin-top:12px" onclick="toast('Demo: opens chat with Marcus')">Message Marcus</button>
       </div>
-
-      <div class="sectitle">📍 Near you</div>
-      <div class="card"><b>VFW Post 8541 — coffee &amp; connect</b><br><span class="muted" style="font-size:14px">Sat 9:00 AM · 2.3 mi away · 12 going</span></div>
-
       <div class="sectitle" style="color:var(--red)">You're never alone</div>
       <div class="crisis">
         <b>Rough day? Reach out now.</b>
-        <p class="muted" style="margin:6px 0 0;font-size:14px">Free, confidential, 24/7 — for all veterans, even if not enrolled in VA.</p>
+        <p class="muted" style="margin:6px 0 0;font-size:14px">Free, confidential, 24/7 — for all veterans.</p>
         <a href="tel:988" onclick="event.preventDefault();toast('Demo: dials 988 → press 1')">📞 Call 988, then press 1</a>
       </div>
-      <p class="disclaim">This app is not a medical or crisis service. In an emergency call 911. Veterans Crisis Line: dial 988 then press 1, or text 838255.</p>
+      <p class="disclaim">Not a medical or crisis service. Emergency: call 911. Veterans Crisis Line: dial 988 then press 1, or text 838255.</p>
     </div>
     <div class="nav">
       <button onclick="navTo(this,'s-home')"><span class="ni">🏠</span>Home</button>
@@ -394,29 +388,15 @@
 
   <div class="toast" id="toast"></div>
 </div>
-
 <script>
-  function go(id){
-    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    const sc=document.querySelector('#'+id+' .scroll'); if(sc) sc.scrollTop=0;
-  }
-  function pick(el,next){ // single-select that auto-advances
-    el.parentNode.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
-    el.classList.add('sel'); setTimeout(()=>go(next),180);
-  }
+  function go(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); const sc=document.querySelector('#'+id+' .scroll'); if(sc) sc.scrollTop=0; }
+  function pick(el,next){ el.parentNode.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); setTimeout(()=>go(next),180); }
   function pickOne(el){ el.parentNode.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel')); el.classList.add('sel'); }
   function pickMulti(el){ el.classList.toggle('sel'); }
   function navTo(btn,id){ go(id); }
   function moodPick(el){ el.parentNode.querySelectorAll('button').forEach(b=>b.classList.remove('sel')); el.classList.add('sel'); }
-  let tT;
-  function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('show'),2200); }
-  function runScan(){
-    go('s-scan');
-    const lines=['sl0','sl1','sl2','sl3','sl4'];
-    lines.forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('show'), 350*(i+1)));
-    setTimeout(()=>{ lines.forEach(id=>document.getElementById(id).classList.remove('show')); go('s-home'); }, 2600);
-  }
+  let tT; function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tT); tT=setTimeout(()=>t.classList.remove('show'),2600); }
+  function runScan(){ go('s-scan'); const lines=['sl0','sl1','sl2','sl3','sl4']; lines.forEach((id,i)=>setTimeout(()=>document.getElementById(id).classList.add('show'), 350*(i+1))); setTimeout(()=>{ lines.forEach(id=>document.getElementById(id).classList.remove('show')); go('s-home'); }, 2700); }
 </script>
 </body>
 </html>

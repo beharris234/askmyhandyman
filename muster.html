@@ -282,29 +282,46 @@ body{
       <div class="h1" style="margin-top:6px">Pay &amp; BAH</div>
       <div class="sub">Live 2026 DoD pay tables — updated for the 3.8% raise.</div>
     </div>
+    <div class="seg" style="margin:0 18px 14px">
+      <button class="on" id="comp_a" onclick="setComp('active')">Active</button>
+      <button id="comp_g" onclick="setComp('guard')">Guard</button>
+      <button id="comp_r" onclick="setComp('reserve')">Reserve</button>
+    </div>
     <div class="pad" style="padding-top:0">
       <div class="card">
         <div class="field"><label>Pay grade</label>
           <select id="c_grade" onchange="buildYos();calc()"></select></div>
         <div class="field"><label>Years of service</label>
           <select id="c_yos" onchange="calc()"></select></div>
-        <div class="field"><label>Duty station (sets BAH)</label>
+        <div class="field" id="f_bah"><label>Duty station (sets BAH)</label>
           <select id="c_bah" onchange="calc()"></select></div>
-        <div class="field" style="margin-bottom:0"><label>Dependents</label>
+        <div class="field" id="f_dep" style="margin-bottom:0"><label>Dependents</label>
           <div class="seg" style="margin:0">
             <button class="on" id="dep_y" onclick="setDep(true)">With dependents</button>
             <button id="dep_n" onclick="setDep(false)">Without</button>
           </div></div>
       </div>
 
-      <div class="payout">
+      <!-- ACTIVE output -->
+      <div class="payout" id="out_active">
         <div class="payline"><span>Base pay <em style="color:var(--mut2);font-style:normal;font-size:11px">· taxable</em></span><b>$<span id="o_base">0</span></b></div>
         <div class="payline"><span>BAH — housing <em style="color:var(--mut2);font-style:normal;font-size:11px">· tax-free</em></span><b>$<span id="o_bah">0</span></b></div>
         <div class="payline"><span>BAS — food <em style="color:var(--mut2);font-style:normal;font-size:11px">· tax-free</em></span><b>$<span id="o_bas">0</span></b></div>
         <div class="payline total"><span>Gross / month</span><b>$<span id="o_total">0</span></b></div>
       </div>
 
-      <div class="card" style="margin-top:12px;background:var(--panel2)">
+      <!-- DRILL (Guard/Reserve) output -->
+      <div class="payout" id="out_drill" style="display:none">
+        <div class="payline"><span>1 drill period <em style="color:var(--mut2);font-style:normal;font-size:11px">· base ÷ 30</em></span><b>$<span id="d_period">0</span></b></div>
+        <div class="payline"><span>Drill weekend <em style="color:var(--mut2);font-style:normal;font-size:11px">· 4 periods</em></span><b>$<span id="d_weekend">0</span></b></div>
+        <div class="payline total"><span>Typical drill month</span><b>$<span id="d_month">0</span></b></div>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line)">
+          <div class="sub" style="margin:0 0 8px">Annual Training (2-week orders &gt;30 days):</div>
+          <div class="payline" style="border:0;padding:6px 0"><span>AT — 14 days active</span><b>$<span id="d_at">0</span></b><span style="font-size:10px;color:var(--mut2);width:100%;text-align:right">+ BAS &amp; locality BAH on orders</span></div>
+        </div>
+      </div>
+
+      <div class="card" id="card_annual" style="margin-top:12px;background:var(--panel2)">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div><div class="sub" style="margin:0">Est. annual</div><b id="o_year" style="font-size:18px;font-family:'JetBrains Mono',monospace">$0</b></div>
           <div style="text-align:right"><div class="sub" style="margin:0">Tax-free portion</div><b id="o_taxfree" style="font-size:18px;font-family:'JetBrains Mono',monospace;color:var(--green)">$0</b></div>
@@ -312,10 +329,58 @@ body{
         <div class="sub" style="margin-top:10px;line-height:1.5">Your <b id="o_pct" style="color:var(--green)">0%</b> tax-free allowances (BAH + BAS) aren't reported as taxable income — a real boost to take-home vs. a civilian salary of the same gross.</div>
       </div>
 
+      <button class="btn ghost" style="margin-top:14px" onclick="go('tdy')">🧳 On orders? Calculate TDY per diem ›</button>
+
       <div class="banner-note">
         Basic pay &amp; BAS reflect official <b>2026 DoD rates</b> (NDAA 3.8% pay raise; BAS $476.95 enlisted / $328.48 officer).
-        BAH shown is the 2026 rate for the selected installation — production syncs exact ZIP-level rates from the DTMO BAH feed.
+        BAH = 2026 rate for the selected installation (DTMO sync in production). Guard/Reserve drill pay = basic pay ÷ 30 per drill period.
         Estimate only; confirm against your LES.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TDY PER DIEM ============ -->
+  <section class="screen" id="s-tdy">
+    <div class="pad">
+      <div class="eyebrow">CALCULATOR · FY2026 GSA</div>
+      <div class="h1" style="margin-top:6px">TDY Per Diem</div>
+      <div class="sub">What you're authorized for lodging &amp; meals on travel.</div>
+    </div>
+    <div class="pad" style="padding-top:0">
+      <div class="card">
+        <div class="field"><label>TDY location</label>
+          <select id="t_loc" onchange="tdy()"></select></div>
+        <div class="field"><label>Nights (away from home)</label>
+          <select id="t_nights" onchange="tdy()">
+            <option>1</option><option>2</option><option>3</option><option selected>4</option>
+            <option>5</option><option>6</option><option>7</option><option>10</option><option>14</option><option>21</option><option>30</option>
+          </select></div>
+        <div class="field" style="margin-bottom:0"><label>Meals provided by gov't / event (deducted each full day)</label>
+          <div class="seg" style="margin:0;font-size:12px">
+            <button class="on" id="m_b" onclick="tMeal('b',this)">Breakfast</button>
+            <button id="m_l" onclick="tMeal('l',this)">Lunch</button>
+            <button id="m_d" onclick="tMeal('d',this)">Dinner</button>
+          </div></div>
+      </div>
+
+      <div class="payout">
+        <div class="payline"><span>Lodging <em style="color:var(--mut2);font-style:normal;font-size:11px">· up to cap × nights</em></span><b>$<span id="t_lodge">0</span></b></div>
+        <div class="payline"><span>M&amp;IE — full days</span><b>$<span id="t_full">0</span></b></div>
+        <div class="payline"><span>M&amp;IE — travel days <em style="color:var(--mut2);font-style:normal;font-size:11px">· 75%</em></span><b>$<span id="t_travel">0</span></b></div>
+        <div class="payline" id="t_dedline" style="display:none"><span>Provided-meal deductions</span><b style="color:var(--red)">−$<span id="t_ded">0</span></b></div>
+        <div class="payline total"><span>Total authorized</span><b>$<span id="t_total">0</span></b></div>
+      </div>
+
+      <div class="card" style="margin-top:12px;background:var(--panel2)">
+        <div class="sub" style="margin:0;line-height:1.55">
+          <b style="color:var(--txt)" id="t_locname">Standard CONUS</b> · lodging cap $<span id="t_lcap">110</span>/night · M&amp;IE $<span id="t_mie">68</span>/day.
+          First &amp; last travel day always pay <b>75% of M&amp;IE</b>. Lodging is reimbursed at <b>actual cost up to the cap</b>.
+        </div>
+      </div>
+
+      <div class="banner-note">
+        Built on official <b>GSA FY2026 CONUS</b> rates &amp; rules (standard $110 lodging / $68 M&amp;IE; ~300 high-cost areas have their own caps).
+        Production pulls exact rate by ZIP &amp; month from the GSA per diem API; OCONUS uses DoD/State Dept tables. Estimate only.
       </div>
     </div>
   </section>
@@ -417,6 +482,7 @@ body{
       <div class="sectionhdr" style="margin:6px 0 10px"><div class="h2">Money</div></div>
       <div class="card">
         <div class="lrow" onclick="go('pay')"><div class="lic">💵</div><div class="ltext"><b>Pay &amp; BAH calculator</b><span>Top search</span></div><div class="lchev">›</div></div>
+        <div class="lrow" onclick="go('tdy')"><div class="lic">🧳</div><div class="ltext"><b>TDY per diem calculator</b><span>Lodging + M&amp;IE you're authorized · FY2026</span></div><div class="lchev">›</div></div>
         <div class="lrow" onclick="toast('LES decoder coming in build')"><div class="lic">🧾</div><div class="ltext"><b>LES decoder</b><span>Understand every line of your pay stub</span></div><div class="lchev">›</div></div>
         <div class="lrow" onclick="toast('TSP / SDP guide')"><div class="lic">📈</div><div class="ltext"><b>TSP &amp; savings (SDP)</b><span>10% guaranteed on deployment</span></div><div class="lchev">›</div></div>
       </div>
@@ -570,6 +636,22 @@ const BAH_FACTOR = {
 };
 
 let withDep=true;
+let comp='active'; // active | guard | reserve
+
+function setComp(c){
+  comp=c;
+  document.getElementById('comp_a').classList.toggle('on',c==='active');
+  document.getElementById('comp_g').classList.toggle('on',c==='guard');
+  document.getElementById('comp_r').classList.toggle('on',c==='reserve');
+  const drill = c!=='active';
+  // Drill weekends don't pay BAH/BAS or use dependents — hide those inputs
+  document.getElementById('f_bah').style.display = drill?'none':'block';
+  document.getElementById('f_dep').style.display = drill?'none':'block';
+  document.getElementById('out_active').style.display = drill?'none':'block';
+  document.getElementById('out_drill').style.display = drill?'block':'none';
+  document.getElementById('card_annual').style.display = drill?'none':'block';
+  calc();
+}
 
 function buildGradeOptions(){
   const g=document.getElementById('c_grade');
@@ -596,7 +678,22 @@ function calc(){
   const grade=document.getElementById('c_grade').value;
   const yi=+document.getElementById('c_yos').value;
   const base=PAY[grade][yi];
+  const set=(id,v)=>document.getElementById(id).textContent=Math.round(v).toLocaleString();
 
+  // ---- Guard / Reserve: drill-pay mode (derives from same basic-pay table) ----
+  if(comp!=='active'){
+    const perDrill=base/30;            // 1 drill period = 1/30 monthly base
+    const weekend=perDrill*4;          // standard drill weekend = 4 periods
+    const isOfficer=/^[OW]/.test(grade);
+    const atDaily=base/30;             // active-duty daily rate on AT orders
+    set('d_period',perDrill);
+    set('d_weekend',weekend);
+    set('d_month',weekend);            // typical month = one drill weekend
+    set('d_at',atDaily*14);           // 14-day Annual Training (base pay only)
+    return;
+  }
+
+  // ---- Active duty ----
   // BAH: scale E-5 w/dep anchor by grade factor; without-dep ≈ 0.90×
   const anchor=BAH_BASES[+document.getElementById('c_bah').value][1];
   let bah=Math.round(anchor*(BAH_FACTOR[grade]||1)/3)*3; // round to clean $3 step
@@ -607,11 +704,59 @@ function calc(){
 
   const total=base+bah+bas;
   const taxfree=bah+bas;
-  const set=(id,v)=>document.getElementById(id).textContent=Math.round(v).toLocaleString();
   set('o_base',base); set('o_bah',bah); set('o_bas',bas); set('o_total',total);
   document.getElementById('o_year').textContent='$'+Math.round(total*12).toLocaleString();
   document.getElementById('o_taxfree').textContent='$'+Math.round(taxfree*12).toLocaleString();
   document.getElementById('o_pct').textContent=Math.round(taxfree/total*100)+'%';
+}
+
+/* ============================================================
+   TDY PER DIEM — GSA FY2026 (CONUS)
+   Locations: [name, lodging cap, M&IE daily]. Standard CONUS is
+   $110 / $68; the others are representative high-cost (NSA) areas.
+   Production pulls exact ZIP+month rates from the GSA per diem API.
+   ============================================================ */
+const TDY_LOC = [
+  ["Standard CONUS (most locations)",110,68],
+  ["Washington, DC",258,92],
+  ["New York City, NY",295,92],
+  ["San Diego, CA",194,86],
+  ["Boston, MA",284,92],
+  ["San Antonio, TX",130,74],
+  ["Norfolk / Virginia Beach, VA",128,74],
+  ["Colorado Springs, CO",135,80],
+  ["Tampa, FL",150,80],
+  ["Las Vegas, NV",119,80]
+];
+// FY2026 standard M&IE breakdown ($68): B16 / L19 / D28 / incidentals 5
+const MEAL_FRAC = { b:16/68, l:19/68, d:28/68 };
+const tMeals = { b:false, l:false, d:false };
+
+function buildTdyOptions(){
+  document.getElementById('t_loc').innerHTML =
+    TDY_LOC.map((x,i)=>`<option value="${i}">${x[0]}</option>`).join('');
+}
+function tMeal(k,btn){ tMeals[k]=!tMeals[k]; btn.classList.toggle('on',tMeals[k]); tdy(); }
+
+function tdy(){
+  const loc=TDY_LOC[+document.getElementById('t_loc').value];
+  const nights=+document.getElementById('t_nights').value;
+  const lodgeCap=loc[1], mie=loc[2];
+  const fullDays=Math.max(nights-1,0);          // N nights → N+1 days; 2 are travel days
+  const lodging=nights*lodgeCap;
+  const travel=2*(0.75*mie);                    // first + last day at 75%
+  const fullM=fullDays*mie;
+  // provided-meal deductions on full days (scaled to this location's M&IE tier)
+  let perDayDed=0; ['b','l','d'].forEach(k=>{ if(tMeals[k]) perDayDed+=MEAL_FRAC[k]*mie; });
+  const ded=Math.round(perDayDed*fullDays);
+  const total=Math.round(lodging+travel+fullM-ded);
+  const set=(id,v)=>document.getElementById(id).textContent=Math.round(v).toLocaleString();
+  set('t_lodge',lodging); set('t_full',fullM); set('t_travel',travel); set('t_total',total);
+  document.getElementById('t_ded').textContent=ded.toLocaleString();
+  document.getElementById('t_dedline').style.display = ded>0?'flex':'none';
+  document.getElementById('t_locname').textContent=loc[0];
+  document.getElementById('t_lcap').textContent=lodgeCap;
+  document.getElementById('t_mie').textContent=mie;
 }
 
 /* ---------- PCS checklist ---------- */
@@ -633,6 +778,8 @@ renderStep();
 buildGradeOptions();
 buildYos();
 calc();
+buildTdyOptions();
+tdy();
 </script>
 </body>
 </html>

@@ -247,6 +247,17 @@ body{
     </div>
     <div class="banner-note">2026 rates — E-5, 6 yrs, Fort Liberty, w/ dependents. Tap “Pay &amp; BAH” to run your own.</div>
 
+    <div class="pad" style="padding-top:4px;padding-bottom:0">
+      <div class="card" onclick="go('ai')" style="cursor:pointer;background:radial-gradient(120% 120% at 100% 0%,rgba(90,169,217,.22),transparent 55%),linear-gradient(160deg,#10202b,#0c1812);border-color:#21506e">
+        <div style="display:flex;align-items:center;gap:13px">
+          <div class="ic" style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#5aa9d9,#2fbf71);display:flex;align-items:center;justify-content:center;font-size:21px;margin:0">✦</div>
+          <div style="flex:1"><b style="font-size:15px">Ask Muster AI</b><div class="sub" style="margin:0">5 agents working 24/7 on your pay, PCS &amp; benefits</div></div>
+          <div class="lchev" style="color:#9ad0ee">›</div>
+        </div>
+        <div class="sub" style="margin-top:11px;padding-top:11px;border-top:1px solid var(--line);line-height:1.5">💡 <b style="color:var(--txt)">Pay Watchdog</b> flagged: your BAH hasn't updated to JBLM yet — could be ~$740/mo. Tap to fix.</div>
+      </div>
+    </div>
+
     <div class="sectionhdr"><div class="h2">Quick tools</div><a onclick="go('more')">See all</a></div>
     <div class="grid">
       <div class="tool" onclick="go('pay')"><div class="ic" style="background:rgba(47,191,113,.16)">💵</div><b>Pay &amp; BAH</b><span>Calculate your check</span><div class="arrow">›</div></div>
@@ -335,6 +346,45 @@ body{
         Basic pay &amp; BAS reflect official <b>2026 DoD rates</b> (NDAA 3.8% pay raise; BAS $476.95 enlisted / $328.48 officer).
         BAH = 2026 rate for the selected installation (DTMO sync in production). Guard/Reserve drill pay = basic pay ÷ 30 per drill period.
         Estimate only; confirm against your LES.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AI HUB ============ -->
+  <section class="screen" id="s-ai">
+    <div class="pad">
+      <div class="eyebrow" style="color:var(--blue)">✦ ALWAYS ON</div>
+      <div class="h1" style="margin-top:6px">Muster AI</div>
+      <div class="sub">Five agents that watch your military life around the clock.</div>
+    </div>
+
+    <!-- chat demo -->
+    <div class="pad" style="padding-top:0">
+      <div class="card" style="background:var(--panel2)">
+        <div id="ai_chat" style="display:flex;flex-direction:column;gap:10px;max-height:230px;overflow-y:auto">
+          <div style="align-self:flex-start;background:var(--panel);border:1px solid var(--line);padding:11px 14px;border-radius:14px;border-bottom-left-radius:4px;font-size:13.5px;max-width:85%">Hey SGT — ask me anything about pay, PCS, TRICARE, leave, or your benefits. I cite the reg.</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <input id="ai_in" placeholder="e.g. How many days of TLE do I get?" onkeydown="if(event.key==='Enter')aiSend()" style="flex:1;background:var(--bg);border:1px solid var(--line);color:var(--txt);padding:12px 14px;border-radius:13px;font-size:14px;font-family:inherit">
+          <button onclick="aiSend()" style="background:var(--green);border:0;border-radius:13px;width:46px;font-size:18px;cursor:pointer">➤</button>
+        </div>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:10px">
+          <div class="opt" style="padding:7px 11px;font-size:12px" onclick="aiAsk('Can I sell back my leave?')">Sell back leave?</div>
+          <div class="opt" style="padding:7px 11px;font-size:12px" onclick="aiAsk('Will my BAH change after PCS?')">BAH after PCS?</div>
+          <div class="opt" style="padding:7px 11px;font-size:12px" onclick="aiAsk('Am I eligible for Tuition Assistance?')">TA eligible?</div>
+        </div>
+      </div>
+      <div class="banner-note" style="text-align:left">Powered by Claude. Production grounds answers in the JTR, DoD FMR &amp; your profile — and never replaces finance/legal. Demo responses shown.</div>
+    </div>
+
+    <div class="sectionhdr"><div class="h2">Your agents</div><span class="chip g">5 active</span></div>
+    <div class="pad" style="padding-top:0">
+      <div class="card">
+        <div class="lrow"><div class="lic">📦</div><div class="ltext"><b>PCS Copilot</b><span>Runs your move: sequences tasks, watches deadlines, drafts next steps</span></div><span class="chip gold">6d</span></div>
+        <div class="lrow"><div class="lic">🛡️</div><div class="ltext"><b>Pay Watchdog</b><span>Audits every LES, flags errors, tells you what to take to finance</span></div><span class="chip r">1 flag</span></div>
+        <div class="lrow"><div class="lic">🎁</div><div class="ltext"><b>Benefits Radar</b><span>Scans life events for entitlements you're leaving on the table</span></div><span class="chip g">$4.5k</span></div>
+        <div class="lrow"><div class="lic">🎖️</div><div class="ltext"><b>Promotion Strategist</b><span>Tracks points vs. live cutoffs, models your fastest path up</span></div><span class="chip b">+30</span></div>
+        <div class="lrow" style="border:0"><div class="lic">📑</div><div class="ltext"><b>Orders &amp; Docs Agent</b><span>Reads your orders/LES and explains them in plain English</span></div><span class="chip g">on</span></div>
       </div>
     </div>
   </section>
@@ -479,7 +529,11 @@ body{
   <section class="screen" id="s-more">
     <div class="pad"><div class="eyebrow">ALL TOOLS</div><div class="h1" style="margin-top:6px">Everything else</div></div>
     <div class="pad" style="padding-top:0">
-      <div class="sectionhdr" style="margin:6px 0 10px"><div class="h2">Money</div></div>
+      <div class="sectionhdr" style="margin:6px 0 10px"><div class="h2">Assistant</div></div>
+      <div class="card">
+        <div class="lrow" onclick="go('ai')" style="border:0"><div class="lic">✦</div><div class="ltext"><b>Muster AI</b><span>5 agents on your pay, PCS &amp; benefits 24/7</span></div><div class="lchev">›</div></div>
+      </div>
+      <div class="sectionhdr" style="margin:18px 0 10px"><div class="h2">Money</div></div>
       <div class="card">
         <div class="lrow" onclick="go('pay')"><div class="lic">💵</div><div class="ltext"><b>Pay &amp; BAH calculator</b><span>Top search</span></div><div class="lchev">›</div></div>
         <div class="lrow" onclick="go('tdy')"><div class="lic">🧳</div><div class="ltext"><b>TDY per diem calculator</b><span>Lodging + M&amp;IE you're authorized · FY2026</span></div><div class="lchev">›</div></div>
@@ -773,6 +827,35 @@ function switchBase(){ toast('Pick a new base → app re-localizes everything');
 /* ---------- Toast ---------- */
 let tt;
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2200); }
+
+/* ---------- Muster AI chat (prototype: canned, grounded-style answers) ---------- */
+const AI_CANNED={
+  "tle":"You're authorized up to **10 days of TLE** for a CONUS-to-CONUS PCS (5 days OCONUS). It reimburses lodging + M&IE while you're between homes. Source: JTR, Ch. 5. Want me to add it to your PCS checklist?",
+  "leave":"Yes — you can sell back leave, but only at **separation/ETS/retirement**, capped at **60 days** over a career, and you're paid **base pay only** (no BAH/BAS) and it's taxable. Selling vs. taking terminal leave is usually the bigger payout. Want me to compare both for your dates?",
+  "bah":"On a PCS your BAH switches to the **new duty ZIP** once you report — and it can swing a lot. Fort Liberty E-5 w/dep is ~$1,815; JBLM is ~$2,556, so you'd gain ~**$741/mo**. Rate protection may apply if the new rate is lower. I'll watch your LES to confirm it actually updates.",
+  "ta":"As an active-duty E-5 you're generally eligible for **Tuition Assistance — up to $4,500/yr / $250 per semester hour**, once you're past initial-skills training and meet your branch's service-remaining rule. The next window opens **Jul 15**. Want a reminder + the application steps?",
+  "default":"Here's the short version with the governing reg, tailored to your grade and base. In the live app I pull from the JTR, DoD FMR and your profile — and flag anything you should verify with finance. What specifically should I dig into?"
+};
+function aiPush(text,me){
+  const c=document.getElementById('ai_chat');
+  const d=document.createElement('div');
+  d.style.cssText=me
+    ? "align-self:flex-end;background:var(--green-d);color:#eafff3;padding:11px 14px;border-radius:14px;border-bottom-right-radius:4px;font-size:13.5px;max-width:85%"
+    : "align-self:flex-start;background:var(--panel);border:1px solid var(--line);padding:11px 14px;border-radius:14px;border-bottom-left-radius:4px;font-size:13.5px;max-width:85%";
+  d.innerHTML=text.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  c.appendChild(d); c.scrollTop=c.scrollHeight;
+}
+function aiReply(q){
+  const k=q.toLowerCase();
+  let key='default';
+  if(k.includes('tle')||k.includes('temporary lodging')) key='tle';
+  else if(k.includes('leave')||k.includes('sell back')) key='leave';
+  else if(k.includes('bah')||k.includes('pcs')) key='bah';
+  else if(k.includes('ta ')||k.includes('tuition')||k.includes('assistance')) key='ta';
+  setTimeout(()=>aiPush(AI_CANNED[key],false),450);
+}
+function aiAsk(q){ aiPush(q,true); aiReply(q); }
+function aiSend(){ const i=document.getElementById('ai_in'); const v=i.value.trim(); if(!v)return; i.value=''; aiAsk(v); }
 
 renderStep();
 buildGradeOptions();

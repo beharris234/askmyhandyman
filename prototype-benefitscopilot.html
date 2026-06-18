@@ -28,6 +28,12 @@
   }
   .notch{position:absolute; top:0; left:50%; transform:translateX(-50%); width:150px; height:26px;
     background:#11181c; border-radius:0 0 18px 18px; z-index:50}
+  /* On real phones: fill the whole screen instead of a tiny floating card */
+  @media (max-width:480px){
+    body{padding:0; background:var(--bg); align-items:stretch}
+    .phone{width:100%; height:100vh; max-height:none; border-radius:0; box-shadow:none}
+    .notch{display:none}
+  }
   .screen{position:absolute; inset:0; display:none; flex-direction:column; overflow:hidden}
   .screen.active{display:flex}
   .scroll{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch}
@@ -132,6 +138,14 @@
 </style>
 </head>
 <body>
+<noscript>
+  <div style="position:fixed;inset:0;background:#0b1f2a;color:#fff;z-index:999;display:flex;
+    align-items:center;justify-content:center;text-align:center;padding:30px;font-family:sans-serif">
+    <div><h2 style="color:#f0c46b">Open this in a web browser</h2>
+    <p>This prototype needs JavaScript. You're viewing it in a file-preview that blocks it.<br><br>
+    Tap the <b>Share</b> icon → <b>Open in Safari / Chrome</b> to use the interactive demo.</p></div>
+  </div>
+</noscript>
 <div class="phone">
   <div class="notch"></div>
 

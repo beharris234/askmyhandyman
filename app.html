@@ -182,6 +182,12 @@ textarea{resize:none;min-height:95px}
 .rl-url{flex:1;font-size:11px;color:var(--pu);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 .rl-copy{padding:7px 12px;background:rgba(180,150,255,.1);border:1px solid rgba(180,150,255,.22);border-radius:8px;color:var(--pu);font-size:10px;letter-spacing:1.5px;cursor:pointer;white-space:nowrap;font-family:'DM Mono',monospace}
 .rl-copy:active{background:rgba(180,150,255,.2)}
+.share-row{display:flex;gap:9px;margin-top:10px}
+.share-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:12px;border-radius:11px;border:1px solid var(--b);background:var(--s1);color:var(--tx);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.sb-fb{background:#1877F2;border-color:#1877F2;color:#fff}
+.sb-fb:active{background:#166fe0}
+.sb-nat:active{background:var(--s2)}
+.sb-i{width:16px;height:16px;border-radius:4px;background:#fff;color:#1877F2;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;font-family:Arial,sans-serif}
 .rh-item{display:flex;align-items:center;gap:11px;padding:13px;background:var(--s1);border:1px solid var(--b);border-radius:12px;margin-bottom:7px}
 .rh-av{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,rgba(180,150,255,.18),rgba(255,110,180,.18));display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .rh-info{flex:1}
@@ -369,6 +375,10 @@ textarea{resize:none;min-height:95px}
     <div class="rl-box">
       <div class="rl-url" id="refUrl">Loading...</div>
       <div class="rl-copy" onclick="copyRefLink()">Copy</div>
+    </div>
+    <div class="share-row">
+      <button class="share-btn sb-fb" onclick="shareToFacebook()"><span class="sb-i">f</span> Share on Facebook</button>
+      <button class="share-btn sb-nat" onclick="shareRefLink()">📤 Share…</button>
     </div>
     <div class="sec">Your Referrals</div>
     <div id="refList"><div style="text-align:center;padding:30px;color:var(--dim);font-size:11px">No referrals yet. Share your link!</div></div>
@@ -997,6 +1007,31 @@ function renderReferrals() {
 function copyRefLink() {
   const url = document.getElementById('refUrl').textContent
   navigator.clipboard.writeText(url).then(() => toast('✓ Referral link copied!'))
+}
+
+const SHARE_MSG = "I'm on PrivateBlast — blast your whole list at once, feels 1-on-1, totally private. Join me:"
+
+function getRefUrl() {
+  const url = document.getElementById('refUrl').textContent
+  if (!url || url === 'Loading...') { toast('Hang on, your link is still loading'); return null }
+  return url
+}
+
+function shareToFacebook() {
+  const url = getRefUrl()
+  if (!url) return
+  const fb = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url) + '&quote=' + encodeURIComponent(SHARE_MSG)
+  window.open(fb, 'fbshare', 'width=580,height=520,noopener')
+}
+
+async function shareRefLink() {
+  const url = getRefUrl()
+  if (!url) return
+  if (navigator.share) {
+    try { await navigator.share({ title: 'PrivateBlast', text: SHARE_MSG, url }) } catch (e) {}
+  } else {
+    navigator.clipboard.writeText(SHARE_MSG + ' ' + url).then(() => toast('✓ Link copied — paste it anywhere!'))
+  }
 }
 
 // ─── TIP JAR ────────────────────────────────
